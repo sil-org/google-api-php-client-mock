@@ -1,0 +1,7 @@
+nbproject/
+.DS_Store
+vendor/
+*.local.php
+build/
+.vagrant/
+.idea/
