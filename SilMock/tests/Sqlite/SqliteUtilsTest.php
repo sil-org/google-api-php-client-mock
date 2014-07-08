@@ -1,8 +1,5 @@
 <?php
 
-//require_once(dirname(__FILE__).'/../../../../Google/Service/Directory.php');
-
-//use SilMock\Google\Service\Directory;
 use SilMock\DataStore\Sqlite\SqliteUtils;
 
 class SqliteUtilsTest extends PHPUnit_Framework_TestCase
@@ -132,6 +129,43 @@ class SqliteUtilsTest extends PHPUnit_Framework_TestCase
         $results = $newSql->getData('', '');
         $expected = array();
         $msg = " *** Expected no data but got something.";
+        $this->assertEquals($expected, $results, $msg);
+    }
+
+    public function testDeleteAllData()
+    {
+        $newSql =  $this->loadData();
+        $newSql->deleteAllData();
+        $results = $newSql->getData('', '');
+        $expected = array();
+        $msg = " *** Mismatched data results for missing data.";
+        $this->assertEquals($expected, $results, $msg);
+    }
+
+    public function testDeleteRecordById()
+    {
+        $newSql =  $this->loadData();
+        $newSql->deleteRecordById(2);
+        $results = $newSql->getData('', '');
+
+        $expected = array(
+            array('id' => '1',
+                'type' => 'directory',
+                'class' => 'user',
+                'data' => 'user1 test data',
+            ),
+            array('id' => '3',
+                'type' => 'app_engine',
+                'class' => 'webapp',
+                'data' => 'webapp3 test data',
+            ),
+            array('id' => '4',
+                'type' => 'directory',
+                'class' => 'user',
+                'data' => 'user4 test data',
+            ),
+        );
+        $msg = " *** Mismatched data results for remaining data.";
         $this->assertEquals($expected, $results, $msg);
     }
 
