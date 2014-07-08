@@ -21,6 +21,9 @@ class DirectoryTest extends PHPUnit_Framework_TestCase
 
     public function testUsersInsert()
     {
+        $fixturesClass = new GoogleFixtures();
+        $fixturesClass->removeAllFixtures();
+
         $newUser = new User();
         $newUser->changePasswordAtNextLogin = false; // bool
         $newUser->hashFunction = "SHA-1"; // string
@@ -55,34 +58,71 @@ class DirectoryTest extends PHPUnit_Framework_TestCase
         $this->assertEquals($expected, $results, $msg);
     }
 
+    public function get_fixtures() {
+        $user4Data = '{"changePasswordAtNextLogin":false,"hashFunction":"SHA-1",' .
+            '"id":999991,"password":"testP4ss",' .
+            '"primaryEmail":"user_test4@sil.org",' .
+            '"suspended":false,"suspensionReason":null}';
+
+
+        $fixtures = array(
+            array('directory', 'user', '{"primaryEmail":"user_test1@sil.org",' .
+                                       '"id":999990}'),
+            array('directory', 'useralias', 'useralias2 test data'),
+            array('app_engine', 'webapp', 'webapp3 test data'),
+            array('directory', 'user', $user4Data),
+            array('directory', 'user', 'user5 test data'),
+        );
+
+        return $fixtures;
+    }
 
     public function testUsersGet()
     {
         $fixturesClass = new GoogleFixtures();
         $fixturesClass->removeAllFixtures();
 
+        $primaryEmail = 'user_test4@sil.org';
+
         $userData = '{"changePasswordAtNextLogin":false,"hashFunction":"SHA-1",' .
                     '"id":999991,"password":"testP4ss",' .
-                    '"primaryEmail":"user_test4@sil.org",' .
+                    '"primaryEmail":"' . $primaryEmail . '",' .
                     '"suspended":false,"suspensionReason":null}';
 
-        $fixtures = array(
-            array('directory', 'user', 'user1 test data'),
-            array('directory', 'useralias', 'useralias2 test data'),
-            array('app_engine', 'webapp', 'webapp3 test data'),
-            array('directory', 'user', $userData),
-            array('directory', 'user', 'user5 test data'),
-        );
-
+        $fixtures = $this->get_fixtures();
         $fixturesClass->addFixtures($fixtures);
+
         $newDir = new Directory(null);
 
-        $results = json_encode($newDir->users->get('user_test4@sil.org'));
+        $results = json_encode($newDir->users->get($primaryEmail));
         $expected = $userData;
         $msg = " *** Bad user data returned";
         $this->assertEquals($expected, $results, $msg);
     }
 
+
+    public function testUsersGet_ById()
+    {
+        $fixturesClass = new GoogleFixtures();
+        $fixturesClass->removeAllFixtures();
+
+        $userId = '999991';
+
+        $userData = '{"changePasswordAtNextLogin":false,"hashFunction":"SHA-1",' .
+            '"id":' . $userId . ',"password":"testP4ss",' .
+            '"primaryEmail":"user_test4@sil.org",' .
+            '"suspended":false,"suspensionReason":null}';
+
+        $fixtures = $this->get_fixtures();
+        $fixturesClass->addFixtures($fixtures);
+
+        $newDir = new Directory(null);
+
+        $results = json_encode($newDir->users->get($userId));
+        $expected = $userData;
+        $msg = " *** Bad user data returned";
+        $this->assertEquals($expected, $results, $msg);
+    }
 
     public function testUsersUpdate()
     {
@@ -101,14 +141,7 @@ class DirectoryTest extends PHPUnit_Framework_TestCase
             "suspensionReason" => null
         );
 
-        $fixtures = array(
-            array('directory', 'user', '{"primaryEmail":"user1@sil.org"}'),
-            array('directory', 'useralias', 'useralias2 test data'),
-            array('app_engine', 'webapp', 'webapp3 test data'),
-            array('directory', 'user','{"primaryEmail":"' . $primaryEmail . '"}'),
-            array('directory', 'user', 'user5 test data'),
-        );
-
+        $fixtures = $this->get_fixtures();
         $fixturesClass->addFixtures($fixtures);
 
         $newUser = new User();
@@ -124,6 +157,38 @@ class DirectoryTest extends PHPUnit_Framework_TestCase
     }
 
 
+    public function testUsersUpdate_ById()
+    {
+        $fixturesClass = new GoogleFixtures();
+        $fixturesClass->removeAllFixtures();
+
+        $userId = 999991;
+
+        $userData = array(
+            "changePasswordAtNextLogin" => false,
+            "hashFunction" => "SHA-1",
+            "id" => $userId,
+            "password" => "testP4ss",
+            "primaryEmail" => "user_test4@sil.org",
+            "suspended" => false,
+            "suspensionReason" => null
+        );
+
+        $fixtures = $this->get_fixtures();
+        $fixturesClass->addFixtures($fixtures);
+
+        $newUser = new User();
+        $newUser->initialize($userData);
+
+        $newDir = new Directory(null);
+        $newDir->users->update($userId, $newUser);
+
+        $results = json_encode($newDir->users->get($userId));
+        $expected = json_encode($userData);
+        $msg = " *** Bad user data returned";
+        $this->assertEquals($expected, $results, $msg);
+    }
+
     public function testUsersDelete()
     {
         $fixturesClass = new GoogleFixtures();
@@ -131,14 +196,7 @@ class DirectoryTest extends PHPUnit_Framework_TestCase
 
         $primaryEmail = "user_test4@sil.org";
 
-        $fixtures = array(
-            array('directory', 'user', '{"primaryEmail":"user1@sil.org"}'),
-            array('directory', 'useralias', 'useralias2 test data'),
-            array('app_engine', 'webapp', 'webapp3 test data'),
-            array('directory', 'user','{"primaryEmail":"' . $primaryEmail . '"}'),
-            array('directory', 'user', 'user5 test data'),
-        );
-
+        $fixtures = $this->get_fixtures();
         $fixturesClass->addFixtures($fixtures);
 
         $newDir = new Directory(null);
@@ -149,13 +207,45 @@ class DirectoryTest extends PHPUnit_Framework_TestCase
 
         $expected = array(
             array('id' => 1, 'type' => 'directory', 'class' => 'user',
-                  'data' => '{"primaryEmail":"user1@sil.org"}'),
+                  'data' => '{"primaryEmail":"user_test1@sil.org",' .
+                              '"id":999990}'),
             array('id' => 2, 'type' => 'directory', 'class' => 'useralias',
                   'data' => 'useralias2 test data'),
             array('id' => 3, 'type' => 'app_engine', 'class' => 'webapp',
                   'data' => 'webapp3 test data'),
             array('id' => 5, 'type' => 'directory', 'class' => 'user',
                   'data' => 'user5 test data'),
+        );
+
+        $msg = " *** Bad database data returned";
+        $this->assertEquals($expected, $results, $msg);
+    }
+
+    public function testUsersDelete_ById()
+    {
+        $fixturesClass = new GoogleFixtures();
+        $fixturesClass->removeAllFixtures();
+
+        $userId = 999991;
+
+        $fixtures = $this->get_fixtures();
+        $fixturesClass->addFixtures($fixtures);
+
+        $newDir = new Directory(null);
+        $newDir->users->delete($userId);
+
+        $sqliteClass = new SqliteUtils();
+        $results = $sqliteClass->getData('', '');
+
+        $expected = array(
+            array('id' => 1, 'type' => 'directory', 'class' => 'user',
+                'data' => '{"primaryEmail":"user_test1@sil.org","id":999990}'),
+            array('id' => 2, 'type' => 'directory', 'class' => 'useralias',
+                'data' => 'useralias2 test data'),
+            array('id' => 3, 'type' => 'app_engine', 'class' => 'webapp',
+                'data' => 'webapp3 test data'),
+            array('id' => 5, 'type' => 'directory', 'class' => 'user',
+                'data' => 'user5 test data'),
         );
 
         $msg = " *** Bad database data returned";
