@@ -1,9 +1,11 @@
 <?php
 namespace SilMock\Google\Service\Directory;
 
-
+use SilMock\DataStore\Sqlite\SqliteUtils;
 class Users_Resource {
 
+    private $_dataType = 'directory';
+    private $_dataClass = 'user';
 
     /**
      * Delete user (users.delete)
@@ -16,9 +18,18 @@ class Users_Resource {
     {
         $params = array('userKey' => $userKey);
         $params = array_merge($params, $optParams);
-        //TODO: finish this
-//        return $this->call('delete', array($params));
+
+        $userEntry = $this->getDbUser('primaryEmail', $userKey);
+
+        if ($userEntry === null) {
+            return null;
+        }
+
+        $sqliteUtils = new SqliteUtils();
+        $sqliteUtils->deleteRecordById($userEntry['id']);
+        return true;
     }
+
     /**
      * retrieve user (users.get)
      *
@@ -31,9 +42,23 @@ class Users_Resource {
     {
         $params = array('userKey' => $userKey);
         $params = array_merge($params, $optParams);
-        //TODO: finish this
-//        return $this->call('get', array($params), "Google_Service_Directory_User");
+
+        $sqliteUtils = new SqliteUtils();
+        $allUsers = $sqliteUtils->getData($this->_dataType, $this->_dataClass);
+        $newUser = null;
+
+        $userEntry = $this->getDbUser('primaryEmail', $userKey);
+
+        if ($userEntry === null) {
+            return null;
+        }
+
+        $newUser = new User();
+        $newUser->initialize(json_decode($userEntry['data'], true));
+
+        return $newUser;
     }
+
     /**
      * create user. (users.insert)
      *
@@ -41,12 +66,18 @@ class Users_Resource {
      * @param array $optParams Optional parameters.
      * @return Google_Service_Directory_User
      */
-    public function insert(Google_Service_Directory_User $postBody, $optParams = array())
+    public function insert($postBody, $optParams = array())
     {
+        //TODO: consider doing something with the $params
         $params = array('postBody' => $postBody);
         $params = array_merge($params, $optParams);
-        //TODO: finish this
-//        return $this->call('insert', array($params), "Google_Service_Directory_User");
+
+        $userData = json_encode($postBody);
+
+        $sqliteUtils = new SqliteUtils();
+        $sqliteUtils->recordData($this->_dataType, $this->_dataClass, $userData);
+
+        return $this->get($postBody->primaryEmail);
     }
 
     /**
@@ -58,12 +89,40 @@ class Users_Resource {
      * @param array $optParams Optional parameters.
      * @return Google_Service_Directory_User
      */
-    public function update($userKey, Google_Service_Directory_User $postBody, $optParams = array())
+    public function update($userKey, $postBody, $optParams = array())
     {
+        //TODO: consider doing something with the $params
         $params = array('userKey' => $userKey, 'postBody' => $postBody);
         $params = array_merge($params, $optParams);
-        //TODO: finish this
-//        return $this->call('update', array($params), "Google_Service_Directory_User");
+
+        $userEntry = $this->getDbUser('primaryEmail', $userKey);
+
+        if ($userEntry === null) {
+            return null;
+        }
+
+        $sqliteUtils = new SqliteUtils();
+        $sqliteUtils->updateRecordById($userEntry['id'], json_encode($postBody));
+        return $this->get($userKey);
+
+    }
+
+
+    private function getDbUser($key, $value)
+    {
+
+        $sqliteUtils = new SqliteUtils();
+        $allUsers = $sqliteUtils->getData($this->_dataType, $this->_dataClass);
+
+        foreach ($allUsers as $userEntry) {
+            $userData = json_decode($userEntry['data'], true);
+            if (isset($userData[$key]) &&
+                $userData[$key] === $value) {
+                return $userEntry;
+            }
+        }
+
+        return null;
     }
 
 } 
