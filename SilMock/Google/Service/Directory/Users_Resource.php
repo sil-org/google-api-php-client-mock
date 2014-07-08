@@ -16,10 +16,15 @@ class Users_Resource {
      */
     public function delete($userKey, $optParams = array())
     {
+        //TODO: consider doing something with the $params
         $params = array('userKey' => $userKey);
         $params = array_merge($params, $optParams);
 
-        $userEntry = $this->getDbUser('primaryEmail', $userKey);
+        if (filter_var($userKey, FILTER_VALIDATE_EMAIL)) {
+            $userEntry = $this->getDbUser('primaryEmail', $userKey);
+        } else {
+            $userEntry = $this->getDbUser('id', $userKey);
+        }
 
         if ($userEntry === null) {
             return null;
@@ -40,6 +45,7 @@ class Users_Resource {
      */
     public function get($userKey, $optParams = array())
     {
+        //TODO: consider doing something with the $params
         $params = array('userKey' => $userKey);
         $params = array_merge($params, $optParams);
 
@@ -47,7 +53,11 @@ class Users_Resource {
         $allUsers = $sqliteUtils->getData($this->_dataType, $this->_dataClass);
         $newUser = null;
 
-        $userEntry = $this->getDbUser('primaryEmail', $userKey);
+        if (filter_var($userKey, FILTER_VALIDATE_EMAIL)) {
+            $userEntry = $this->getDbUser('primaryEmail', $userKey);
+        } else {
+            $userEntry = $this->getDbUser('id', $userKey);
+        }
 
         if ($userEntry === null) {
             return null;
@@ -95,7 +105,11 @@ class Users_Resource {
         $params = array('userKey' => $userKey, 'postBody' => $postBody);
         $params = array_merge($params, $optParams);
 
-        $userEntry = $this->getDbUser('primaryEmail', $userKey);
+        if (filter_var($userKey, FILTER_VALIDATE_EMAIL)) {
+            $userEntry = $this->getDbUser('primaryEmail', $userKey);
+        } else {
+            $userEntry = $this->getDbUser('id', $userKey);
+        }
 
         if ($userEntry === null) {
             return null;
