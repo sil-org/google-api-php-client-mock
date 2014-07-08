@@ -55,6 +55,35 @@ class SqliteUtils {
             $whereArray, false, true);
     }
 
+    public function deleteRecordById($recordId)
+    {
+        $this->runSql("DELETE FROM " .  $this->_dbTable .
+            " WHERE id = :id",
+            array(
+                ':id' => $recordId,
+            ),
+            true);
+    }
+
+
+    public function updateRecordById($recordId, $newData)
+    {
+        $this->runSql("UPDATE " .  $this->_dbTable .
+                       " SET data = :data " .
+                       " WHERE id = :id",
+                array(
+                      ':id' => $recordId,
+                      ':data' => $newData,
+                ),
+                true);
+    }
+
+    public function deleteAllData()
+    {
+        return $this->runSql(
+            "DELETE FROM " . $this->_dbTable . " WHERE id > -1"
+        );
+    }
 
     /**
      * Add a record of data
