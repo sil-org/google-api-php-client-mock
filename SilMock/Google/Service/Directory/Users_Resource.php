@@ -1,9 +1,9 @@
 <?php
-
-namespace Google\Service\Directory;
+namespace SilMock\Google\Service\Directory;
 
 
 class Users_Resource {
+
 
     /**
      * Delete user (users.delete)

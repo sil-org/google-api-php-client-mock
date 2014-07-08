@@ -1,6 +1,5 @@
 <?php
-
-namespace Google\Service\Directory;
+namespace SilMock\Google\Service\Directory;
 
 
 class User {
