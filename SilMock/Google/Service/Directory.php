@@ -1,5 +1,5 @@
 <?php
-namespace Google\Service;
+namespace SilMock\Google\Service;
 
 class Directory {
 
@@ -15,4 +15,5 @@ class Directory {
         $this->users = new Directory\Users_Resource();
         $this->users_aliases = new Directory\UsersAliases_Resource();
     }
+
 } 
