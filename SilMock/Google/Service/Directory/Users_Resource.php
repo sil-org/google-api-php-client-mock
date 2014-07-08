@@ -23,7 +23,7 @@ class Users_Resource {
         if (filter_var($userKey, FILTER_VALIDATE_EMAIL)) {
             $userEntry = $this->getDbUser('primaryEmail', $userKey);
         } else {
-            $userEntry = $this->getDbUser('id', $userKey);
+            $userEntry = $this->getDbUser('id', intval($userKey));
         }
 
         if ($userEntry === null) {
@@ -56,7 +56,7 @@ class Users_Resource {
         if (filter_var($userKey, FILTER_VALIDATE_EMAIL)) {
             $userEntry = $this->getDbUser('primaryEmail', $userKey);
         } else {
-            $userEntry = $this->getDbUser('id', $userKey);
+            $userEntry = $this->getDbUser('id', intval($userKey));
         }
 
         if ($userEntry === null) {
@@ -108,7 +108,7 @@ class Users_Resource {
         if (filter_var($userKey, FILTER_VALIDATE_EMAIL)) {
             $userEntry = $this->getDbUser('primaryEmail', $userKey);
         } else {
-            $userEntry = $this->getDbUser('id', $userKey);
+            $userEntry = $this->getDbUser('id', intval($userKey));
         }
 
         if ($userEntry === null) {
@@ -130,6 +130,7 @@ class Users_Resource {
 
         foreach ($allUsers as $userEntry) {
             $userData = json_decode($userEntry['data'], true);
+
             if (isset($userData[$key]) &&
                 $userData[$key] === $value) {
                 return $userEntry;
