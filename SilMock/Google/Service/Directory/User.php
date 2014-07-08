@@ -13,5 +13,11 @@ class User {
     public $suspended; // bool
     public $suspensionReason; // string
 
+    public function initialize($properties)
+    {
+        foreach ($properties as $key=>$value) {
+            $this->$key = $value;
+        }
+    }
 
 } 
