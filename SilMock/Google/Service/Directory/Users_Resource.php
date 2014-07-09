@@ -109,26 +109,15 @@ class Users_Resource {
     private function getDbUser($userKey)
     {
 
-        if (filter_var($userKey, FILTER_VALIDATE_EMAIL)) {
-            $key = 'primaryEmail';
-        } else {
+        $key = 'primaryEmail';
+        if ( ! filter_var($userKey, FILTER_VALIDATE_EMAIL)) {
             $key = 'id';
             $userKey = intval($userKey);
         }
 
         $sqliteUtils = new SqliteUtils();
-        $allUsers = $sqliteUtils->getData($this->_dataType, $this->_dataClass);
-
-        foreach ($allUsers as $userEntry) {
-            $userData = json_decode($userEntry['data'], true);
-
-            if (isset($userData[$key]) &&
-                $userData[$key] === $userKey) {
-                return $userEntry;
-            }
-        }
-
-        return null;
+        return $sqliteUtils->getRecordByDataKey($this->_dataType,
+                               $this->_dataClass, $key, $userKey);
     }
 
 } 
