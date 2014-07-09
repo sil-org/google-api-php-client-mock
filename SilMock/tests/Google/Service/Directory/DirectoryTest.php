@@ -13,6 +13,15 @@ class DirectoryTest extends PHPUnit_Framework_TestCase
 {
     public $dataFile = '../DataStore/Sqlite/Google_Services_Data.db';
 
+    public function testDirectory()
+    {
+        $dir = new Directory('whatever');
+        $results = json_encode($dir);
+        $expected = '{"users":{},"users_aliases":{}}';
+        $msg = " *** Directory was not initialized properly";
+        $this->assertEquals($expected, $results, $msg);
+    }
+
     public function testUsersInsert()
     {
         $fixturesClass = new GoogleFixtures();
