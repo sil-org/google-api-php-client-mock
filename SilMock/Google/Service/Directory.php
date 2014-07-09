@@ -1,8 +1,8 @@
 <?php
 namespace SilMock\Google\Service;
 
-use SilMock\Google\Service\Directory\Users_Resource;
-use SilMock\Google\Service\Directory\UsersAliases_Resource;
+use SilMock\Google\Service\Directory\UsersResource;
+use SilMock\Google\Service\Directory\UsersAliasesResource;
 
 class Directory {
 
@@ -15,8 +15,8 @@ class Directory {
      */
     public function __construct($client)
     {
-        $this->users = new Users_Resource();
-        $this->users_aliases = new UsersAliases_Resource();
+        $this->users = new UsersResource();
+        $this->users_aliases = new UsersAliasesResource();
     }
 
 } 

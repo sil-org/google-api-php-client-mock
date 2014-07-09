@@ -2,7 +2,7 @@
 namespace SilMock\Google\Service\Directory;
 
 use SilMock\DataStore\Sqlite\SqliteUtils;
-class Users_Resource {
+class UsersResource {
 
     private $_dataType = 'directory';
     private $_dataClass = 'user';
