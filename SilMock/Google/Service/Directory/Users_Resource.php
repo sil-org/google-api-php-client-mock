@@ -20,11 +20,7 @@ class Users_Resource {
         $params = array('userKey' => $userKey);
         $params = array_merge($params, $optParams);
 
-        if (filter_var($userKey, FILTER_VALIDATE_EMAIL)) {
-            $userEntry = $this->getDbUser('primaryEmail', $userKey);
-        } else {
-            $userEntry = $this->getDbUser('id', intval($userKey));
-        }
+        $userEntry = $this->getDbUser($userKey);
 
         if ($userEntry === null) {
             return null;
@@ -49,15 +45,8 @@ class Users_Resource {
         $params = array('userKey' => $userKey);
         $params = array_merge($params, $optParams);
 
-        $sqliteUtils = new SqliteUtils();
-        $allUsers = $sqliteUtils->getData($this->_dataType, $this->_dataClass);
         $newUser = null;
-
-        if (filter_var($userKey, FILTER_VALIDATE_EMAIL)) {
-            $userEntry = $this->getDbUser('primaryEmail', $userKey);
-        } else {
-            $userEntry = $this->getDbUser('id', intval($userKey));
-        }
+        $userEntry = $this->getDbUser($userKey);
 
         if ($userEntry === null) {
             return null;
@@ -105,12 +94,7 @@ class Users_Resource {
         $params = array('userKey' => $userKey, 'postBody' => $postBody);
         $params = array_merge($params, $optParams);
 
-        if (filter_var($userKey, FILTER_VALIDATE_EMAIL)) {
-            $userEntry = $this->getDbUser('primaryEmail', $userKey);
-        } else {
-            $userEntry = $this->getDbUser('id', intval($userKey));
-        }
-
+        $userEntry = $this->getDbUser($userKey);
         if ($userEntry === null) {
             return null;
         }
@@ -122,8 +106,15 @@ class Users_Resource {
     }
 
 
-    private function getDbUser($key, $value)
+    private function getDbUser($userKey)
     {
+
+        if (filter_var($userKey, FILTER_VALIDATE_EMAIL)) {
+            $key = 'primaryEmail';
+        } else {
+            $key = 'id';
+            $userKey = intval($userKey);
+        }
 
         $sqliteUtils = new SqliteUtils();
         $allUsers = $sqliteUtils->getData($this->_dataType, $this->_dataClass);
@@ -132,7 +123,7 @@ class Users_Resource {
             $userData = json_decode($userEntry['data'], true);
 
             if (isset($userData[$key]) &&
-                $userData[$key] === $value) {
+                $userData[$key] === $userKey) {
                 return $userEntry;
             }
         }
