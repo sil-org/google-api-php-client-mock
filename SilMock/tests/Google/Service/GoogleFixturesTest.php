@@ -17,7 +17,7 @@ class GoogleFixturesTest extends PHPUnit_Framework_TestCase
 
         $fixtures = array(
            array('directory', 'user', 'user1 test data'),
-           array('directory', 'useralias', 'useralias2 test data'),
+           array('directory', 'users_alias', 'users_alias2 test data'),
            array('app_engine', 'webapp', 'webapp3 test data'),
            array('directory', 'user', 'user4 test data'),
         );
@@ -32,8 +32,8 @@ class GoogleFixturesTest extends PHPUnit_Framework_TestCase
                  ),
             array('id' => 2,
                 'type' => 'directory',
-                'class' => 'useralias',
-                'data' => 'useralias2 test data',
+                'class' => 'users_alias',
+                'data' => 'users_alias2 test data',
             ),
             array('id' => 3,
                 'type' => 'app_engine',
