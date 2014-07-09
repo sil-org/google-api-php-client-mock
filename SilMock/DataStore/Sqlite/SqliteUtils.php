@@ -157,16 +157,16 @@ class SqliteUtils {
 
         // Add the record.
         $this->runSql('INSERT INTO ' . $this->_dbTable . ' (' .
-            'type, class, data' .
-            ') VALUES (' .
-            ':type, :class, :data' .
-            ')',
-            array(
-                ':type' => $dataType,
-                ':class' => $dataClass,
-                ':data' => $data,
-            ),
-            true);
+                                     'type, class, data' .
+                                     ') VALUES (' .
+                                     ':type, :class, :data' .
+                                     ')',
+                                 array(
+                                     ':type' => $dataType,
+                                     ':class' => $dataClass,
+                                     ':data' => $data,
+                                 ),
+                                 true);
 
         return true;
     }
