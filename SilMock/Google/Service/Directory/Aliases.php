@@ -2,7 +2,7 @@
 namespace SilMock\Google\Service\Directory;
 
 
-class Aliases  implements ArrayAccess
+class Aliases  implements \ArrayAccess
 {
 
     protected $aliasesType = 'Google_Service_Directory_Alias';
