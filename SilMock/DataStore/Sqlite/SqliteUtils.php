@@ -55,6 +55,57 @@ class SqliteUtils {
             $whereArray, false, true);
     }
 
+    /**
+     * Find and return a record in the database that matches the input values.
+     *
+     * @param $type string (e.g. "directory")
+     * @param $class string (e.g. "user")
+     * @param $dataKey string|int  (e.g. "primaryEmail" or "id")
+     * @param $dataValue string
+     * @return null|nested array for the matching database entry
+     */
+    public function getRecordByDataKey($type, $class, $dataKey, $dataValue)
+    {
+        $allOfClass = $this->getData($type, $class);
+
+        foreach ($allOfClass as $nextEntry) {
+            $nextData = json_decode($nextEntry['data'], true);
+            if (isset($nextData[$dataKey]) &&
+                 $nextData[$dataKey] === $dataValue) {
+                return $nextEntry;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Find and return a record in the database that matches the input values.
+     *
+     * @param $type string (e.g. "directory")
+     * @param $class string (e.g. "user")
+     * @param $dataKey string|int  (e.g. "primaryEmail" or "id")
+     * @param $dataValue string
+     * @return null|nested array for the matching database entry
+     */
+    public function getAllRecordsByDataKey($type, $class, $dataKey, $dataValue)
+    {
+        $allOfClass = $this->getData($type, $class);
+
+        $foundEntries = array();
+
+        foreach ($allOfClass as $nextEntry) {
+            $nextData = json_decode($nextEntry['data'], true);
+            if (isset($nextData[$dataKey]) &&
+                $nextData[$dataKey] === $dataValue) {
+                $foundEntries[] = $nextEntry;
+            }
+        }
+
+        return $foundEntries;
+    }
+
+
     public function deleteRecordById($recordId)
     {
         $this->runSql("DELETE FROM " .  $this->_dbTable .
