@@ -4,20 +4,14 @@
 
 use SilMock\Google\Service\Directory;
 use SilMock\Google\Service\Directory\User;
+use SilMock\Google\Service\Directory\Alias;
+use SilMock\Google\Service\Directory\Aliases;
 use SilMock\DataStore\Sqlite\SqliteUtils;
 use SilMock\Google\Service\GoogleFixtures;
 
 class DirectoryTest extends PHPUnit_Framework_TestCase
 {
     public $dataFile = '../DataStore/Sqlite/Google_Services_Data.db';
-
-    public function loadFixtures()
-    {
-        $fixtures = array(
-            array('directory', 'user', '{')
-
-        );
-    }
 
     public function testUsersInsert()
     {
@@ -58,6 +52,16 @@ class DirectoryTest extends PHPUnit_Framework_TestCase
         $this->assertEquals($expected, $results, $msg);
     }
 
+
+//$results = $newSql->recordData('directory', 'users_alias',
+//'{"primaryEmail":"user_test1@sil.org","alias":"users_alias2@sil.org"}');
+//$results = $newSql->recordData('app_engine', 'webapp',
+//'webapp3 test data');
+//$results = $newSql->recordData('directory', 'user',
+//'{"primaryEmail":"user_test4@sil.org","id":4,"password":"testPass4"}');
+//$results = $newSql->recordData('directory', 'users_alias',
+//'{"primaryEmail":"user_test1@sil.org","alias":"users_alias5@sil.org"}');
+
     public function get_fixtures() {
         $user4Data = '{"changePasswordAtNextLogin":false,"hashFunction":"SHA-1",' .
             '"id":999991,"password":"testP4ss",' .
@@ -68,10 +72,13 @@ class DirectoryTest extends PHPUnit_Framework_TestCase
         $fixtures = array(
             array('directory', 'user', '{"primaryEmail":"user_test1@sil.org",' .
                                        '"id":999990}'),
-            array('directory', 'users_alias', 'users_alias2 test data'),
+            array('directory', 'users_alias', '{"primaryEmail":"user_test1@sil.org",' .
+                                              '"alias":"users_alias2@sil.org"}'),
             array('app_engine', 'webapp', 'webapp3 test data'),
             array('directory', 'user', $user4Data),
             array('directory', 'user', 'user5 test data'),
+            array('directory', 'users_alias', '{"id":1,' .
+                                              '"alias":"users_alias6@sil.org"}'),
         );
 
         return $fixtures;
@@ -210,11 +217,14 @@ class DirectoryTest extends PHPUnit_Framework_TestCase
                   'data' => '{"primaryEmail":"user_test1@sil.org",' .
                               '"id":999990}'),
             array('id' => 2, 'type' => 'directory', 'class' => 'users_alias',
-                  'data' => 'users_alias2 test data'),
+                  'data' => '{"primaryEmail":"user_test1@sil.org",' .
+                            '"alias":"users_alias2@sil.org"}'),
             array('id' => 3, 'type' => 'app_engine', 'class' => 'webapp',
                   'data' => 'webapp3 test data'),
             array('id' => 5, 'type' => 'directory', 'class' => 'user',
                   'data' => 'user5 test data'),
+            array('id' => 6, 'type' => 'directory', 'class' => 'users_alias',
+                'data' => '{"id":1,"alias":"users_alias6@sil.org"}'),
         );
 
         $msg = " *** Bad database data returned";
@@ -239,17 +249,124 @@ class DirectoryTest extends PHPUnit_Framework_TestCase
 
         $expected = array(
             array('id' => 1, 'type' => 'directory', 'class' => 'user',
-                'data' => '{"primaryEmail":"user_test1@sil.org","id":999990}'),
+                  'data' => '{"primaryEmail":"user_test1@sil.org","id":999990}'),
             array('id' => 2, 'type' => 'directory', 'class' => 'users_alias',
-                'data' => 'users_alias2 test data'),
+                  'data' => '{"primaryEmail":"user_test1@sil.org",' .
+                           '"alias":"users_alias2@sil.org"}'),
             array('id' => 3, 'type' => 'app_engine', 'class' => 'webapp',
-                'data' => 'webapp3 test data'),
+                  'data' => 'webapp3 test data'),
             array('id' => 5, 'type' => 'directory', 'class' => 'user',
-                'data' => 'user5 test data'),
+                  'data' => 'user5 test data'),
+            array('id' => 6, 'type' => 'directory', 'class' => 'users_alias',
+                  'data' => '{"id":1,"alias":"users_alias6@sil.org"}'),
         );
 
         $msg = " *** Bad database data returned";
         $this->assertEquals($expected, $results, $msg);
     }
 
+
+    public function testUsersAliasesInsert()
+    {
+        $fixturesClass = new GoogleFixtures();
+        $fixturesClass->removeAllFixtures();
+
+        $fixtures = $this->get_fixtures();
+        $fixturesClass->addFixtures($fixtures);
+
+        $newAlias = new Alias();
+        $newAlias->alias = "users_alias1@sil.org";
+        $newAlias->kind = "personal";
+
+        $newDir = new Directory(null);
+        $newAlias = $newDir->users_aliases->insert("user_test1@sil.org", $newAlias);
+
+        $results = json_encode($newAlias);
+        $expected = '{"alias":"users_alias1@sil.org","etag":null,"id":null,' .
+                    '"kind":"personal","primaryEmail":"user_test1@sil.org"}'
+        ;
+        $msg = " *** Bad returned alias";
+        $this->assertEquals($expected, $results, $msg);
+
+
+        $sqliteClass = new SqliteUtils();
+        $lastDataEntry = end(array_values($sqliteClass->getData('', '')));
+        $results = $lastDataEntry['data'];
+
+        $msg = " *** Bad data from sqlite database";
+        $this->assertEquals($expected, $results, $msg);
+    }
+
+    public function testUsersAliasesListUsersAliases_Email()
+    {
+        $fixturesClass = new GoogleFixtures();
+        $fixturesClass->removeAllFixtures();
+
+        $fixtures = $this->get_fixtures();
+        $fixturesClass->addFixtures($fixtures);
+
+        $newFixtures = array(
+            array('directory', 'users_alias', '{"id":1,"primaryEmail":' .
+            '"user_test1@sil.org","alias":"users_alias7@sil.org"}'),
+        );
+        $fixturesClass->addFixtures($newFixtures);
+
+        $newDir = new Directory(null);
+        $aliases = $newDir->users_aliases->listUsersAliases("user_test1@sil.org");
+
+        $results = array();
+        foreach ($aliases->_values as $nextAlias) {
+            $results[] = json_encode($nextAlias);
+        }
+
+        $expected = array(
+            '{"alias":"users_alias2@sil.org","etag":null,"id":null,"kind":null,' .
+                '"primaryEmail":"user_test1@sil.org"}',
+            '{"alias":"users_alias7@sil.org","etag":null,"id":1,"kind":null,' .
+                '"primaryEmail":"user_test1@sil.org"}',
+        );
+
+        $msg = " *** Bad returned Aliases";
+        $this->assertEquals($expected, $results, $msg);
+
+    }
+
+    public function testUsersAliasesListUsersAliases_ID()
+    {
+        $fixturesClass = new GoogleFixtures();
+        $fixturesClass->removeAllFixtures();
+
+        $fixtures = $this->get_fixtures();
+        $fixturesClass->addFixtures($fixtures);
+
+        $newFixtures = array(
+            array('directory', 'users_alias', '{"id":1,"primaryEmail":' .
+            '"user_test1@sil.org","alias":"users_alias7@sil.org"}'),
+        );
+        $fixturesClass->addFixtures($newFixtures);
+
+        $newDir = new Directory(null);
+        $aliases = $newDir->users_aliases->listUsersAliases("1");
+
+        $results = array();
+        foreach ($aliases->_values as $nextAlias) {
+            $results[] = json_encode($nextAlias);
+        }
+
+        $expected = array(
+            '{"id":5,"alias":"users_alias2@sil.org"}',
+            '{"primaryEmail":"user_test1@sil.org","id":1,"alias":"users_alias7@sil.org"}',
+        );
+
+        $expected = array(
+            '{"alias":"users_alias6@sil.org","etag":null,"id":1,"kind":null,'.
+                '"primaryEmail":null}',
+            '{"alias":"users_alias7@sil.org","etag":null,"id":1,"kind":null,' .
+                 '"primaryEmail":"user_test1@sil.org"}',
+        );
+
+        $msg = " *** Bad returned Aliases";
+        $this->assertEquals($expected, $results, $msg);
+
+    }
 } 
