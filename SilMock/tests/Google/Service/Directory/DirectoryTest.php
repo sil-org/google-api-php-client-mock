@@ -68,7 +68,7 @@ class DirectoryTest extends PHPUnit_Framework_TestCase
         $fixtures = array(
             array('directory', 'user', '{"primaryEmail":"user_test1@sil.org",' .
                                        '"id":999990}'),
-            array('directory', 'useralias', 'useralias2 test data'),
+            array('directory', 'users_alias', 'users_alias2 test data'),
             array('app_engine', 'webapp', 'webapp3 test data'),
             array('directory', 'user', $user4Data),
             array('directory', 'user', 'user5 test data'),
@@ -209,8 +209,8 @@ class DirectoryTest extends PHPUnit_Framework_TestCase
             array('id' => 1, 'type' => 'directory', 'class' => 'user',
                   'data' => '{"primaryEmail":"user_test1@sil.org",' .
                               '"id":999990}'),
-            array('id' => 2, 'type' => 'directory', 'class' => 'useralias',
-                  'data' => 'useralias2 test data'),
+            array('id' => 2, 'type' => 'directory', 'class' => 'users_alias',
+                  'data' => 'users_alias2 test data'),
             array('id' => 3, 'type' => 'app_engine', 'class' => 'webapp',
                   'data' => 'webapp3 test data'),
             array('id' => 5, 'type' => 'directory', 'class' => 'user',
@@ -240,8 +240,8 @@ class DirectoryTest extends PHPUnit_Framework_TestCase
         $expected = array(
             array('id' => 1, 'type' => 'directory', 'class' => 'user',
                 'data' => '{"primaryEmail":"user_test1@sil.org","id":999990}'),
-            array('id' => 2, 'type' => 'directory', 'class' => 'useralias',
-                'data' => 'useralias2 test data'),
+            array('id' => 2, 'type' => 'directory', 'class' => 'users_alias',
+                'data' => 'users_alias2 test data'),
             array('id' => 3, 'type' => 'app_engine', 'class' => 'webapp',
                 'data' => 'webapp3 test data'),
             array('id' => 5, 'type' => 'directory', 'class' => 'user',
