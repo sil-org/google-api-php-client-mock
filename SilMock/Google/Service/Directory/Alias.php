@@ -10,6 +10,13 @@ class Alias {
     public $kind;
     public $primaryEmail;
 
+    public function initialize($properties)
+    {
+        foreach ($properties as $key=>$value) {
+            $this->$key = $value;
+        }
+    }
+
     public function setAlias($alias)
     {
         $this->alias = $alias;
