@@ -64,6 +64,7 @@ class UsersResource {
      * @param Google_User $postBody
      * @param array $optParams Optional parameters.
      * @return Google_Service_Directory_User
+     * @throws \Exception with code 201407101120
      */
     public function insert($postBody, $optParams = array())
     {
@@ -72,6 +73,14 @@ class UsersResource {
         $params = array_merge($params, $optParams);
 
         $userData = json_encode($postBody);
+
+        $currentUser = $this->get($postBody->primaryEmail);
+
+        if ($currentUser) {
+            throw new \Exception("Account already exists: " .
+                $postBody['primaryEmail'],
+                201407101120);
+        }
 
         $sqliteUtils = new SqliteUtils();
         $sqliteUtils->recordData($this->_dataType, $this->_dataClass, $userData);
@@ -87,6 +96,7 @@ class UsersResource {
      * @param Google_User $postBody
      * @param array $optParams Optional parameters.
      * @return Google_Service_Directory_User
+     * @throws \Exception with code 201407101130
      */
     public function update($userKey, $postBody, $optParams = array())
     {
@@ -96,11 +106,25 @@ class UsersResource {
 
         $userEntry = $this->getDbUser($userKey);
         if ($userEntry === null) {
-            return null;
+            throw new \Exception("Account doesn't exist: " . $userKey,
+                201407101130);
+        }
+
+        /*
+         * only keep the non-null properties of the $postBody user
+         */
+
+        $dbUserProps = json_decode($userEntry['data'], true);
+        $newUserProps = json_decode(json_encode($postBody), true);
+
+        foreach ($newUserProps as $key => $value) {
+            if ($value !== null || $key === "suspensionReason") {
+                $dbUserProps[$key] = $value;
+            }
         }
 
         $sqliteUtils = new SqliteUtils();
-        $sqliteUtils->updateRecordById($userEntry['id'], json_encode($postBody));
+        $sqliteUtils->updateRecordById($userEntry['id'], json_encode($dbUserProps));
         return $this->get($userKey);
 
     }
