@@ -61,16 +61,6 @@ class DirectoryTest extends PHPUnit_Framework_TestCase
         $this->assertEquals($expected, $results, $msg);
     }
 
-
-//$results = $newSql->recordData('directory', 'users_alias',
-//'{"primaryEmail":"user_test1@sil.org","alias":"users_alias2@sil.org"}');
-//$results = $newSql->recordData('app_engine', 'webapp',
-//'webapp3 test data');
-//$results = $newSql->recordData('directory', 'user',
-//'{"primaryEmail":"user_test4@sil.org","id":4,"password":"testPass4"}');
-//$results = $newSql->recordData('directory', 'users_alias',
-//'{"primaryEmail":"user_test1@sil.org","alias":"users_alias5@sil.org"}');
-
     public function get_fixtures() {
         $user4Data = '{"changePasswordAtNextLogin":false,"hashFunction":"SHA-1",' .
             '"id":999991,"password":"testP4ss",' .
