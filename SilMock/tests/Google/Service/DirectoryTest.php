@@ -5,7 +5,6 @@
 use SilMock\Google\Service\Directory;
 use SilMock\Google\Service\Directory\User;
 use SilMock\Google\Service\Directory\Alias;
-use SilMock\Google\Service\Directory\Aliases;
 use SilMock\DataStore\Sqlite\SqliteUtils;
 use SilMock\Google\Service\GoogleFixtures;
 
