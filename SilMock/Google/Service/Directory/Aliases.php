@@ -1,17 +1,24 @@
 <?php
 namespace SilMock\Google\Service\Directory;
 
-
 class Aliases  implements \ArrayAccess
 {
+    protected $_values = array();
 
     protected $aliasesType = 'Google_Service_Directory_Alias';
     protected $aliasesDataType = 'array';
     public $etag;
     public $kind;
+    public $aliases = array();
 
-    //TODO finish this
+    public function __construct()
+    {
+        $this->_values['aliases'] = $this->aliases;
+    }
 
+    public function refreshAliases() {
+        $this->_values['aliases'] = $this->aliases;
+    }
 
     // These are for implementing the ArrayAccess
     public function offsetExists($offset) {
