@@ -78,6 +78,7 @@ class UsersAliasesResource {
      * Email or immutable Id of the user
      * @param array $optParams Optional parameters.
      * @return Google_Service_Directory_Aliases
+     * @throws \Exception
      */
     public function listUsersAliases($userKey, $optParams = array())
     {
@@ -91,11 +92,20 @@ class UsersAliasesResource {
             $userKey = intval($userKey);
         }
 
-        $sqliteUtils = new SqliteUtils();
-        $aliases =  $sqliteUtils->getAllRecordsByDataKey($this->_dataType,
-                                    $this->_dataClass, $key, $userKey);
+        $dir = new \SilMock\Google\Service\Directory('anything');
+        $matchingUsers = $dir->users->get($userKey);
 
-        if ($aliases === null) {
+        // ensure that user exists in db
+        $sqliteUtils = new SqliteUtils();
+
+        if ($matchingUsers === null) {
+            throw new \Exception("Account doesn't exist: " . $userKey, 201407101420);
+        }
+
+        $aliases =  $sqliteUtils->getAllRecordsByDataKey($this->_dataType,
+            $this->_dataClass, $key, $userKey);
+
+        if ( ! $aliases) {
             return null;
         }
 
@@ -104,8 +114,10 @@ class UsersAliasesResource {
         foreach ($aliases as $nextAlias) {
             $newAlias = new Alias();
             $newAlias->initialize(json_decode($nextAlias['data'], true));
-            $foundAliases->_values[] = $newAlias;
+            $foundAliases->aliases[] = $newAlias;
         }
+
+        $foundAliases->refreshAliases();
 
         return $foundAliases;
     }
