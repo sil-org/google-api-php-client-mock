@@ -313,7 +313,7 @@ class DirectoryTest extends PHPUnit_Framework_TestCase
         $aliases = $newDir->users_aliases->listUsersAliases("user_test1@sil.org");
 
         $results = array();
-        foreach ($aliases->_values as $nextAlias) {
+        foreach ($aliases->aliases as $nextAlias) {
             $results[] = json_encode($nextAlias);
         }
 
@@ -338,31 +338,66 @@ class DirectoryTest extends PHPUnit_Framework_TestCase
         $fixturesClass->addFixtures($fixtures);
 
         $newFixtures = array(
+            array('directory', 'user', '{"id":7,"primaryEmail":' .
+            '"user_test7@sil.org","alias":"users_alias7@sil.org"}'),
+            array('directory', 'users_alias', '{"id":7, "primaryEmail":' .
+            'null,"alias":"users_alias7b@sil.org"}'),
+            array('directory', 'users_alias', '{"id":7, "primaryEmail":' .
+            '"user_test7@sil.org","alias":"users_alias7c@sil.org"}'),
+        );
+        $fixturesClass->addFixtures($newFixtures);
+
+        $newDir = new Directory(null);
+        $aliases = $newDir->users_aliases->listUsersAliases("7");
+
+        $results = array();
+        foreach ($aliases->aliases as $nextAlias) {
+            $results[] = json_encode($nextAlias);
+        }
+
+        $expected = array(
+            '{"alias":"users_alias7b@sil.org","etag":null,"id":7,"kind":null,'.
+                '"primaryEmail":null}',
+            '{"alias":"users_alias7c@sil.org","etag":null,"id":7,"kind":null,' .
+                 '"primaryEmail":"user_test7@sil.org"}',
+        );
+
+        $msg = " *** Bad returned Aliases";
+        $this->assertEquals($expected, $results, $msg);
+
+    }
+
+    public function testUsersAliasesListUsersAliases_Structure()
+    {
+        $fixturesClass = new GoogleFixtures();
+        $fixturesClass->removeAllFixtures();
+
+        $fixtures = $this->get_fixtures();
+        $fixturesClass->addFixtures($fixtures);
+
+        $newFixtures = array(
             array('directory', 'users_alias', '{"id":1,"primaryEmail":' .
             '"user_test1@sil.org","alias":"users_alias7@sil.org"}'),
         );
         $fixturesClass->addFixtures($newFixtures);
 
         $newDir = new Directory(null);
-        $aliases = $newDir->users_aliases->listUsersAliases("1");
+        $aliases = $newDir->users_aliases->listUsersAliases("user_test1@sil.org");
 
-        $results = array();
-        foreach ($aliases->_values as $nextAlias) {
-            $results[] = json_encode($nextAlias);
+        $results = isset($aliases['aliases']);
+        $this->assertTrue($results, ' *** The aliases property is not accessible');
+
+        $results = is_array($aliases['aliases']);
+        $this->assertTrue($results, ' *** The aliases property is not an array');
+
+        $user_aliases = array();
+
+        foreach($aliases['aliases'] as $alias) {
+            $user_aliases[] = $alias['alias'];
         }
 
-        $expected = array(
-            '{"id":5,"alias":"users_alias2@sil.org"}',
-            '{"primaryEmail":"user_test1@sil.org","id":1,"alias":"users_alias7@sil.org"}',
-        );
-
-        $expected = array(
-            '{"alias":"users_alias6@sil.org","etag":null,"id":1,"kind":null,'.
-                '"primaryEmail":null}',
-            '{"alias":"users_alias7@sil.org","etag":null,"id":1,"kind":null,' .
-                 '"primaryEmail":"user_test1@sil.org"}',
-        );
-
+        $results = $user_aliases;
+        $expected = array("users_alias2@sil.org", "users_alias7@sil.org");
         $msg = " *** Bad returned Aliases";
         $this->assertEquals($expected, $results, $msg);
 
