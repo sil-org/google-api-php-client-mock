@@ -13,9 +13,25 @@ class SqliteUtils {
      * The SQLite database file.
      * @var string
      */
-    private $_dbFile = '../DataStore/Sqlite/Google_Services_Data.db';
+    private $_dbFile;
 
     private $_dbTable = 'google_service';
+
+    /**
+     * @param string $dbFile path and filename of the database for Mock Google
+     */
+    public function __construct($dbFile=null)
+    {
+        // default database path
+        $this->_dbFile = __DIR__ . '/Google_Services_Data.db';
+
+        // if database path given, use it instead
+        if ($dbFile) {
+            $this->_dbFile = $dbFile;
+        }
+
+        $this->createDbStructureAsNecessary();
+    }
 
     /**
      * A utility function to get the GSD Mock data out of the data
