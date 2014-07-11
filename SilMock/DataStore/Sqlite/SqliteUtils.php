@@ -23,7 +23,7 @@ class SqliteUtils {
     public function __construct($dbFile=null)
     {
         // default database path
-        $this->_dbFile = __DIR__ . '/Google_Services_Data.db';
+        $this->_dbFile = __DIR__ . '/Google_Service_Data.db';
 
         // if database path given, use it instead
         if ($dbFile) {
