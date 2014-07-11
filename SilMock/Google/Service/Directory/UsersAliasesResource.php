@@ -16,6 +16,7 @@ class UsersAliasesResource {
      * @param string $alias
      * The alias to be removed
      * @param array $optParams Optional parameters.
+     * @throws \Exception with code 201407101645
      */
     public function delete($userKey, $alias, $optParams = array())
     {
