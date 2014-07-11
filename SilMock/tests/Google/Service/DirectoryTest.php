@@ -10,11 +10,11 @@ use SilMock\Google\Service\GoogleFixtures;
 
 class DirectoryTest extends PHPUnit_Framework_TestCase
 {
-    public $dataFile = '../DataStore/Sqlite/Google_Services_Data.db';
+    public $dataFile = '../DataStore/Sqlite/Test2_Google_Service_Data.db';
 
     public function testDirectory()
     {
-        $dir = new Directory('whatever');
+        $dir = new Directory('whatever', $this->dataFile);
         $results = json_encode($dir);
         $expected = '{"users":{},"users_aliases":{}}';
         $msg = " *** Directory was not initialized properly";
@@ -23,7 +23,7 @@ class DirectoryTest extends PHPUnit_Framework_TestCase
 
     public function testUsersInsert()
     {
-        $fixturesClass = new GoogleFixtures();
+        $fixturesClass = new GoogleFixtures($this->dataFile);
         $fixturesClass->removeAllFixtures();
 
         $newUser = new User();
@@ -35,7 +35,7 @@ class DirectoryTest extends PHPUnit_Framework_TestCase
         $newUser->suspended = false; // bool
       //  $newUser->$suspensionReason = ''; // string
 
-        $newDir = new Directory(null);
+        $newDir = new Directory('anyclient', $this->dataFile);
         $newUser = $newDir->users->insert($newUser);
 
         $results = json_encode($newUser);
@@ -47,7 +47,7 @@ class DirectoryTest extends PHPUnit_Framework_TestCase
         $this->assertEquals($expected, $results, $msg);
 
 
-        $sqliteClass = new SqliteUtils();
+        $sqliteClass = new SqliteUtils($this->dataFile);
         $lastDataEntry = end(array_values($sqliteClass->getData('', '')));
         $results = $lastDataEntry['data'];
 
@@ -84,7 +84,7 @@ class DirectoryTest extends PHPUnit_Framework_TestCase
 
     public function testUsersGet()
     {
-        $fixturesClass = new GoogleFixtures();
+        $fixturesClass = new GoogleFixtures($this->dataFile);
         $fixturesClass->removeAllFixtures();
 
         $primaryEmail = 'user_test4@sil.org';
@@ -97,7 +97,7 @@ class DirectoryTest extends PHPUnit_Framework_TestCase
         $fixtures = $this->get_fixtures();
         $fixturesClass->addFixtures($fixtures);
 
-        $newDir = new Directory(null);
+        $newDir = new Directory('anyclient', $this->dataFile);
 
         $results = json_encode($newDir->users->get($primaryEmail));
         $expected = $userData;
@@ -108,7 +108,7 @@ class DirectoryTest extends PHPUnit_Framework_TestCase
 
     public function testUsersGet_ById()
     {
-        $fixturesClass = new GoogleFixtures();
+        $fixturesClass = new GoogleFixtures($this->dataFile);
         $fixturesClass->removeAllFixtures();
 
         $userId = '999991';
@@ -121,7 +121,7 @@ class DirectoryTest extends PHPUnit_Framework_TestCase
         $fixtures = $this->get_fixtures();
         $fixturesClass->addFixtures($fixtures);
 
-        $newDir = new Directory(null);
+        $newDir = new Directory('anyclient', $this->dataFile);
 
         $results = json_encode($newDir->users->get($userId));
         $expected = $userData;
@@ -131,7 +131,7 @@ class DirectoryTest extends PHPUnit_Framework_TestCase
 
     public function testUsersUpdate()
     {
-        $fixturesClass = new GoogleFixtures();
+        $fixturesClass = new GoogleFixtures($this->dataFile);
         $fixturesClass->removeAllFixtures();
 
         $primaryEmail = "user_test4@sil.org";
@@ -152,7 +152,7 @@ class DirectoryTest extends PHPUnit_Framework_TestCase
         $newUser = new User();
         $newUser->initialize($userData);
 
-        $newDir = new Directory(null);
+        $newDir = new Directory('anyclient', $this->dataFile);
         $newDir->users->update($primaryEmail, $newUser);
 
         $results = json_encode($newDir->users->get($primaryEmail));
@@ -164,7 +164,7 @@ class DirectoryTest extends PHPUnit_Framework_TestCase
 
     public function testUsersUpdate_ById()
     {
-        $fixturesClass = new GoogleFixtures();
+        $fixturesClass = new GoogleFixtures($this->dataFile);
         $fixturesClass->removeAllFixtures();
 
         $userId = 999991;
@@ -185,7 +185,7 @@ class DirectoryTest extends PHPUnit_Framework_TestCase
         $newUser = new User();
         $newUser->initialize($userData);
 
-        $newDir = new Directory(null);
+        $newDir = new Directory('anyclient', $this->dataFile);
         $newDir->users->update($userId, $newUser);
 
         $results = json_encode($newDir->users->get($userId));
@@ -200,7 +200,7 @@ class DirectoryTest extends PHPUnit_Framework_TestCase
      */
     public function testUsersUpdate_NotThere()
     {
-        $fixturesClass = new GoogleFixtures();
+        $fixturesClass = new GoogleFixtures($this->dataFile);
         $fixturesClass->removeAllFixtures();
 
         $userId = 999999;
@@ -221,14 +221,14 @@ class DirectoryTest extends PHPUnit_Framework_TestCase
         $newUser = new User();
         $newUser->initialize($userData);
 
-        $newDir = new Directory(null);
+        $newDir = new Directory('anyclient', $this->dataFile);
         $newDir->users->update($userId, $newUser);
         // the assert is in the doc comment
     }
 
     public function testUsersDelete()
     {
-        $fixturesClass = new GoogleFixtures();
+        $fixturesClass = new GoogleFixtures($this->dataFile);
         $fixturesClass->removeAllFixtures();
 
         $primaryEmail = "user_test4@sil.org";
@@ -236,10 +236,10 @@ class DirectoryTest extends PHPUnit_Framework_TestCase
         $fixtures = $this->get_fixtures();
         $fixturesClass->addFixtures($fixtures);
 
-        $newDir = new Directory(null);
+        $newDir = new Directory('anyclient', $this->dataFile);
         $newDir->users->delete($primaryEmail);
 
-        $sqliteClass = new SqliteUtils();
+        $sqliteClass = new SqliteUtils($this->dataFile);
         $results = $sqliteClass->getData('', '');
 
         $expected = array(
@@ -263,7 +263,7 @@ class DirectoryTest extends PHPUnit_Framework_TestCase
 
     public function testUsersDelete_ById()
     {
-        $fixturesClass = new GoogleFixtures();
+        $fixturesClass = new GoogleFixtures($this->dataFile);
         $fixturesClass->removeAllFixtures();
 
         $userId = 999991;
@@ -271,10 +271,10 @@ class DirectoryTest extends PHPUnit_Framework_TestCase
         $fixtures = $this->get_fixtures();
         $fixturesClass->addFixtures($fixtures);
 
-        $newDir = new Directory(null);
+        $newDir = new Directory('anyclient', $this->dataFile);
         $newDir->users->delete($userId);
 
-        $sqliteClass = new SqliteUtils();
+        $sqliteClass = new SqliteUtils($this->dataFile);
         $results = $sqliteClass->getData('', '');
 
         $expected = array(
@@ -298,7 +298,7 @@ class DirectoryTest extends PHPUnit_Framework_TestCase
 
     public function testUsersAliasesInsert()
     {
-        $fixturesClass = new GoogleFixtures();
+        $fixturesClass = new GoogleFixtures($this->dataFile);
         $fixturesClass->removeAllFixtures();
 
         $fixtures = $this->get_fixtures();
@@ -308,7 +308,7 @@ class DirectoryTest extends PHPUnit_Framework_TestCase
         $newAlias->alias = "users_alias1@sil.org";
         $newAlias->kind = "personal";
 
-        $newDir = new Directory(null);
+        $newDir = new Directory('anyclient', $this->dataFile);
         $newAlias = $newDir->users_aliases->insert("user_test1@sil.org", $newAlias);
 
         $results = json_encode($newAlias);
@@ -319,7 +319,7 @@ class DirectoryTest extends PHPUnit_Framework_TestCase
         $this->assertEquals($expected, $results, $msg);
 
 
-        $sqliteClass = new SqliteUtils();
+        $sqliteClass = new SqliteUtils($this->dataFile);
         $lastDataEntry = end(array_values($sqliteClass->getData('', '')));
         $results = $lastDataEntry['data'];
 
@@ -333,7 +333,7 @@ class DirectoryTest extends PHPUnit_Framework_TestCase
      */
     public function testUsersAliasesInsert_UserNotThere()
     {
-        $fixturesClass = new GoogleFixtures();
+        $fixturesClass = new GoogleFixtures($this->dataFile);
         $fixturesClass->removeAllFixtures();
 
         $fixtures = $this->get_fixtures();
@@ -343,14 +343,14 @@ class DirectoryTest extends PHPUnit_Framework_TestCase
         $newAlias->alias = "users_alias1@sil.org";
         $newAlias->kind = "personal";
 
-        $newDir = new Directory(null);
+        $newDir = new Directory('anyclient', $this->dataFile);
         $newAlias = $newDir->users_aliases->insert("no_user@sil.org", $newAlias);
         // the assert is in the doc comments with @expectedException
     }
 
     public function testUsersAliasesListUsersAliases_Email()
     {
-        $fixturesClass = new GoogleFixtures();
+        $fixturesClass = new GoogleFixtures($this->dataFile);
         $fixturesClass->removeAllFixtures();
 
         $fixtures = $this->get_fixtures();
@@ -362,7 +362,7 @@ class DirectoryTest extends PHPUnit_Framework_TestCase
         );
         $fixturesClass->addFixtures($newFixtures);
 
-        $newDir = new Directory(null);
+        $newDir = new Directory('anyclient', $this->dataFile);
         $aliases = $newDir->users_aliases->listUsersAliases("user_test1@sil.org");
 
         $results = array();
@@ -384,7 +384,7 @@ class DirectoryTest extends PHPUnit_Framework_TestCase
 
     public function testUsersAliasesListUsersAliases_ID()
     {
-        $fixturesClass = new GoogleFixtures();
+        $fixturesClass = new GoogleFixtures($this->dataFile);
         $fixturesClass->removeAllFixtures();
 
         $fixtures = $this->get_fixtures();
@@ -400,7 +400,7 @@ class DirectoryTest extends PHPUnit_Framework_TestCase
         );
         $fixturesClass->addFixtures($newFixtures);
 
-        $newDir = new Directory(null);
+        $newDir = new Directory('anyclient', $this->dataFile);
         $aliases = $newDir->users_aliases->listUsersAliases("7");
 
         $results = array();
@@ -422,7 +422,7 @@ class DirectoryTest extends PHPUnit_Framework_TestCase
 
     public function testUsersAliasesListUsersAliases_Structure()
     {
-        $fixturesClass = new GoogleFixtures();
+        $fixturesClass = new GoogleFixtures($this->dataFile);
         $fixturesClass->removeAllFixtures();
 
         $fixtures = $this->get_fixtures();
@@ -434,7 +434,7 @@ class DirectoryTest extends PHPUnit_Framework_TestCase
         );
         $fixturesClass->addFixtures($newFixtures);
 
-        $newDir = new Directory(null);
+        $newDir = new Directory('anyclient', $this->dataFile);
         $aliases = $newDir->users_aliases->listUsersAliases("user_test1@sil.org");
 
         $results = isset($aliases['aliases']);
@@ -461,7 +461,7 @@ class DirectoryTest extends PHPUnit_Framework_TestCase
      */
     public function testUsersAliasesListUsersAliases_UserNotThere()
     {
-        $fixturesClass = new GoogleFixtures();
+        $fixturesClass = new GoogleFixtures($this->dataFile);
         $fixturesClass->removeAllFixtures();
 
         $fixtures = $this->get_fixtures();
@@ -473,13 +473,13 @@ class DirectoryTest extends PHPUnit_Framework_TestCase
         );
         $fixturesClass->addFixtures($newFixtures);
 
-        $newDir = new Directory(null);
+        $newDir = new Directory('anyclient', $this->dataFile);
         $aliases = $newDir->users_aliases->listUsersAliases("no_user@sil.org");
     }
 
     public function testUsersAliasesDelete()
     {
-        $fixturesClass = new GoogleFixtures();
+        $fixturesClass = new GoogleFixtures($this->dataFile);
         $fixturesClass->removeAllFixtures();
 
         $fixtures = $this->get_fixtures();
@@ -491,13 +491,13 @@ class DirectoryTest extends PHPUnit_Framework_TestCase
         );
         $fixturesClass->addFixtures($newFixtures);
 
-        $newDir = new Directory(null);
+        $newDir = new Directory('anyclient', $this->dataFile);
         $results = $newDir->users_aliases->delete("user_test1@sil.org",
                                                  "users_alias2@sil.org");
 
         $this->assertTrue($results, " *** Didn't appear to delete the alias.");
 
-        $sqliteUtils = new SqliteUtils();
+        $sqliteUtils = new SqliteUtils($this->dataFile);
         $results = $sqliteUtils->getData('directory', 'users_alias');
 
         $expected = array(

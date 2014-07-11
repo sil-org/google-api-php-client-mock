@@ -5,8 +5,15 @@ use SilMock\DataStore\Sqlite\SqliteUtils;
 
 class UsersAliasesResource {
 
+    private $_dbFile;  // path for the Sqlite database
     private $_dataType = 'directory';
     private $_dataClass = 'users_alias';
+
+
+    public function __construct($dbFile=null)
+    {
+        $this->_dbFile = $dbFile;
+    }
 
     /**
      * Remove a alias for the user (aliases.delete)
@@ -31,14 +38,14 @@ class UsersAliasesResource {
         }
 
         // ensure that user exists in db
-        $dir = new \SilMock\Google\Service\Directory('anything');
+        $dir = new \SilMock\Google\Service\Directory('anything', $this->_dbFile);
         $matchingUsers = $dir->users->get($userKey);
 
         if ($matchingUsers === null) {
             throw new \Exception("Account doesn't exist: " . $userKey, 201407101645);
         }
 
-        $sqliteUtils = new SqliteUtils();
+        $sqliteUtils = new SqliteUtils($this->_dbFile);
         $aliases =  $sqliteUtils->getAllRecordsByDataKey($this->_dataType,
             $this->_dataClass, $key, $userKey);
 
@@ -80,7 +87,7 @@ class UsersAliasesResource {
         }
 
         // ensure that user exists in db
-        $dir = new \SilMock\Google\Service\Directory('anything');
+        $dir = new \SilMock\Google\Service\Directory('anything', $this->_dbFile);
         $matchingUsers = $dir->users->get($userKey);
 
         if ($matchingUsers === null) {
@@ -92,7 +99,7 @@ class UsersAliasesResource {
         }
 
         $entryData = json_encode($postBody);
-        $sqliteUtils = new SqliteUtils();
+        $sqliteUtils = new SqliteUtils($this->_dbFile);
         $sqliteUtils->recordData($this->_dataType, $this->_dataClass,
                                              $entryData, true);
         $allAliases = $sqliteUtils->getData($this->_dataType, $this->_dataClass);
@@ -131,14 +138,14 @@ class UsersAliasesResource {
         }
 
         // ensure that user exists in db
-        $dir = new \SilMock\Google\Service\Directory('anything');
+        $dir = new \SilMock\Google\Service\Directory('anything', $this->_dbFile);
         $matchingUsers = $dir->users->get($userKey);
 
         if ($matchingUsers === null) {
             throw new \Exception("Account doesn't exist: " . $userKey, 201407101420);
         }
 
-        $sqliteUtils = new SqliteUtils();
+        $sqliteUtils = new SqliteUtils($this->_dbFile);
         $aliases =  $sqliteUtils->getAllRecordsByDataKey($this->_dataType,
             $this->_dataClass, $key, $userKey);
 
@@ -153,9 +160,8 @@ class UsersAliasesResource {
             $newAlias->initialize(json_decode($nextAlias['data'], true));
             $foundAliases->aliases[] = $newAlias;
         }
-
         $foundAliases->refreshAliases();
 
         return $foundAliases;
     }
-} 
+}

@@ -13,10 +13,10 @@ class Directory {
      *
      * @param  $client (normally it would be a Google_Client)
      */
-    public function __construct($client)
+    public function __construct($client, $dbFile=null)
     {
-        $this->users = new UsersResource();
-        $this->users_aliases = new UsersAliasesResource();
+        $this->users = new UsersResource($dbFile);
+        $this->users_aliases = new UsersAliasesResource($dbFile);
     }
 
 } 

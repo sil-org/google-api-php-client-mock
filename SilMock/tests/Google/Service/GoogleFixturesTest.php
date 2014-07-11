@@ -7,13 +7,14 @@ use SilMock\DataStore\Sqlite\SqliteUtils;
 
 class GoogleFixturesTest extends PHPUnit_Framework_TestCase
 {
+    public $dataFile = '../DataStore/Sqlite/Test3_Google_Service_Data.db';
 
     public function testAddFixtures()
     {
-        $sqliteClass = new SqliteUtils();
+        $sqliteClass = new SqliteUtils($this->dataFile);
         $sqliteClass->deleteAllData();
 
-        $fixturesClass = new GoogleFixtures();
+        $fixturesClass = new GoogleFixtures($this->dataFile);
 
         $fixtures = array(
            array('directory', 'user', 'user1 test data'),
@@ -54,7 +55,7 @@ class GoogleFixturesTest extends PHPUnit_Framework_TestCase
 
     public function testRemoveAllFixtures()
     {
-        $fixturesClass = new GoogleFixtures();
+        $fixturesClass = new GoogleFixtures($this->dataFile);
 
         $fixtures = array(
             array('directory', 'user', 'user1 test data'),
@@ -63,7 +64,7 @@ class GoogleFixturesTest extends PHPUnit_Framework_TestCase
         $fixturesClass->addFixtures($fixtures);
         $fixturesClass->removeAllFixtures();
 
-        $sqliteClass = new SqliteUtils();
+        $sqliteClass = new SqliteUtils($this->dataFile);
         $results = $sqliteClass->getData('','');
         $expected = array();
 

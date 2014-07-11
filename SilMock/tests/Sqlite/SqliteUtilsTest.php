@@ -4,12 +4,12 @@ use SilMock\DataStore\Sqlite\SqliteUtils;
 
 class SqliteUtilsTest extends PHPUnit_Framework_TestCase
 {
-    public $dataFile = '../DataStore/Sqlite/Google_Services_Data.db';
+    public $dataFile = '../DataStore/Sqlite/Test_Google_Service_Data.db';
 
     public function testRecordData()
     {
         file_put_contents($this->dataFile, '');
-        $newSql = new SqliteUtils();
+        $newSql = new SqliteUtils($this->dataFile);
         $newSql->createDbStructureAsNecessary();
 
         $results = $newSql->recordData('directory', 'user',
@@ -21,7 +21,7 @@ class SqliteUtilsTest extends PHPUnit_Framework_TestCase
     public function loadData()
     {
         file_put_contents($this->dataFile, '');
-        $newSql = new SqliteUtils();
+        $newSql = new SqliteUtils($this->dataFile);
         $newSql->createDbStructureAsNecessary();
 
         $results = $newSql->recordData('directory', 'user',
@@ -145,7 +145,7 @@ class SqliteUtilsTest extends PHPUnit_Framework_TestCase
     public function testGetData_EmptyFile()
     {
         file_put_contents($this->dataFile, '');
-        $newSql = new SqliteUtils();
+        $newSql = new SqliteUtils($this->dataFile);
         $newSql->createDbStructureAsNecessary();
 
         $results = $newSql->getData('', '');

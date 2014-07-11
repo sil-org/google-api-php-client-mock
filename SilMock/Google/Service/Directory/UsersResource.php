@@ -4,9 +4,14 @@ namespace SilMock\Google\Service\Directory;
 use SilMock\DataStore\Sqlite\SqliteUtils;
 class UsersResource {
 
+    private $_dbFile;  // path for the Sqlite database
     private $_dataType = 'directory';
     private $_dataClass = 'user';
 
+    public function __construct($dbFile=null)
+    {
+        $this->_dbFile = $dbFile;
+    }
     /**
      * Delete user (users.delete)
      *
@@ -26,7 +31,7 @@ class UsersResource {
             return null;
         }
 
-        $sqliteUtils = new SqliteUtils();
+        $sqliteUtils = new SqliteUtils($this->_dbFile);
         $sqliteUtils->deleteRecordById($userEntry['id']);
         return true;
     }
@@ -82,7 +87,7 @@ class UsersResource {
                 201407101120);
         }
 
-        $sqliteUtils = new SqliteUtils();
+        $sqliteUtils = new SqliteUtils($this->_dbFile);
         $sqliteUtils->recordData($this->_dataType, $this->_dataClass, $userData);
 
         return $this->get($postBody->primaryEmail);
@@ -123,7 +128,7 @@ class UsersResource {
             }
         }
 
-        $sqliteUtils = new SqliteUtils();
+        $sqliteUtils = new SqliteUtils($this->_dbFile);
         $sqliteUtils->updateRecordById($userEntry['id'], json_encode($dbUserProps));
         return $this->get($userKey);
 
@@ -139,7 +144,7 @@ class UsersResource {
             $userKey = intval($userKey);
         }
 
-        $sqliteUtils = new SqliteUtils();
+        $sqliteUtils = new SqliteUtils($this->_dbFile);
         return $sqliteUtils->getRecordByDataKey($this->_dataType,
                                $this->_dataClass, $key, $userKey);
     }
