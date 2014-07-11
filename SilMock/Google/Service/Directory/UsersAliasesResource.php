@@ -23,9 +23,37 @@ class UsersAliasesResource {
         $params = array('userKey' => $userKey, 'alias' => $alias);
         $params = array_merge($params, $optParams);
 
-        //TODO: finish this
+        $key = 'primaryEmail';
+        if ( ! filter_var($userKey, FILTER_VALIDATE_EMAIL)) {
+            $key = 'id';
+            $userKey = intval($userKey);
+        }
 
-//        return $this->call('delete', array($params));
+        // ensure that user exists in db
+        $dir = new \SilMock\Google\Service\Directory('anything');
+        $matchingUsers = $dir->users->get($userKey);
+
+        if ($matchingUsers === null) {
+            throw new \Exception("Account doesn't exist: " . $userKey, 201407101645);
+        }
+
+        $sqliteUtils = new SqliteUtils();
+        $aliases =  $sqliteUtils->getAllRecordsByDataKey($this->_dataType,
+            $this->_dataClass, $key, $userKey);
+
+        if ( ! $aliases) {
+            return null;
+        }
+
+        foreach ($aliases as $nextAlias) {
+            $aliasData = json_decode($nextAlias['data'], true);
+            if ($aliasData['alias'] === $alias) {
+                $sqliteUtils->deleteRecordById(intval($nextAlias['id']));
+                return true;
+            }
+        }
+
+        return null;
     }
 
     /**
@@ -36,6 +64,7 @@ class UsersAliasesResource {
      * @param Alias $postBody
      * @param array $optParams Optional parameters.
      * @return Alias instance
+     * @throws \Exception with code 201407110830
      */
     public function insert($userKey, $postBody, $optParams = array())
     {
@@ -47,6 +76,14 @@ class UsersAliasesResource {
         if ( ! filter_var($userKey, FILTER_VALIDATE_EMAIL)) {
             $key = 'id';
             $userKey = intval($userKey);
+        }
+
+        // ensure that user exists in db
+        $dir = new \SilMock\Google\Service\Directory('anything');
+        $matchingUsers = $dir->users->get($userKey);
+
+        if ($matchingUsers === null) {
+            throw new \Exception("Account doesn't exist: " . $userKey, 201407110830);
         }
 
         if ($postBody->$key === null) {
@@ -78,7 +115,7 @@ class UsersAliasesResource {
      * Email or immutable Id of the user
      * @param array $optParams Optional parameters.
      * @return Google_Service_Directory_Aliases
-     * @throws \Exception
+     * @throws \Exception with code 201407101420
      */
     public function listUsersAliases($userKey, $optParams = array())
     {
@@ -92,16 +129,15 @@ class UsersAliasesResource {
             $userKey = intval($userKey);
         }
 
+        // ensure that user exists in db
         $dir = new \SilMock\Google\Service\Directory('anything');
         $matchingUsers = $dir->users->get($userKey);
-
-        // ensure that user exists in db
-        $sqliteUtils = new SqliteUtils();
 
         if ($matchingUsers === null) {
             throw new \Exception("Account doesn't exist: " . $userKey, 201407101420);
         }
 
+        $sqliteUtils = new SqliteUtils();
         $aliases =  $sqliteUtils->getAllRecordsByDataKey($this->_dataType,
             $this->_dataClass, $key, $userKey);
 
