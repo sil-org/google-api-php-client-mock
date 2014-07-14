@@ -6,11 +6,11 @@ class Alias implements \ArrayAccess
 {
     private $_values = array();
 
-    public $alias;
-    public $etag;
-    public $id;
-    public $kind;
-    public $primaryEmail;
+//    public $alias;
+//    public $etag;
+//    public $id;
+//    public $kind;
+//    public $primaryEmail;
 
     public function initialize($properties)
     {
@@ -38,6 +38,26 @@ class Alias implements \ArrayAccess
     public function getPrimaryEmail()
     {
         return $this->primaryEmail;
+    }
+
+    /**
+     * Get a data by property name
+     *
+     * @param string The key data to retrieve
+     */
+    public function &__get ($key) {
+        return $this->_values[$key];
+    }
+
+    /**
+     * Assigns a value to the specified property
+     *
+     * @param string The data key to assign the value to
+     * @param mixed  The value to set
+     */
+    public function __set($key,$value) {
+        $this->_values[$key] = $value;
+        $this->$key = $value;
     }
 
     // These are for implementing the ArrayAccess
