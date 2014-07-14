@@ -98,10 +98,15 @@ class UsersAliasesResource {
             $postBody->$key = $userKey;
         }
 
+        return $this->insertAssumingUserExists($postBody);
+    }
+
+    public function insertAssumingUserExists($postBody)
+    {
         $entryData = json_encode($postBody);
         $sqliteUtils = new SqliteUtils($this->_dbFile);
         $sqliteUtils->recordData($this->_dataType, $this->_dataClass,
-                                             $entryData, true);
+            $entryData, true);
         $allAliases = $sqliteUtils->getData($this->_dataType, $this->_dataClass);
 
         if ( ! $allAliases) {
@@ -113,7 +118,6 @@ class UsersAliasesResource {
         $newAlias->initialize(json_decode($newEntry['data'], true));
 
         return $newAlias;
-
     }
 
     /**
@@ -136,7 +140,6 @@ class UsersAliasesResource {
             $key = 'id';
             $userKey = intval($userKey);
         }
-
         // ensure that user exists in db
         $dir = new \SilMock\Google\Service\Directory('anything', $this->_dbFile);
         $matchingUsers = $dir->users->get($userKey);
@@ -145,9 +148,15 @@ class UsersAliasesResource {
             throw new \Exception("Account doesn't exist: " . $userKey, 201407101420);
         }
 
+        $foundAliases =  $this->fetchAliasesByUser($key, $userKey);
+
+        return $foundAliases;
+    }
+
+    public function fetchAliasesByUser($keyType, $userKey) {
         $sqliteUtils = new SqliteUtils($this->_dbFile);
         $aliases =  $sqliteUtils->getAllRecordsByDataKey($this->_dataType,
-            $this->_dataClass, $key, $userKey);
+            $this->_dataClass, $keyType, $userKey);
 
         if ( ! $aliases) {
             return null;
