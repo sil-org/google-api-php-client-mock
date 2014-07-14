@@ -60,6 +60,25 @@ class UsersResource {
         $newUser = new User();
         $newUser->initialize(json_decode($userEntry['data'], true));
 
+        // populate aliases
+        $key = 'primaryEmail';
+        if ( ! filter_var($userKey, FILTER_VALIDATE_EMAIL)) {
+            $key = 'id';
+            $userKey = intval($userKey);
+        }
+
+        $usersAliases = new UsersAliasesResource($this->_dbFile);
+        $aliases =  $usersAliases->fetchAliasesByUser($key, $userKey);
+        if ( $aliases) {
+            $foundAliases = array();
+
+            foreach ($aliases['aliases'] as $nextAlias) {
+                $foundAliases[] = $nextAlias['alias'];
+            }
+
+            $newUser->aliases = $foundAliases;
+        }
+
         return $newUser;
     }
 
@@ -77,8 +96,11 @@ class UsersResource {
         $params = array('postBody' => $postBody);
         $params = array_merge($params, $optParams);
 
-        $userData = json_encode($postBody);
+        if ( ! isset($postBody->aliases)) {
+            $postBody->aliases = array();
+        }
 
+        $userData = json_encode($postBody);
         $currentUser = $this->get($postBody->primaryEmail);
 
         if ($currentUser) {
@@ -89,6 +111,19 @@ class UsersResource {
 
         $sqliteUtils = new SqliteUtils($this->_dbFile);
         $sqliteUtils->recordData($this->_dataType, $this->_dataClass, $userData);
+
+        if ($postBody->aliases) {
+            $usersAliases = new UsersAliasesResource($this->_dbFile);
+
+            foreach($postBody->aliases as $alias) {
+                $newAlias = new Alias();
+                $newAlias->alias = $alias;
+                $newAlias->kind = "personal";
+                $newAlias->primaryEmail = $postBody->primaryEmail;
+
+                $insertedAlias = $usersAliases->insertAssumingUserExists($newAlias);
+            }
+        }
 
         return $this->get($postBody->primaryEmail);
     }
@@ -130,6 +165,20 @@ class UsersResource {
 
         $sqliteUtils = new SqliteUtils($this->_dbFile);
         $sqliteUtils->updateRecordById($userEntry['id'], json_encode($dbUserProps));
+
+        if (isset($postBody->aliases) && $postBody->aliases) {
+            $usersAliases = new UsersAliasesResource($this->_dbFile);
+
+            foreach($postBody->aliases as $alias) {
+                $newAlias = new Alias();
+                $newAlias->alias = $alias;
+                $newAlias->kind = "personal";
+                $newAlias->primaryEmail = $postBody->primaryEmail;
+
+                $insertedAlias = $usersAliases->insertAssumingUserExists($newAlias);
+            }
+        }
+
         return $this->get($userKey);
 
     }
