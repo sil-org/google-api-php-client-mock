@@ -53,11 +53,11 @@ class DirectoryTest extends PHPUnit_Framework_TestCase
         $lastDataEntry = end(array_values($sqliteClass->getData('', '')));
         $results = $lastDataEntry['data'];
 
-        $expected = '{"changePasswordAtNextLogin":false,' .
+        $expected = '{"aliases":[],"changePasswordAtNextLogin":false,' .
                     '"hashFunction":"SHA-1",' .
                     '"id":999991,"password":"testP4ss",' .
                     '"primaryEmail":"user_test1@sil.org",' .
-                    '"suspended":false,"aliases":[]}'; //,"suspensionReason":null}';
+                    '"suspended":false}';
 
         $msg = " *** Bad data from sqlite database";
         $this->assertEquals($expected, $results, $msg);
