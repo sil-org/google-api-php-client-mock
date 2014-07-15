@@ -4,6 +4,7 @@ use SilMock\Google\Service\Directory;
 use SilMock\Google\Service\Directory\User;
 use SilMock\Google\Service\Directory\FakeGoogleUser;
 use SilMock\Google\Service\Directory\Alias;
+use SilMock\Google\Service\Directory\FakeGoogleAlias;
 use SilMock\DataStore\Sqlite\SqliteUtils;
 use SilMock\Google\Service\GoogleFixtures;
 
@@ -542,6 +543,38 @@ class DirectoryTest extends PHPUnit_Framework_TestCase
         $newDir = new Directory('anyclient', $this->dataFile);
         $newAlias = $newDir->users_aliases->insert("no_user@sil.org", $newAlias);
         // the assert is in the doc comments with @expectedException
+    }
+
+
+    public function testUsersAliasesInsert_WithFakeAlias()
+    {
+        $fixturesClass = new GoogleFixtures($this->dataFile);
+        $fixturesClass->removeAllFixtures();
+
+        $fixtures = $this->get_fixtures();
+        $fixturesClass->addFixtures($fixtures);
+
+        $newAlias = new FakeGoogleAlias();
+        $newAlias->setAlias("users_alias1@sil.org");
+        $newAlias->setKind("personal");
+
+        $newDir = new Directory('anyclient', $this->dataFile);
+        $newAlias = $newDir->users_aliases->insert("user_test1@sil.org", $newAlias);
+
+        $results = $newAlias->encode2json();
+        $expected = '{"alias":"users_alias1@sil.org","etag":null,"id":null,' .
+            '"kind":"personal","primaryEmail":"user_test1@sil.org"}'
+        ;
+        $msg = " *** Bad returned alias";
+        $this->assertEquals($expected, $results, $msg);
+
+
+        $sqliteClass = new SqliteUtils($this->dataFile);
+        $lastDataEntry = end(array_values($sqliteClass->getData('', '')));
+        $results = $lastDataEntry['data'];
+
+        $msg = " *** Bad data from sqlite database";
+        $this->assertEquals($expected, $results, $msg);
     }
 
     public function testUsersAliasesListUsersAliases_Email()
