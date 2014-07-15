@@ -100,7 +100,6 @@ class UsersResource {
             $postBody->aliases = array();
         }
 
-        $userData = json_encode($postBody);
         $currentUser = $this->get($postBody->primaryEmail);
 
         if ($currentUser) {
@@ -108,6 +107,10 @@ class UsersResource {
                 $postBody['primaryEmail'],
                 201407101120);
         }
+
+        $newUser = new User();
+        $newUser->initialize($postBody);
+        $userData = json_encode($newUser);
 
         $sqliteUtils = new SqliteUtils($this->_dbFile);
         $sqliteUtils->recordData($this->_dataType, $this->_dataClass, $userData);
