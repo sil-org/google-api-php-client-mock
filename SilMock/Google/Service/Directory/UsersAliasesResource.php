@@ -103,7 +103,7 @@ class UsersAliasesResource {
 
     public function insertAssumingUserExists($postBody)
     {
-        $entryData = json_encode($postBody);
+        $entryData = $postBody->encode2json();
         $sqliteUtils = new SqliteUtils($this->_dbFile);
         $sqliteUtils->recordData($this->_dataType, $this->_dataClass,
             $entryData, true);
