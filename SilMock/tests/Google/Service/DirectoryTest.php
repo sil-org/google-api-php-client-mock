@@ -1,12 +1,12 @@
 <?php
 
-//require_once(dirname(__FILE__).'/../../../../Google/Service/Directory.php');
-
 use SilMock\Google\Service\Directory;
 use SilMock\Google\Service\Directory\User;
+use SilMock\Google\Service\Directory\FakeGoogleUser;
 use SilMock\Google\Service\Directory\Alias;
 use SilMock\DataStore\Sqlite\SqliteUtils;
 use SilMock\Google\Service\GoogleFixtures;
+
 
 class DirectoryTest extends PHPUnit_Framework_TestCase
 {
@@ -88,6 +88,42 @@ class DirectoryTest extends PHPUnit_Framework_TestCase
             '"id":999991,"password":"testP4ss",' .
             '"primaryEmail":"user_test1@sil.org",' .
             '"suspended":false}'; //,"suspensionReason":null}';
+        $msg = " *** Bad returned user";
+        $this->assertEquals($expected, $results, $msg);
+
+        $sqliteClass = new SqliteUtils($this->dataFile);
+        $lastDataEntry = end(array_values($sqliteClass->getData('', '')));
+        $results = $lastDataEntry['data'];
+
+        $expected = '{"alias":"user_alias1@sil.org",' .
+            '"kind":"personal",' .
+            '"primaryEmail":"user_test1@sil.org"}';
+
+        $msg = " *** Bad data from sqlite database";
+        $this->assertEquals($expected, $results, $msg);
+    }
+
+    public function testUsersInsert_WithFakeGoogleUser()
+    {
+        $fixturesClass = new GoogleFixtures($this->dataFile);
+        $fixturesClass->removeAllFixtures();
+        $newUser = new FakeGoogleUser();
+        $newUser->setChangePasswordAtNextLogin(false);
+        $newUser->setId(999991);
+        $newUser->setPassword('testP4ss');
+        $newUser->setAliases(array('user_alias1@sil.org'));
+        $newUser->setPrimaryEmail('user_test1@sil.org');
+
+        $newDir = new Directory('anyclient', $this->dataFile);
+        $newUser = $newDir->users->insert($newUser);
+
+        $results = $newUser->encode2json();
+        $expected = '{"aliases":["user_alias1@sil.org"],' .
+            '"changePasswordAtNextLogin":false,' .
+            '"hashFunction":null,' .
+            '"id":999991,"password":"testP4ss",' .
+            '"primaryEmail":"user_test1@sil.org",' .
+            '"suspended":null,"suspensionReason":null}';
         $msg = " *** Bad returned user";
         $this->assertEquals($expected, $results, $msg);
 
@@ -303,6 +339,46 @@ class DirectoryTest extends PHPUnit_Framework_TestCase
 
         $newUser = new User();
         $newUser->initialize($userData);
+
+        $newDir = new Directory('anyclient', $this->dataFile);
+        $newDir->users->update($primaryEmail, $newUser);
+        $newUser = $newDir->users->get($primaryEmail);
+
+        $results = $newUser->encode2json();
+        $expected = json_encode($userData);
+        $msg = " *** Bad user data returned";
+        $this->assertEquals($expected, $results, $msg);
+    }
+
+    public function testUsersUpdate_WithFakeGoogleUser()
+    {
+        $fixturesClass = new GoogleFixtures($this->dataFile);
+        $fixturesClass->removeAllFixtures();
+
+        $primaryEmail = "user_test4@sil.org";
+
+        $userData = array(
+            "aliases" => array('user_alias4B@sil.org'),
+            "changePasswordAtNextLogin" => false,
+            "hashFunction" => "SHA-1",
+            "id" => 999991,
+            "password" => "testP4ssB",
+            "primaryEmail" => $primaryEmail,
+            "suspended" => false,
+            "suspensionReason" => null
+        );
+
+        $fixtures = $this->get_fixtures();
+        $fixturesClass->addFixtures($fixtures);
+
+        $newUser = new FakeGoogleUser();
+        $newUser->setChangePasswordAtNextLogin(false);
+        $newUser->setId(999991);
+        $newUser->setPassword('testP4ssB');
+        $newUser->setAliases(array('user_alias4B@sil.org'));
+        $newUser->setPrimaryEmail($primaryEmail);
+
+        // expecting change in password and alias
 
         $newDir = new Directory('anyclient', $this->dataFile);
         $newDir->users->update($primaryEmail, $newUser);
