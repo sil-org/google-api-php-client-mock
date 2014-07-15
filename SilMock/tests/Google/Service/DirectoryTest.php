@@ -35,11 +35,12 @@ class DirectoryTest extends PHPUnit_Framework_TestCase
         $newUser->primaryEmail = 'user_test1@sil.org'; // string email
         $newUser->suspended = false; // bool
       //  $newUser->$suspensionReason = ''; // string
+        $newUser->aliases = array();
 
         $newDir = new Directory('anyclient', $this->dataFile);
         $newUser = $newDir->users->insert($newUser);
 
-        $results = json_encode($newUser);
+        $results = $newUser->encode2json();
         $expected = '{"aliases":[],"changePasswordAtNextLogin":false,' .
             '"hashFunction":"SHA-1",' .
             '"id":999991,"password":"testP4ss",' .
@@ -53,11 +54,11 @@ class DirectoryTest extends PHPUnit_Framework_TestCase
         $lastDataEntry = end(array_values($sqliteClass->getData('', '')));
         $results = $lastDataEntry['data'];
 
-        $expected = '{"aliases":[],"changePasswordAtNextLogin":false,' .
+        $expected = '{"changePasswordAtNextLogin":false,' .
                     '"hashFunction":"SHA-1",' .
                     '"id":999991,"password":"testP4ss",' .
                     '"primaryEmail":"user_test1@sil.org",' .
-                    '"suspended":false}';
+                    '"suspended":false,"aliases":[]}';
 
         $msg = " *** Bad data from sqlite database";
         $this->assertEquals($expected, $results, $msg);
@@ -80,7 +81,7 @@ class DirectoryTest extends PHPUnit_Framework_TestCase
         $newDir = new Directory('anyclient', $this->dataFile);
         $newUser = $newDir->users->insert($newUser);
 
-        $results = json_encode($newUser);
+        $results = $newUser->encode2json();
         $expected = '{"aliases":["user_alias1@sil.org"],' .
             '"changePasswordAtNextLogin":false,' .
             '"hashFunction":"SHA-1",' .
@@ -89,7 +90,6 @@ class DirectoryTest extends PHPUnit_Framework_TestCase
             '"suspended":false}'; //,"suspensionReason":null}';
         $msg = " *** Bad returned user";
         $this->assertEquals($expected, $results, $msg);
-
 
         $sqliteClass = new SqliteUtils($this->dataFile);
         $lastDataEntry = end(array_values($sqliteClass->getData('', '')));
@@ -144,7 +144,8 @@ class DirectoryTest extends PHPUnit_Framework_TestCase
 
         $newDir = new Directory('anyclient', $this->dataFile);
 
-        $results = json_encode($newDir->users->get($primaryEmail));
+        $newUser = $newDir->users->get($primaryEmail);
+        $results = $newUser->encode2json();
         $expected = $userData;
         $msg = " *** Bad user data returned";
         $this->assertEquals($expected, $results, $msg);
@@ -168,8 +169,9 @@ class DirectoryTest extends PHPUnit_Framework_TestCase
         $fixturesClass->addFixtures($fixtures);
 
         $newDir = new Directory('anyclient', $this->dataFile);
+        $newUser = $newDir->users->get($userId);
 
-        $results = json_encode($newDir->users->get($userId));
+        $results = $newUser->encode2json();
         $expected = $userData;
         $msg = " *** Bad user data returned";
         $this->assertEquals($expected, $results, $msg);
@@ -202,8 +204,8 @@ class DirectoryTest extends PHPUnit_Framework_TestCase
         $fixturesClass->addFixtures($newFixtures);
 
         $newDir = new Directory('anyclient', $this->dataFile);
-
-        $results = json_encode($newDir->users->get($email));
+        $newUser = $newDir->users->get($email);
+        $results = $newUser->encode2json();
         $expected = $userData;
         $msg = " *** Bad user data returned";
         $this->assertEquals($expected, $results, $msg);
@@ -236,7 +238,8 @@ class DirectoryTest extends PHPUnit_Framework_TestCase
         $newDir = new Directory('anyclient', $this->dataFile);
         $newDir->users->update($primaryEmail, $newUser);
 
-        $results = json_encode($newDir->users->get($primaryEmail));
+        $newUser = $newDir->users->get($primaryEmail);
+        $results = $newUser->encode2json();
         $expected = json_encode($userData);
         $msg = " *** Bad user data returned";
         $this->assertEquals($expected, $results, $msg);
@@ -269,8 +272,9 @@ class DirectoryTest extends PHPUnit_Framework_TestCase
 
         $newDir = new Directory('anyclient', $this->dataFile);
         $newDir->users->update($userId, $newUser);
+        $newUser = $newDir->users->get($userId);
 
-        $results = json_encode($newDir->users->get($userId));
+        $results = $newUser->encode2json();
         $expected = json_encode($userData);
         $msg = " *** Bad user data returned";
         $this->assertEquals($expected, $results, $msg);
@@ -302,8 +306,9 @@ class DirectoryTest extends PHPUnit_Framework_TestCase
 
         $newDir = new Directory('anyclient', $this->dataFile);
         $newDir->users->update($primaryEmail, $newUser);
+        $newUser = $newDir->users->get($primaryEmail);
 
-        $results = json_encode($newDir->users->get($primaryEmail));
+        $results = $newUser->encode2json();
         $expected = json_encode($userData);
         $msg = " *** Bad user data returned";
         $this->assertEquals($expected, $results, $msg);
@@ -426,7 +431,7 @@ class DirectoryTest extends PHPUnit_Framework_TestCase
         $newDir = new Directory('anyclient', $this->dataFile);
         $newAlias = $newDir->users_aliases->insert("user_test1@sil.org", $newAlias);
 
-        $results = json_encode($newAlias);
+        $results = $newAlias->encode2json();
         $expected = '{"alias":"users_alias1@sil.org",' .
                     '"kind":"personal","primaryEmail":"user_test1@sil.org"}'
         ;
@@ -482,7 +487,7 @@ class DirectoryTest extends PHPUnit_Framework_TestCase
 
         $results = array();
         foreach ($aliases->aliases as $nextAlias) {
-            $results[] = json_encode($nextAlias);
+            $results[] = $nextAlias->encode2json();
         }
 
         $expected = array(
@@ -518,7 +523,7 @@ class DirectoryTest extends PHPUnit_Framework_TestCase
 
         $results = array();
         foreach ($aliases->aliases as $nextAlias) {
-            $results[] = json_encode($nextAlias);
+            $results[] = $nextAlias->encode2json();
         }
 
         $expected = array(
