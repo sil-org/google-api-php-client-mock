@@ -123,6 +123,7 @@ class UsersResource {
                 $insertedAlias = $usersAliases->insertAssumingUserExists($newAlias);
             }
         }
+
         return $this->get($postBody->primaryEmail);
     }
 
@@ -154,8 +155,12 @@ class UsersResource {
 
         $dbUserProps = json_decode($userEntry['data'], true);
 
-        $newUser = $postBody;
-        $newUserProps = json_decode($newUser->encode2json(), true);
+        if (in_array('encode2json', get_class_methods($postBody))) {
+            $newUserProps = json_decode($postBody->encode2json(), true);
+        } else {
+            $newUserProps = get_object_vars($postBody);
+        }
+
 
         foreach ($newUserProps as $key => $value) {
             if ($value !== null || $key === "suspensionReason") {
