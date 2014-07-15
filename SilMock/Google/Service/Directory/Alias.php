@@ -16,8 +16,12 @@ class Alias implements \ArrayAccess
     {
         foreach ($properties as $key=>$value) {
             $this->$key = $value;
-            $this->offsetSet($key, $value);
         }
+    }
+
+    public function encode2json() {
+        $properties = array_merge(array(), $this->_values);
+        return json_encode($properties);
     }
 
     public function setAlias($alias)
@@ -57,7 +61,6 @@ class Alias implements \ArrayAccess
      */
     public function __set($key,$value) {
         $this->_values[$key] = $value;
-        $this->$key = $value;
     }
 
     // These are for implementing the ArrayAccess
