@@ -96,10 +96,6 @@ class UsersResource {
         $params = array('postBody' => $postBody);
         $params = array_merge($params, $optParams);
 
-        if ( ! isset($postBody->aliases)) {
-            $postBody->aliases = array();
-        }
-
         $currentUser = $this->get($postBody->primaryEmail);
 
         if ($currentUser) {
@@ -110,7 +106,7 @@ class UsersResource {
 
         $newUser = new User();
         $newUser->initialize($postBody);
-        $userData = json_encode($newUser);
+        $userData = $newUser->encode2json();
 
         $sqliteUtils = new SqliteUtils($this->_dbFile);
         $sqliteUtils->recordData($this->_dataType, $this->_dataClass, $userData);
@@ -127,7 +123,6 @@ class UsersResource {
                 $insertedAlias = $usersAliases->insertAssumingUserExists($newAlias);
             }
         }
-
         return $this->get($postBody->primaryEmail);
     }
 
@@ -158,7 +153,9 @@ class UsersResource {
          */
 
         $dbUserProps = json_decode($userEntry['data'], true);
-        $newUserProps = json_decode(json_encode($postBody), true);
+
+        $newUser = $postBody;
+        $newUserProps = json_decode($newUser->encode2json(), true);
 
         foreach ($newUserProps as $key => $value) {
             if ($value !== null || $key === "suspensionReason") {
