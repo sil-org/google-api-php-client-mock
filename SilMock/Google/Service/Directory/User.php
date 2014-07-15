@@ -19,7 +19,12 @@ class User implements \ArrayAccess
     public function initialize($properties)
     {
         $this->aliases = array();
-        foreach ($properties as $key=>$value) {
+        $propArray = $properties;
+        if (is_object($properties)) {
+            $propArray = get_object_vars($properties);
+        }
+
+        foreach ($propArray as $key=>$value) {
             $this->$key = $value;
         }
     }
