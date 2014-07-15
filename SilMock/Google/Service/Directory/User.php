@@ -24,19 +24,17 @@ class User implements \ArrayAccess
         }
     }
 
+    public function encode2json() {
+        $properties = array_merge(array(), $this->_values);
+        return json_encode($properties);
+    }
+
     /**
      * Get a data by property name
      *
      * @param string The key data to retrieve
      */
     public function &__get ($key) {
-        if ($key === 'aliases') {
-            if (isset($this->aliases)) {
-                $this->_values['aliases'] = $this->aliases;
-            } else {
-                $this->_values['aliases'] = array();
-            }
-        }
         return $this->_values[$key];
     }
 
@@ -48,7 +46,6 @@ class User implements \ArrayAccess
      */
     public function __set($key,$value) {
         $this->_values[$key] = $value;
-        $this->$key = $value;
     }
 
     // These are for implementing the ArrayAccess
