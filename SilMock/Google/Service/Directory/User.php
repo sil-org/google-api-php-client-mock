@@ -18,7 +18,6 @@ class User implements \ArrayAccess
 
     public function initialize($properties)
     {
-        $this->aliases = array();
         $propArray = $properties;
         if (is_object($properties)) {
             $propArray = get_object_vars($properties);
@@ -26,6 +25,10 @@ class User implements \ArrayAccess
 
         foreach ($propArray as $key=>$value) {
             $this->$key = $value;
+        }
+
+        if ( ! is_array($this->aliases)) {
+            $this->aliases = array();
         }
     }
 
