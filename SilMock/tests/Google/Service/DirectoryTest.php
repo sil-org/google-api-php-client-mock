@@ -42,11 +42,11 @@ class DirectoryTest extends PHPUnit_Framework_TestCase
         $newUser = $newDir->users->insert($newUser);
 
         $results = $newUser->encode2json();
-        $expected = '{"aliases":[],"changePasswordAtNextLogin":false,' .
+        $expected = '{"changePasswordAtNextLogin":false,' .
             '"hashFunction":"SHA-1",' .
             '"id":999991,"password":"testP4ss",' .
             '"primaryEmail":"user_test1@sil.org",' .
-            '"suspended":false}'; //,"suspensionReason":null}';
+            '"suspended":false,"aliases":[]}'; //,"suspensionReason":null}';
         $msg = " *** Bad returned user";
         $this->assertEquals($expected, $results, $msg);
 
@@ -83,12 +83,11 @@ class DirectoryTest extends PHPUnit_Framework_TestCase
         $newUser = $newDir->users->insert($newUser);
 
         $results = $newUser->encode2json();
-        $expected = '{"aliases":["user_alias1@sil.org"],' .
-            '"changePasswordAtNextLogin":false,' .
+        $expected = '{"changePasswordAtNextLogin":false,' .
             '"hashFunction":"SHA-1",' .
             '"id":999991,"password":"testP4ss",' .
             '"primaryEmail":"user_test1@sil.org",' .
-            '"suspended":false}'; //,"suspensionReason":null}';
+            '"suspended":false,"aliases":["user_alias1@sil.org"]}';
         $msg = " *** Bad returned user";
         $this->assertEquals($expected, $results, $msg);
 
@@ -119,13 +118,14 @@ class DirectoryTest extends PHPUnit_Framework_TestCase
         $newUser = $newDir->users->insert($newUser);
 
         $results = $newUser->encode2json();
-        $expected = '{"aliases":["user_alias1@sil.org"],' .
-            '"changePasswordAtNextLogin":false,' .
+        $expected = '{"changePasswordAtNextLogin":false,' .
             '"hashFunction":null,' .
             '"id":999991,"password":"testP4ss",' .
             '"primaryEmail":"user_test1@sil.org",' .
-            '"suspended":null,"suspensionReason":null}';
+            '"suspended":null,"suspensionReason":null,' .
+            '"aliases":["user_alias1@sil.org"]}';
         $msg = " *** Bad returned user";
+
         $this->assertEquals($expected, $results, $msg);
 
         $sqliteClass = new SqliteUtils($this->dataFile);
@@ -170,11 +170,11 @@ class DirectoryTest extends PHPUnit_Framework_TestCase
 
         $primaryEmail = 'user_test4@sil.org';
 
-        $userData = '{"aliases":[],"changePasswordAtNextLogin":false,' .
+        $userData = '{"changePasswordAtNextLogin":false,' .
                     '"hashFunction":"SHA-1",' .
                     '"id":999991,"password":"testP4ss",' .
                     '"primaryEmail":"' . $primaryEmail . '",' .
-                    '"suspended":false,"suspensionReason":null}';
+                    '"suspended":false,"suspensionReason":null,"aliases":[]}';
 
         $fixtures = $this->get_fixtures();
         $fixturesClass->addFixtures($fixtures);
@@ -196,11 +196,11 @@ class DirectoryTest extends PHPUnit_Framework_TestCase
 
         $userId = '999991';
 
-        $userData = '{"aliases":[],"changePasswordAtNextLogin":false,' .
+        $userData = '{"changePasswordAtNextLogin":false,' .
             '"hashFunction":"SHA-1",' .
             '"id":' . $userId . ',"password":"testP4ss",' .
             '"primaryEmail":"user_test4@sil.org",' .
-            '"suspended":false,"suspensionReason":null}';
+            '"suspended":false,"suspensionReason":null,"aliases":[]}';
 
         $fixtures = $this->get_fixtures();
         $fixturesClass->addFixtures($fixtures);
@@ -225,12 +225,12 @@ class DirectoryTest extends PHPUnit_Framework_TestCase
         $userId = '999991';
         $email = "user_test4@sil.org";
 
-        $userData = '{"aliases":["users_alias1A@sil.org","users_alias1B@sil.org"],' .
-            '"changePasswordAtNextLogin":false,' .
+        $userData = '{"changePasswordAtNextLogin":false,' .
             '"hashFunction":"SHA-1",' .
             '"id":' . $userId . ',"password":"testP4ss",' .
             '"primaryEmail":"user_test4@sil.org",' .
-            '"suspended":false,"suspensionReason":null}';
+            '"suspended":false,"suspensionReason":null,' .
+            '"aliases":["users_alias1A@sil.org","users_alias1B@sil.org"]}';
 
         $newFixtures = array(
             array('directory', 'users_alias', '{"primaryEmail":' .
@@ -256,14 +256,14 @@ class DirectoryTest extends PHPUnit_Framework_TestCase
         $primaryEmail = "user_test4@sil.org";
 
         $userData = array(
-            "aliases" => array(),
             "changePasswordAtNextLogin" => false,
             "hashFunction" => "SHA-1",
             "id" => 999991,
             "password" => "testP4ss",
             "primaryEmail" => $primaryEmail,
             "suspended" => false,
-            "suspensionReason" => null
+            "suspensionReason" => null,
+            "aliases" => array(),
         );
 
         $fixtures = $this->get_fixtures();
@@ -291,14 +291,14 @@ class DirectoryTest extends PHPUnit_Framework_TestCase
         $userId = 999991;
 
         $userData = array(
-            "aliases" => array(),
             "changePasswordAtNextLogin" => false,
             "hashFunction" => "SHA-1",
             "id" => $userId,
             "password" => "testP4ss",
             "primaryEmail" => "user_test4@sil.org",
             "suspended" => false,
-            "suspensionReason" => null
+            "suspensionReason" => null,
+            "aliases" => array(),
         );
 
         $fixtures = $this->get_fixtures();
@@ -325,14 +325,14 @@ class DirectoryTest extends PHPUnit_Framework_TestCase
         $primaryEmail = "user_test4@sil.org";
 
         $userData = array(
-            "aliases" => array('user_alias4B@sil.org'),
             "changePasswordAtNextLogin" => false,
             "hashFunction" => "SHA-1",
             "id" => 999991,
             "password" => "testP4ss",
             "primaryEmail" => $primaryEmail,
             "suspended" => false,
-            "suspensionReason" => null
+            "suspensionReason" => null,
+            "aliases" => array('user_alias4B@sil.org'),
         );
 
         $fixtures = $this->get_fixtures();
@@ -359,14 +359,14 @@ class DirectoryTest extends PHPUnit_Framework_TestCase
         $primaryEmail = "user_test4@sil.org";
 
         $userData = array(
-            "aliases" => array('user_alias4B@sil.org'),
             "changePasswordAtNextLogin" => false,
             "hashFunction" => "SHA-1",
             "id" => 999991,
             "password" => "testP4ssB",
             "primaryEmail" => $primaryEmail,
             "suspended" => false,
-            "suspensionReason" => null
+            "suspensionReason" => null,
+            "aliases" => array('user_alias4B@sil.org'),
         );
 
         $fixtures = $this->get_fixtures();
