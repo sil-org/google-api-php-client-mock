@@ -29,12 +29,6 @@ ones implemented by this mock are ...
 2. insert()
 3. listUsersAliases()
 
-### Others
-This mock has very minimal mocks of GSD User, GSD Aliases, and GSD Alias that
-implement array access. It also has a second set of mocks for GSD User and
-GSD Alias, which ... (TODO)
-
-
 Data Persistence
 ----------------
 In order to keep data available for use by this mock, it makes use of a **Sqlite**
@@ -48,14 +42,14 @@ It has one table with four columns ...
 
 1. id  = INTEGER PRIMARY KEY,
 2. type = TEXT,  e.g. "directory",
-3. class = TEXT, e.g. "user" or "alias",
+3. class = TEXT, e.g. "user" or "users_alias",
 4. data = TEXT
 
-The data column contains json with key-value pairs related to the properties
-of the GSD objects.
+The **data** field contains json with key-value pairs related to the properties
+of the GSD objects.  The data is prepared by using the php json_encode.
 
-Tests Fixtures
---------------
+Test Fixtures
+-------------
 There is a class to assist with dealing with data for unit tests ...
 **SilMock\Google\Service\GoogleFixtures.php**.  Its constructor accepts an
 optional parameter for the path and name of the Sqlite database file.  It has
