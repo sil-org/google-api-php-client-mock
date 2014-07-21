@@ -57,8 +57,9 @@ class UsersResource {
             return null;
         }
 
-        $newUser = new User();
-        $newUser->initialize(json_decode($userEntry['data'], true));
+      //  $newUser = new User();
+        $newUser = new \Google_Service_Directory_User();
+        ObjectUtils::initialize($newUser, json_decode($userEntry['data'], true));
 
         // populate aliases
         $key = 'primaryEmail';
@@ -68,10 +69,11 @@ class UsersResource {
         }
 
         $usersAliases = new UsersAliasesResource($this->_dbFile);
+
         $aliases =  $usersAliases->fetchAliasesByUser($key, $userKey);
+
         if ( $aliases) {
             $foundAliases = array();
-
             foreach ($aliases['aliases'] as $nextAlias) {
                 $foundAliases[] = $nextAlias['alias'];
             }
@@ -104,9 +106,10 @@ class UsersResource {
                 201407101120);
         }
 
-        $newUser = new User();
-        $newUser->initialize($postBody);
-        $userData = $newUser->encode2json();
+        //  $newUser = new User();
+        $newUser = new \Google_Service_Directory_User();
+        ObjectUtils::initialize($newUser, $postBody);
+        $userData = json_encode($newUser);
 
         $sqliteUtils = new SqliteUtils($this->_dbFile);
         $sqliteUtils->recordData($this->_dataType, $this->_dataClass, $userData);
@@ -154,13 +157,7 @@ class UsersResource {
          */
 
         $dbUserProps = json_decode($userEntry['data'], true);
-
-        if (in_array('encode2json', get_class_methods($postBody))) {
-            $newUserProps = json_decode($postBody->encode2json(), true);
-        } else {
-            $newUserProps = get_object_vars($postBody);
-        }
-
+        $newUserProps = get_object_vars($postBody);
 
         foreach ($newUserProps as $key => $value) {
             if ($value !== null || $key === "suspensionReason") {
@@ -175,7 +172,7 @@ class UsersResource {
             $usersAliases = new UsersAliasesResource($this->_dbFile);
 
             foreach($postBody->aliases as $alias) {
-                $newAlias = new Alias();
+                $newAlias = new \Google_Service_Directory_Alias();
                 $newAlias->alias = $alias;
                 $newAlias->kind = "personal";
                 $newAlias->primaryEmail = $postBody->primaryEmail;
