@@ -103,14 +103,7 @@ class UsersAliasesResource {
 
     public function insertAssumingUserExists($postBody)
     {
-
-        if (in_array('encode2json', get_class_methods($postBody))) {
-            $entryData = $postBody->encode2json();
-        } else {
-            $entryData = json_encode(get_object_vars($postBody));
-        }
-
-//        $entryData = $postBody->encode2json();
+        $entryData = json_encode(get_object_vars($postBody));
         $sqliteUtils = new SqliteUtils($this->_dbFile);
         $sqliteUtils->recordData($this->_dataType, $this->_dataClass,
             $entryData, true);
@@ -119,10 +112,9 @@ class UsersAliasesResource {
         if ( ! $allAliases) {
             return null;
         }
-        $newEntry = end(array_values($allAliases));
 
-        $newAlias = new Alias();
-        $newAlias->initialize(json_decode($newEntry['data'], true));
+        $newAlias = new \Google_Service_Directory_Alias();
+        ObjectUtils::initialize($newAlias, $postBody);
 
         return $newAlias;
     }
@@ -169,15 +161,17 @@ class UsersAliasesResource {
             return null;
         }
 
-        $foundAliases = new Aliases();
+        $foundAliases = array();
 
         foreach ($aliases as $nextAlias) {
-            $newAlias = new Alias();
-            $newAlias->initialize(json_decode($nextAlias['data'], true));
-            $foundAliases->aliases[] = $newAlias;
-        }
-        $foundAliases->refreshAliases();
+            $newAlias = new \Google_Service_Directory_Alias();
+            ObjectUtils::initialize($newAlias, json_decode($nextAlias['data'], true));
 
-        return $foundAliases;
+            $foundAliases[] = $newAlias;
+        }
+
+        $newUsersAliases = new \Google_Service_Directory_Aliases();
+        $newUsersAliases->setAliases($foundAliases);
+        return $newUsersAliases;
     }
 }
