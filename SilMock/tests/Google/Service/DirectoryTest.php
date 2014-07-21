@@ -1,6 +1,7 @@
 <?php
 
 use SilMock\Google\Service\Directory;
+use SilMock\Google\Service\Directory\ObjectUtils;
 use SilMock\Google\Service\Directory\User;
 use SilMock\Google\Service\Directory\FakeGoogleUser;
 use SilMock\Google\Service\Directory\Alias;
@@ -12,6 +13,28 @@ use SilMock\Google\Service\GoogleFixtures;
 class DirectoryTest extends PHPUnit_Framework_TestCase
 {
     public $dataFile = '../DataStore/Sqlite/Test2_Google_Service_Data.db';
+
+    public function getProperties($object, $propKeys = null) {
+        if ($propKeys === null) {
+            $propKeys = array(
+                "changePasswordAtNextLogin",
+                "hashFunction",
+                "id",
+                "password",
+                "primaryEmail",
+                "suspended",
+                "aliases",
+            );
+        }
+
+        $outArray = array();
+
+        foreach ($propKeys as $key) {
+            $outArray[$key] = $object->$key;
+        }
+
+        return $outArray;
+    }
 
     public function testDirectory()
     {
@@ -28,7 +51,7 @@ class DirectoryTest extends PHPUnit_Framework_TestCase
     {
         $fixturesClass = new GoogleFixtures($this->dataFile);
         $fixturesClass->removeAllFixtures();
-        $newUser = new User();
+        $newUser = new Google_Service_Directory_User();
         $newUser->changePasswordAtNextLogin = false; // bool
         $newUser->hashFunction = "SHA-1"; // string
         $newUser->id = 999991; // int???
@@ -40,26 +63,33 @@ class DirectoryTest extends PHPUnit_Framework_TestCase
 
         $newDir = new Directory('anyclient', $this->dataFile);
         $newUser = $newDir->users->insert($newUser);
+        $results = $this->getProperties($newUser);
 
-        $results = $newUser->encode2json();
-        $expected = '{"changePasswordAtNextLogin":false,' .
-            '"hashFunction":"SHA-1",' .
-            '"id":999991,"password":"testP4ss",' .
-            '"primaryEmail":"user_test1@sil.org",' .
-            '"suspended":false,"aliases":[]}'; //,"suspensionReason":null}';
+        $expected = array(
+            "changePasswordAtNextLogin" => false,
+            "hashFunction" => "SHA-1",
+            "id" => 999991,
+            "password" => "testP4ss",
+            "primaryEmail" => "user_test1@sil.org",
+            "suspended" => false,
+            "aliases" => array(),
+        );
         $msg = " *** Bad returned user";
         $this->assertEquals($expected, $results, $msg);
 
-
         $sqliteClass = new SqliteUtils($this->dataFile);
         $lastDataEntry = end(array_values($sqliteClass->getData('', '')));
-        $results = $lastDataEntry['data'];
+        $results = $this->getProperties(json_decode($lastDataEntry['data']));
 
-        $expected = '{"changePasswordAtNextLogin":false,' .
-                    '"hashFunction":"SHA-1",' .
-                    '"id":999991,"password":"testP4ss",' .
-                    '"primaryEmail":"user_test1@sil.org",' .
-                    '"suspended":false,"aliases":[]}';
+        $expected = array (
+                            "changePasswordAtNextLogin" => false,
+                            "hashFunction" => "SHA-1",
+                            "id" => 999991,
+                            "password" => "testP4ss",
+                            "primaryEmail" => "user_test1@sil.org",
+                            "suspended" => false,
+                            "aliases" => array(),
+                     );
 
         $msg = " *** Bad data from sqlite database";
         $this->assertEquals($expected, $results, $msg);
@@ -69,7 +99,7 @@ class DirectoryTest extends PHPUnit_Framework_TestCase
     {
         $fixturesClass = new GoogleFixtures($this->dataFile);
         $fixturesClass->removeAllFixtures();
-        $newUser = new User();
+        $newUser = new Google_Service_Directory_User();
         $newUser->changePasswordAtNextLogin = false; // bool
         $newUser->hashFunction = "SHA-1"; // string
         $newUser->id = 999991; // int???
@@ -77,90 +107,103 @@ class DirectoryTest extends PHPUnit_Framework_TestCase
         $newUser->primaryEmail = 'user_test1@sil.org'; // string email
         $newUser->suspended = false; // bool
         //  $newUser->$suspensionReason = ''; // string
-        $newUser->aliases = array('user_alias1@sil.org'); // bool
+
+        $newAliases = new Google_Service_Directory_Aliases();
+        $newAlias = new Google_Service_Directory_Alias();
+        $newAlias->alias = 'user_alias1@sil.org';
+        $newAlias->setKind("personal");
+        $newAlias->primaryEmail = $newUser->primaryEmail;
+        $newAliases->setAliases(array($newAlias));
+
+        $newUser->aliases = $newAliases; // bool
 
         $newDir = new Directory('anyclient', $this->dataFile);
         $newUser = $newDir->users->insert($newUser);
 
-        $results = $newUser->encode2json();
-        $expected = '{"changePasswordAtNextLogin":false,' .
-            '"hashFunction":"SHA-1",' .
-            '"id":999991,"password":"testP4ss",' .
-            '"primaryEmail":"user_test1@sil.org",' .
-            '"suspended":false,"aliases":["user_alias1@sil.org"]}';
+        $results =  $this->getProperties($newUser);
+        $expected = array(
+            "changePasswordAtNextLogin" => false,
+            "hashFunction" => "SHA-1",
+            "id" => 999991,
+            "password" => "testP4ss",
+            "primaryEmail" => "user_test1@sil.org",
+            "suspended" => false,
+            "aliases" => array(
+                'etag' => null,
+                'kind' => null,
+                'aliases' => array(
+                    array(
+                        'alias' => "user_alias1@sil.org",
+                        'etag' => null,
+                        'id' => null,
+                        'kind' => 'personal',
+                        'primaryEmail' => 'user_test1@sil.org')),
+            ),
+        );
         $msg = " *** Bad returned user";
         $this->assertEquals($expected, $results, $msg);
 
         $sqliteClass = new SqliteUtils($this->dataFile);
         $lastDataEntry = end(array_values($sqliteClass->getData('', '')));
-        $results = $lastDataEntry['data'];
+        $lastAliases = json_decode($lastDataEntry['data'], true);
 
-        $expected = '{"alias":"user_alias1@sil.org",' .
-            '"kind":"personal",' .
-            '"primaryEmail":"user_test1@sil.org"}';
+        $results = $lastAliases['aliases']['aliases'];
 
-        $msg = " *** Bad data from sqlite database";
-        $this->assertEquals($expected, $results, $msg);
-    }
-
-    public function testUsersInsert_WithFakeGoogleUser()
-    {
-        $fixturesClass = new GoogleFixtures($this->dataFile);
-        $fixturesClass->removeAllFixtures();
-        $newUser = new FakeGoogleUser();
-        $newUser->setChangePasswordAtNextLogin(false);
-        $newUser->setId(999991);
-        $newUser->setPassword('testP4ss');
-        $newUser->setAliases(array('user_alias1@sil.org'));
-        $newUser->setPrimaryEmail('user_test1@sil.org');
-
-        $newDir = new Directory('anyclient', $this->dataFile);
-        $newUser = $newDir->users->insert($newUser);
-
-        $results = $newUser->encode2json();
-        $expected = '{"changePasswordAtNextLogin":false,' .
-            '"hashFunction":null,' .
-            '"id":999991,"password":"testP4ss",' .
-            '"primaryEmail":"user_test1@sil.org",' .
-            '"suspended":null,"suspensionReason":null,' .
-            '"aliases":["user_alias1@sil.org"]}';
-        $msg = " *** Bad returned user";
-
-        $this->assertEquals($expected, $results, $msg);
-
-        $sqliteClass = new SqliteUtils($this->dataFile);
-        $lastDataEntry = end(array_values($sqliteClass->getData('', '')));
-        $results = $lastDataEntry['data'];
-
-        $expected = '{"alias":"user_alias1@sil.org",' .
-            '"kind":"personal",' .
-            '"primaryEmail":"user_test1@sil.org"}';
+        $expected = array(
+            array(
+                "alias" => "user_alias1@sil.org",
+                "kind" => "personal",
+                "primaryEmail" => "user_test1@sil.org",
+                'etag' => null,
+                'id' => null,
+            ),
+        );
 
         $msg = " *** Bad data from sqlite database";
         $this->assertEquals($expected, $results, $msg);
     }
 
-    public function get_fixtures() {
+    public function getFixtures() {
         $user4Data = '{"changePasswordAtNextLogin":false,' .
             '"hashFunction":"SHA-1",' .
             '"id":999991,"password":"testP4ss",' .
             '"primaryEmail":"user_test4@sil.org",' .
             '"suspended":false,"suspensionReason":null}';
 
+        $alias2 = new Google_Service_Directory_Alias();
+        $alias2->setAlias("users_alias2@sil.org");
+        $alias2->setPrimaryEmail("user_test1@sil.org");
+
+        $alias6 = new Google_Service_Directory_Alias();
+        $alias6->setAlias("users_alias6@sil.org");
+        $alias6->setId(1);
 
         $fixtures = array(
             array('directory', 'user', '{"primaryEmail":"user_test1@sil.org",' .
                                        '"id":999990}'),
-            array('directory', 'users_alias', '{"primaryEmail":"user_test1@sil.org",' .
-                                              '"alias":"users_alias2@sil.org"}'),
+            array('directory', 'users_alias', json_encode($alias2)),
             array('app_engine', 'webapp', 'webapp3 test data'),
             array('directory', 'user', $user4Data),
             array('directory', 'user', 'user5 test data'),
-            array('directory', 'users_alias', '{"id":1,' .
-                                              '"alias":"users_alias6@sil.org"}'),
+            array('directory', 'users_alias', json_encode($alias6)),
         );
 
         return $fixtures;
+    }
+
+    public function getAliasFixture($alias, $email, $id)
+    {
+        $newAlias = new Google_Service_Directory_Alias();
+        $newAlias->setAlias($alias);
+        if ($email) {
+            $newAlias->setPrimaryEmail($email);
+        }
+
+        if ($id) {
+            $newAlias->setId($id);
+        }
+
+        return $newAlias;
     }
 
     public function testUsersGet()
@@ -170,19 +213,23 @@ class DirectoryTest extends PHPUnit_Framework_TestCase
 
         $primaryEmail = 'user_test4@sil.org';
 
-        $userData = '{"changePasswordAtNextLogin":false,' .
-                    '"hashFunction":"SHA-1",' .
-                    '"id":999991,"password":"testP4ss",' .
-                    '"primaryEmail":"' . $primaryEmail . '",' .
-                    '"suspended":false,"suspensionReason":null,"aliases":[]}';
+        $userData = array(
+                        "changePasswordAtNextLogin" => false,
+                        "hashFunction" => "SHA-1",
+                        "id" => 999991,
+                        "password" => "testP4ss",
+                        "primaryEmail" => $primaryEmail,
+                        "suspended" => false,
+                        "aliases" =>null,
+                    );
 
-        $fixtures = $this->get_fixtures();
+        $fixtures = $this->getFixtures();
         $fixturesClass->addFixtures($fixtures);
 
         $newDir = new Directory('anyclient', $this->dataFile);
 
         $newUser = $newDir->users->get($primaryEmail);
-        $results = $newUser->encode2json();
+        $results = $this->getProperties($newUser);
         $expected = $userData;
         $msg = " *** Bad user data returned";
         $this->assertEquals($expected, $results, $msg);
@@ -196,19 +243,23 @@ class DirectoryTest extends PHPUnit_Framework_TestCase
 
         $userId = '999991';
 
-        $userData = '{"changePasswordAtNextLogin":false,' .
-            '"hashFunction":"SHA-1",' .
-            '"id":' . $userId . ',"password":"testP4ss",' .
-            '"primaryEmail":"user_test4@sil.org",' .
-            '"suspended":false,"suspensionReason":null,"aliases":[]}';
+        $userData = array(
+            "changePasswordAtNextLogin" => false,
+            "hashFunction" => "SHA-1",
+            "id" => $userId,
+            "password" => "testP4ss",
+            "primaryEmail" => "user_test4@sil.org",
+            "suspended" => false,
+            "aliases" =>null,
+        );
 
-        $fixtures = $this->get_fixtures();
+        $fixtures = $this->getFixtures();
         $fixturesClass->addFixtures($fixtures);
 
         $newDir = new Directory('anyclient', $this->dataFile);
         $newUser = $newDir->users->get($userId);
 
-        $results = $newUser->encode2json();
+        $results = $this->getProperties($newUser);
         $expected = $userData;
         $msg = " *** Bad user data returned";
         $this->assertEquals($expected, $results, $msg);
@@ -219,30 +270,36 @@ class DirectoryTest extends PHPUnit_Framework_TestCase
     {
         $fixturesClass = new GoogleFixtures($this->dataFile);
         $fixturesClass->removeAllFixtures();
-        $fixtures = $this->get_fixtures();
+        $fixtures = $this->getFixtures();
         $fixturesClass->addFixtures($fixtures);
 
         $userId = '999991';
         $email = "user_test4@sil.org";
 
-        $userData = '{"changePasswordAtNextLogin":false,' .
-            '"hashFunction":"SHA-1",' .
-            '"id":' . $userId . ',"password":"testP4ss",' .
-            '"primaryEmail":"user_test4@sil.org",' .
-            '"suspended":false,"suspensionReason":null,' .
-            '"aliases":["users_alias1A@sil.org","users_alias1B@sil.org"]}';
+        $userData = array(
+            "changePasswordAtNextLogin" => false,
+            "hashFunction" => "SHA-1",
+            "id" => intval($userId),
+            "password" => "testP4ss",
+            "primaryEmail" => $email,
+            "suspended" => false,
+            "aliases" => array("users_alias1A@sil.org", "users_alias1B@sil.org"),
+        );
+
+
+        $aliasA = $this->getAliasFixture("users_alias1A@sil.org", $email, null);
+        $aliasB = $this->getAliasFixture("users_alias1B@sil.org", $email, null);
 
         $newFixtures = array(
-            array('directory', 'users_alias', '{"primaryEmail":' .
-            '"' . $email . '","alias":"users_alias1A@sil.org"}'),
-            array('directory', 'users_alias', '{"primaryEmail":' .
-            '"' . $email . '","alias":"users_alias1B@sil.org"}'),
+            array('directory', 'users_alias', json_encode($aliasA)),
+            array('directory', 'users_alias', json_encode($aliasB)),
         );
         $fixturesClass->addFixtures($newFixtures);
 
         $newDir = new Directory('anyclient', $this->dataFile);
         $newUser = $newDir->users->get($email);
-        $results = $newUser->encode2json();
+        $results = $this->getProperties($newUser);
+
         $expected = $userData;
         $msg = " *** Bad user data returned";
         $this->assertEquals($expected, $results, $msg);
@@ -262,22 +319,21 @@ class DirectoryTest extends PHPUnit_Framework_TestCase
             "password" => "testP4ss",
             "primaryEmail" => $primaryEmail,
             "suspended" => false,
-            "suspensionReason" => null,
             "aliases" => array(),
         );
 
-        $fixtures = $this->get_fixtures();
+        $fixtures = $this->getFixtures();
         $fixturesClass->addFixtures($fixtures);
 
-        $newUser = new User();
-        $newUser->initialize($userData);
+        $newUser = new Google_Service_Directory_User();
+        ObjectUtils::initialize($newUser, $userData);
 
         $newDir = new Directory('anyclient', $this->dataFile);
         $newDir->users->update($primaryEmail, $newUser);
 
         $newUser = $newDir->users->get($primaryEmail);
-        $results = $newUser->encode2json();
-        $expected = json_encode($userData);
+        $results = $this->getProperties($newUser);
+        $expected = $userData;
         $msg = " *** Bad user data returned";
         $this->assertEquals($expected, $results, $msg);
     }
@@ -297,22 +353,21 @@ class DirectoryTest extends PHPUnit_Framework_TestCase
             "password" => "testP4ss",
             "primaryEmail" => "user_test4@sil.org",
             "suspended" => false,
-            "suspensionReason" => null,
             "aliases" => array(),
         );
 
-        $fixtures = $this->get_fixtures();
+        $fixtures = $this->getFixtures();
         $fixturesClass->addFixtures($fixtures);
 
-        $newUser = new User();
-        $newUser->initialize($userData);
+        $newUser = new Google_Service_Directory_User();
+        ObjectUtils::initialize($newUser, $userData);
 
         $newDir = new Directory('anyclient', $this->dataFile);
         $newDir->users->update($userId, $newUser);
         $newUser = $newDir->users->get($userId);
 
-        $results = $newUser->encode2json();
-        $expected = json_encode($userData);
+        $results = $this->getProperties($newUser);
+        $expected = $userData;
         $msg = " *** Bad user data returned";
         $this->assertEquals($expected, $results, $msg);
     }
@@ -331,62 +386,21 @@ class DirectoryTest extends PHPUnit_Framework_TestCase
             "password" => "testP4ss",
             "primaryEmail" => $primaryEmail,
             "suspended" => false,
-            "suspensionReason" => null,
             "aliases" => array('user_alias4B@sil.org'),
         );
 
-        $fixtures = $this->get_fixtures();
+        $fixtures = $this->getFixtures();
         $fixturesClass->addFixtures($fixtures);
 
-        $newUser = new User();
-        $newUser->initialize($userData);
+        $newUser = new Google_Service_Directory_User();
+        ObjectUtils::initialize($newUser, $userData);
 
         $newDir = new Directory('anyclient', $this->dataFile);
         $newDir->users->update($primaryEmail, $newUser);
         $newUser = $newDir->users->get($primaryEmail);
 
-        $results = $newUser->encode2json();
-        $expected = json_encode($userData);
-        $msg = " *** Bad user data returned";
-        $this->assertEquals($expected, $results, $msg);
-    }
-
-    public function testUsersUpdate_WithFakeGoogleUser()
-    {
-        $fixturesClass = new GoogleFixtures($this->dataFile);
-        $fixturesClass->removeAllFixtures();
-
-        $primaryEmail = "user_test4@sil.org";
-
-        $userData = array(
-            "changePasswordAtNextLogin" => false,
-            "hashFunction" => "SHA-1",
-            "id" => 999991,
-            "password" => "testP4ssB",
-            "primaryEmail" => $primaryEmail,
-            "suspended" => false,
-            "suspensionReason" => null,
-            "aliases" => array('user_alias4B@sil.org'),
-        );
-
-        $fixtures = $this->get_fixtures();
-        $fixturesClass->addFixtures($fixtures);
-
-        $newUser = new FakeGoogleUser();
-        $newUser->setChangePasswordAtNextLogin(false);
-        $newUser->setId(999991);
-        $newUser->setPassword('testP4ssB');
-        $newUser->setAliases(array('user_alias4B@sil.org'));
-        $newUser->setPrimaryEmail($primaryEmail);
-
-        // expecting change in password and alias
-
-        $newDir = new Directory('anyclient', $this->dataFile);
-        $newDir->users->update($primaryEmail, $newUser);
-        $newUser = $newDir->users->get($primaryEmail);
-
-        $results = $newUser->encode2json();
-        $expected = json_encode($userData);
+        $results = $this->getProperties($newUser);
+        $expected = $userData;
         $msg = " *** Bad user data returned";
         $this->assertEquals($expected, $results, $msg);
     }
@@ -409,14 +423,13 @@ class DirectoryTest extends PHPUnit_Framework_TestCase
             "password" => "testP4ss",
             "primaryEmail" => "user_test4@sil.org",
             "suspended" => false,
-            "suspensionReason" => null
         );
 
-        $fixtures = $this->get_fixtures();
+        $fixtures = $this->getFixtures();
         $fixturesClass->addFixtures($fixtures);
 
-        $newUser = new User();
-        $newUser->initialize($userData);
+        $newUser = new Google_Service_Directory_User();
+        ObjectUtils::initialize($newUser, $userData);
 
         $newDir = new Directory('anyclient', $this->dataFile);
         $newDir->users->update($userId, $newUser);
@@ -430,7 +443,7 @@ class DirectoryTest extends PHPUnit_Framework_TestCase
 
         $primaryEmail = "user_test4@sil.org";
 
-        $fixtures = $this->get_fixtures();
+        $fixtures = $this->getFixtures();
         $fixturesClass->addFixtures($fixtures);
 
         $newDir = new Directory('anyclient', $this->dataFile);
@@ -444,14 +457,16 @@ class DirectoryTest extends PHPUnit_Framework_TestCase
                   'data' => '{"primaryEmail":"user_test1@sil.org",' .
                               '"id":999990}'),
             array('id' => 2, 'type' => 'directory', 'class' => 'users_alias',
-                  'data' => '{"primaryEmail":"user_test1@sil.org",' .
-                            '"alias":"users_alias2@sil.org"}'),
+                  'data' => '{"alias":"users_alias2@sil.org","etag":null,' .
+                            '"id":null,"kind":null,' .
+                            '"primaryEmail":"user_test1@sil.org"}'),
             array('id' => 3, 'type' => 'app_engine', 'class' => 'webapp',
                   'data' => 'webapp3 test data'),
             array('id' => 5, 'type' => 'directory', 'class' => 'user',
                   'data' => 'user5 test data'),
             array('id' => 6, 'type' => 'directory', 'class' => 'users_alias',
-                'data' => '{"id":1,"alias":"users_alias6@sil.org"}'),
+                  'data' => '{"alias":"users_alias6@sil.org","etag":null,' .
+                  '"id":1,"kind":null,"primaryEmail":null}'),
         );
 
         $msg = " *** Bad database data returned";
@@ -465,7 +480,7 @@ class DirectoryTest extends PHPUnit_Framework_TestCase
 
         $userId = 999991;
 
-        $fixtures = $this->get_fixtures();
+        $fixtures = $this->getFixtures();
         $fixturesClass->addFixtures($fixtures);
 
         $newDir = new Directory('anyclient', $this->dataFile);
@@ -476,16 +491,19 @@ class DirectoryTest extends PHPUnit_Framework_TestCase
 
         $expected = array(
             array('id' => 1, 'type' => 'directory', 'class' => 'user',
-                  'data' => '{"primaryEmail":"user_test1@sil.org","id":999990}'),
+                'data' => '{"primaryEmail":"user_test1@sil.org",' .
+                    '"id":999990}'),
             array('id' => 2, 'type' => 'directory', 'class' => 'users_alias',
-                  'data' => '{"primaryEmail":"user_test1@sil.org",' .
-                           '"alias":"users_alias2@sil.org"}'),
+                'data' => '{"alias":"users_alias2@sil.org","etag":null,' .
+                    '"id":null,"kind":null,' .
+                    '"primaryEmail":"user_test1@sil.org"}'),
             array('id' => 3, 'type' => 'app_engine', 'class' => 'webapp',
-                  'data' => 'webapp3 test data'),
+                'data' => 'webapp3 test data'),
             array('id' => 5, 'type' => 'directory', 'class' => 'user',
-                  'data' => 'user5 test data'),
+                'data' => 'user5 test data'),
             array('id' => 6, 'type' => 'directory', 'class' => 'users_alias',
-                  'data' => '{"id":1,"alias":"users_alias6@sil.org"}'),
+                'data' => '{"alias":"users_alias6@sil.org","etag":null,' .
+                    '"id":1,"kind":null,"primaryEmail":null}'),
         );
 
         $msg = " *** Bad database data returned";
@@ -498,18 +516,18 @@ class DirectoryTest extends PHPUnit_Framework_TestCase
         $fixturesClass = new GoogleFixtures($this->dataFile);
         $fixturesClass->removeAllFixtures();
 
-        $fixtures = $this->get_fixtures();
+        $fixtures = $this->getFixtures();
         $fixturesClass->addFixtures($fixtures);
 
-        $newAlias = new Alias();
+        $newAlias = new Google_Service_Directory_Alias();
         $newAlias->alias = "users_alias1@sil.org";
         $newAlias->kind = "personal";
 
         $newDir = new Directory('anyclient', $this->dataFile);
         $newAlias = $newDir->users_aliases->insert("user_test1@sil.org", $newAlias);
 
-        $results = $newAlias->encode2json();
-        $expected = '{"alias":"users_alias1@sil.org",' .
+        $results = json_encode($newAlias);
+        $expected = '{"alias":"users_alias1@sil.org","etag":null,"id":null,' .
                     '"kind":"personal","primaryEmail":"user_test1@sil.org"}'
         ;
         $msg = " *** Bad returned alias";
@@ -533,10 +551,10 @@ class DirectoryTest extends PHPUnit_Framework_TestCase
         $fixturesClass = new GoogleFixtures($this->dataFile);
         $fixturesClass->removeAllFixtures();
 
-        $fixtures = $this->get_fixtures();
+        $fixtures = $this->getFixtures();
         $fixturesClass->addFixtures($fixtures);
 
-        $newAlias = new Alias();
+        $newAlias = new Google_Service_Directory_Alias();
         $newAlias->alias = "users_alias1@sil.org";
         $newAlias->kind = "personal";
 
@@ -545,49 +563,19 @@ class DirectoryTest extends PHPUnit_Framework_TestCase
         // the assert is in the doc comments with @expectedException
     }
 
-
-    public function testUsersAliasesInsert_WithFakeAlias()
-    {
-        $fixturesClass = new GoogleFixtures($this->dataFile);
-        $fixturesClass->removeAllFixtures();
-
-        $fixtures = $this->get_fixtures();
-        $fixturesClass->addFixtures($fixtures);
-
-        $newAlias = new FakeGoogleAlias();
-        $newAlias->setAlias("users_alias1@sil.org");
-        $newAlias->setKind("personal");
-
-        $newDir = new Directory('anyclient', $this->dataFile);
-        $newAlias = $newDir->users_aliases->insert("user_test1@sil.org", $newAlias);
-
-        $results = $newAlias->encode2json();
-        $expected = '{"alias":"users_alias1@sil.org","etag":null,"id":null,' .
-            '"kind":"personal","primaryEmail":"user_test1@sil.org"}'
-        ;
-        $msg = " *** Bad returned alias";
-        $this->assertEquals($expected, $results, $msg);
-
-
-        $sqliteClass = new SqliteUtils($this->dataFile);
-        $lastDataEntry = end(array_values($sqliteClass->getData('', '')));
-        $results = $lastDataEntry['data'];
-
-        $msg = " *** Bad data from sqlite database";
-        $this->assertEquals($expected, $results, $msg);
-    }
-
     public function testUsersAliasesListUsersAliases_Email()
     {
         $fixturesClass = new GoogleFixtures($this->dataFile);
         $fixturesClass->removeAllFixtures();
 
-        $fixtures = $this->get_fixtures();
+        $fixtures = $this->getFixtures();
         $fixturesClass->addFixtures($fixtures);
 
+        $aliasFixture = $this->getAliasFixture("users_alias7@sil.org",
+                                                  "user_test1@sil.org", 1);
+
         $newFixtures = array(
-            array('directory', 'users_alias', '{"id":1,"primaryEmail":' .
-            '"user_test1@sil.org","alias":"users_alias7@sil.org"}'),
+            array('directory', 'users_alias', json_encode($aliasFixture)),
         );
         $fixturesClass->addFixtures($newFixtures);
 
@@ -595,13 +583,15 @@ class DirectoryTest extends PHPUnit_Framework_TestCase
         $aliases = $newDir->users_aliases->listUsersAliases("user_test1@sil.org");
 
         $results = array();
-        foreach ($aliases->aliases as $nextAlias) {
-            $results[] = $nextAlias->encode2json();
+        foreach ($aliases['aliases'] as $nextAlias) {
+            $results[] = json_encode($nextAlias);
         }
 
         $expected = array(
-            '{"primaryEmail":"user_test1@sil.org","alias":"users_alias2@sil.org"}',
-            '{"id":1,"primaryEmail":"user_test1@sil.org","alias":"users_alias7@sil.org"}',
+            '{"alias":"users_alias2@sil.org","etag":null,"id":null,' .
+              '"kind":null,"primaryEmail":"user_test1@sil.org"}',
+            '{"alias":"users_alias7@sil.org","etag":null,"id":1,' .
+              '"kind":null,"primaryEmail":"user_test1@sil.org"}'
         );
 
         $msg = " *** Bad returned Aliases";
@@ -614,16 +604,19 @@ class DirectoryTest extends PHPUnit_Framework_TestCase
         $fixturesClass = new GoogleFixtures($this->dataFile);
         $fixturesClass->removeAllFixtures();
 
-        $fixtures = $this->get_fixtures();
+        $fixtures = $this->getFixtures();
         $fixturesClass->addFixtures($fixtures);
+        $email = "user_test7@sil.org";
+
+        $aliasB = $this->getAliasFixture("users_alias7b@sil.org", $email, 7);
+        $aliasC = $this->getAliasFixture("users_alias7c@sil.org", null, 7);
 
         $newFixtures = array(
-            array('directory', 'user', '{"id":7,"primaryEmail":' .
-            '"user_test7@sil.org","alias":"users_alias7@sil.org"}'),
-            array('directory', 'users_alias', '{"id":7, "primaryEmail":' .
-            'null,"alias":"users_alias7b@sil.org"}'),
-            array('directory', 'users_alias', '{"id":7, "primaryEmail":' .
-            '"user_test7@sil.org","alias":"users_alias7c@sil.org"}'),
+            array('directory', 'user',
+                    '{"id":7,"primaryEmail":"' . $email . '",' .
+                     '"aliases":[]}'),
+            array('directory', 'users_alias', json_encode($aliasB)),
+            array('directory', 'users_alias', json_encode($aliasC)),
         );
         $fixturesClass->addFixtures($newFixtures);
 
@@ -631,13 +624,15 @@ class DirectoryTest extends PHPUnit_Framework_TestCase
         $aliases = $newDir->users_aliases->listUsersAliases("7");
 
         $results = array();
-        foreach ($aliases->aliases as $nextAlias) {
-            $results[] = $nextAlias->encode2json();
+        foreach ($aliases['aliases'] as $nextAlias) {
+            $results[] = json_encode($nextAlias);
         }
 
         $expected = array(
-            '{"id":7,"primaryEmail":null,"alias":"users_alias7b@sil.org"}',
-            '{"id":7,"primaryEmail":"user_test7@sil.org","alias":"users_alias7c@sil.org"}',
+            '{"alias":"users_alias7b@sil.org","etag":null,"id":7,"kind":null,' .
+               '"primaryEmail":"user_test7@sil.org"}',
+            '{"alias":"users_alias7c@sil.org","etag":null,"id":7,"kind":null,' .
+               '"primaryEmail":null}',
         );
 
         $msg = " *** Bad returned Aliases";
@@ -650,13 +645,15 @@ class DirectoryTest extends PHPUnit_Framework_TestCase
         $fixturesClass = new GoogleFixtures($this->dataFile);
         $fixturesClass->removeAllFixtures();
 
-        $fixtures = $this->get_fixtures();
+        $fixtures = $this->getFixtures();
         $fixturesClass->addFixtures($fixtures);
+        $email = "user_test1@sil.org";
 
+        $alias = $this->getAliasFixture("users_alias7@sil.org", $email, 1);
         $newFixtures = array(
-            array('directory', 'users_alias', '{"id":1,"primaryEmail":' .
-            '"user_test1@sil.org","alias":"users_alias7@sil.org"}'),
+            array('directory', 'users_alias', json_encode($alias)),
         );
+
         $fixturesClass->addFixtures($newFixtures);
 
         $newDir = new Directory('anyclient', $this->dataFile);
@@ -689,12 +686,12 @@ class DirectoryTest extends PHPUnit_Framework_TestCase
         $fixturesClass = new GoogleFixtures($this->dataFile);
         $fixturesClass->removeAllFixtures();
 
-        $fixtures = $this->get_fixtures();
+        $fixtures = $this->getFixtures();
         $fixturesClass->addFixtures($fixtures);
-
+        $alias = $this->getAliasFixture("users_alias7@sil.org",
+                                          "user_test1@sil.org", 1);
         $newFixtures = array(
-            array('directory', 'users_alias', '{"id":1,"primaryEmail":' .
-            '"user_test1@sil.org","alias":"users_alias7@sil.org"}'),
+            array('directory', 'users_alias', json_encode($alias)),
         );
         $fixturesClass->addFixtures($newFixtures);
 
@@ -707,18 +704,20 @@ class DirectoryTest extends PHPUnit_Framework_TestCase
         $fixturesClass = new GoogleFixtures($this->dataFile);
         $fixturesClass->removeAllFixtures();
 
-        $fixtures = $this->get_fixtures();
+        $fixtures = $this->getFixtures();
         $fixturesClass->addFixtures($fixtures);
+        $email = "user_test1@sil.org";
+
+        $alias = $this->getAliasFixture("users_alias7@sil.org", $email, 1);
 
         $newFixtures = array(
-            array('directory', 'users_alias', '{"id":1,"primaryEmail":' .
-            '"user_test1@sil.org","alias":"users_alias7@sil.org"}'),
+            array('directory', 'users_alias', json_encode($alias)),
         );
         $fixturesClass->addFixtures($newFixtures);
 
         $newDir = new Directory('anyclient', $this->dataFile);
         $results = $newDir->users_aliases->delete("user_test1@sil.org",
-                                                 "users_alias2@sil.org");
+                                                  "users_alias2@sil.org");
 
         $this->assertTrue($results, " *** Didn't appear to delete the alias.");
 
@@ -729,13 +728,14 @@ class DirectoryTest extends PHPUnit_Framework_TestCase
             array('id' => '6',
                   'type' => 'directory',
                   'class' => 'users_alias',
-                  'data' => '{"id":1,"alias":"users_alias6@sil.org"}',
+                  'data' => '{"alias":"users_alias6@sil.org","etag":null,' .
+                            '"id":1,"kind":null,"primaryEmail":null}',
             ),
             array('id' => '7',
                 'type' => 'directory',
                 'class' => 'users_alias',
-                'data' => '{"id":1,"primaryEmail":' .
-                      '"user_test1@sil.org","alias":"users_alias7@sil.org"}'),
+                'data' => '{"alias":"users_alias7@sil.org","etag":null,' .
+                          '"id":1,"kind":null,"primaryEmail":"' . $email . '"}'),
         );
         $msg = " *** Mismatching users_aliases in db";
         $this->assertEquals($expected, $results, $msg);
@@ -744,7 +744,7 @@ class DirectoryTest extends PHPUnit_Framework_TestCase
 
     public function testUserArrayAccess()
     {
-        $user = new SilMock\Google\Service\Directory\User();
+        $user = new Google_Service_Directory_User();
         $user->suspended = false;
 
         $this->assertFalse($user->suspended, ' *** class access failed');
@@ -754,7 +754,7 @@ class DirectoryTest extends PHPUnit_Framework_TestCase
 
     public function testUserClassAccess()
     {
-        $user = new SilMock\Google\Service\Directory\User();
+        $user = new Google_Service_Directory_User();
         $user['suspended'] = false;
 
         $this->assertFalse($user->suspended, ' *** class access failed');
@@ -764,7 +764,7 @@ class DirectoryTest extends PHPUnit_Framework_TestCase
 
     public function testAliasArrayAccess()
     {
-        $alias = new SilMock\Google\Service\Directory\Alias();
+        $alias = new Google_Service_Directory_Alias();
         $email = 'user_test@sil.org';
         $alias->primaryEmail = $email;
 
@@ -775,7 +775,7 @@ class DirectoryTest extends PHPUnit_Framework_TestCase
 
     public function testAliasClassAccess()
     {
-        $alias = new SilMock\Google\Service\Directory\Alias();
+        $alias = new Google_Service_Directory_Alias();
         $email = 'user_test@sil.org';
         $alias['primaryEmail'] = $email;
 
