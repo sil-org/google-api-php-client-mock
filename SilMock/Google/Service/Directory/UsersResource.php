@@ -94,6 +94,22 @@ class UsersResource {
      */
     public function insert($postBody, $optParams = array())
     {
+        $defaults = array(
+            'id' => intval(str_replace(array(' ','.'),'',microtime())),
+            'suspended' => false,
+            'changePasswordAtNextLogin' => false,
+            'isAdmin' => false,
+            'isDelegatedAdmin' => false,
+            'lastLoginTime' => time(),
+            'creationTime' => time(),
+        );
+
+        foreach ($defaults as $key=>$value) {
+            if (!isset($postBody[$key])) {
+                $postBody[$key] = $value;
+            }
+        }
+
         //TODO: consider doing something with the $params
         $params = array('postBody' => $postBody);
         $params = array_merge($params, $optParams);
