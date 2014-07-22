@@ -235,7 +235,6 @@ class DirectoryTest extends PHPUnit_Framework_TestCase
         $this->assertEquals($expected, $results, $msg);
     }
 
-
     public function testUsersGet_ById()
     {
         $fixturesClass = new GoogleFixtures($this->dataFile);
@@ -401,6 +400,49 @@ class DirectoryTest extends PHPUnit_Framework_TestCase
 
         $results = $this->getProperties($newUser);
         $expected = $userData;
+        $msg = " *** Bad user data returned";
+        $this->assertEquals($expected, $results, $msg);
+    }
+
+    public function testUsersUpdate_WithDifferentAliases()
+    {
+        $fixturesClass = new GoogleFixtures($this->dataFile);
+        $fixturesClass->removeAllFixtures();
+
+        $primaryEmail = "user_test4@sil.org";
+
+        $aliasFixture = $this->getAliasFixture("users_alias4B@sil.org",
+            $primaryEmail, null);
+        $newFixtures = array(
+            array('directory', 'users_alias', json_encode($aliasFixture)),
+        );
+        $fixturesClass->addFixtures($newFixtures);
+
+        // Different aliases
+        $userData = array(
+            "changePasswordAtNextLogin" => false,
+            "hashFunction" => "SHA-1",
+            "id" => 999991,
+            "password" => "testP4ss",
+            "primaryEmail" => $primaryEmail,
+            "suspended" => false,
+            "aliases" => array('user_alias4C@sil.org', 'user_alias4D@sil.org'),
+        );
+
+        $fixtures = $this->getFixtures();
+        $fixturesClass->addFixtures($fixtures);
+        $fixturesClass->addFixtures($fixtures);
+
+        $newUser = new Google_Service_Directory_User();
+        ObjectUtils::initialize($newUser, $userData);
+
+        $newDir = new Directory('anyclient', $this->dataFile);
+        $newDir->users->update($primaryEmail, $newUser);
+        $newUser = $newDir->users->get($primaryEmail);
+
+        $results = $this->getProperties($newUser);
+        $expected = $userData;
+
         $msg = " *** Bad user data returned";
         $this->assertEquals($expected, $results, $msg);
     }
