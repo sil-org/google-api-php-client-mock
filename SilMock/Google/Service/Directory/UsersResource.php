@@ -4,27 +4,23 @@ namespace SilMock\Google\Service\Directory;
 use SilMock\DataStore\Sqlite\SqliteUtils;
 class UsersResource {
 
-    private $_dbFile;  // path for the Sqlite database
-    private $_dataType = 'directory';
-    private $_dataClass = 'user';
+    private $_dbFile;  // path (with file name) for the Sqlite database
+    private $_dataType = 'directory'; // string to put in the 'type' field in the database
+    private $_dataClass = 'user'; // string to put in the 'class' field in the database
 
     public function __construct($dbFile=null)
     {
         $this->_dbFile = $dbFile;
     }
-    /**
-     * Delete user (users.delete)
-     *
-     * @param string $userKey
-     * Email or immutable Id of the user
-     * @param array $optParams Optional parameters.
-     */
-    public function delete($userKey, $optParams = array())
-    {
-        //TODO: consider doing something with the $params
-        $params = array('userKey' => $userKey);
-        $params = array_merge($params, $optParams);
 
+    /**
+     * Deletes a user (users.delete)
+     *
+     * @param string $userKey - The Email or immutable Id of the user
+     * @return null|true depending on if the user was found.
+     */
+    public function delete($userKey)
+    {
         $userEntry = $this->getDbUser($userKey);
 
         if ($userEntry === null) {
@@ -37,19 +33,14 @@ class UsersResource {
     }
 
     /**
-     * retrieve user (users.get)
+     * Retrieves a user (users.get) and sets its aliases property
+     *     based on its aliases found in the database.
      *
-     * @param string $userKey
-     * Email or immutable Id of the user
-     * @param array $optParams Optional parameters.
-     * @return Google_Service_Directory_User
+     * @param string $userKey - The Email or immutable Id of the user
+     * @return null|a real Google_Service_Directory_User instance
      */
-    public function get($userKey, $optParams = array())
+    public function get($userKey)
     {
-        //TODO: consider doing something with the $params
-        $params = array('userKey' => $userKey);
-        $params = array_merge($params, $optParams);
-
         $newUser = null;
         $userEntry = $this->getDbUser($userKey);
 
@@ -57,19 +48,19 @@ class UsersResource {
             return null;
         }
 
-      //  $newUser = new User();
         $newUser = new \Google_Service_Directory_User();
         ObjectUtils::initialize($newUser, json_decode($userEntry['data'], true));
 
-        // populate aliases
+        // if the $userKey is not an email address, then it's an id
         $key = 'primaryEmail';
         if ( ! filter_var($userKey, FILTER_VALIDATE_EMAIL)) {
             $key = 'id';
             $userKey = intval($userKey);
         }
 
-        $usersAliases = new UsersAliasesResource($this->_dbFile);
+        // find its aliases in the database and populate its aliases property
 
+        $usersAliases = new UsersAliasesResource($this->_dbFile);
         $aliases =  $usersAliases->fetchAliasesByUser($key, $userKey);
 
         if ( $aliases) {
@@ -85,14 +76,14 @@ class UsersResource {
     }
 
     /**
-     * create user. (users.insert)
+     * Creates a user (users.insert) and sets its aliases property if any
+     *     are given.
      *
      * @param Google_User $postBody
-     * @param array $optParams Optional parameters.
-     * @return Google_Service_Directory_User
-     * @throws \Exception with code 201407101120
+     * @return null|a real Google_Service_Directory_User instance
+     * @throws \Exception with code 201407101120, if the user already exists
      */
-    public function insert($postBody, $optParams = array())
+    public function insert($postBody)
     {
         $defaults = array(
             'id' => intval(str_replace(array(' ','.'),'',microtime())),
@@ -104,15 +95,13 @@ class UsersResource {
             'creationTime' => time(),
         );
 
+        // array_merge will not work, since $postBody is an object which only
+        // implements ArrayAccess
         foreach ($defaults as $key=>$value) {
             if (!isset($postBody[$key])) {
                 $postBody[$key] = $value;
             }
         }
-
-        //TODO: consider doing something with the $params
-        $params = array('postBody' => $postBody);
-        $params = array_merge($params, $optParams);
 
         $currentUser = $this->get($postBody->primaryEmail);
 
@@ -122,14 +111,15 @@ class UsersResource {
                 201407101120);
         }
 
-        //  $newUser = new User();
         $newUser = new \Google_Service_Directory_User();
         ObjectUtils::initialize($newUser, $postBody);
         $userData = json_encode($newUser);
 
+        // record the user in the database
         $sqliteUtils = new SqliteUtils($this->_dbFile);
         $sqliteUtils->recordData($this->_dataType, $this->_dataClass, $userData);
 
+        // record the user's aliases in the database
         if ($postBody->aliases) {
             $usersAliases = new UsersAliasesResource($this->_dbFile);
 
@@ -143,24 +133,20 @@ class UsersResource {
             }
         }
 
+        // Get (and return) the new user that was just created back out of the database
         return $this->get($postBody->primaryEmail);
     }
 
     /**
-     * update user (users.update)
+     * Updates a user (users.update) in the database as well as its aliases
      *
-     * @param string $userKey
-     * Email or immutable Id of the user. If Id, it should match with id of user object
+     * @param string $userKey - The Email or immutable Id of the user.
      * @param Google_User $postBody
-     * @param array $optParams Optional parameters.
-     * @return Google_Service_Directory_User
-     * @throws \Exception with code 201407101130
+     * @return  null|a real Google_Service_Directory_User instance
+     * @throws \Exception with code 201407101130 if a matching user is not found
      */
-    public function update($userKey, $postBody, $optParams = array())
+    public function update($userKey, $postBody)
     {
-        //TODO: consider doing something with the $params
-        $params = array('userKey' => $userKey, 'postBody' => $postBody);
-        $params = array_merge($params, $optParams);
 
         $userEntry = $this->getDbUser($userKey);
         if ($userEntry === null) {
@@ -169,7 +155,8 @@ class UsersResource {
         }
 
         /*
-         * only keep the non-null properties of the $postBody user
+         * only keep the non-null properties of the $postBody user,
+         * except for suspensionReason.
          */
 
         $dbUserProps = json_decode($userEntry['data'], true);
@@ -181,11 +168,21 @@ class UsersResource {
             }
         }
 
+        // Delete the user's old aliases before adding the new ones
+        $usersAliases = new UsersAliasesResource($this->_dbFile);
+        $aliasesObject = $usersAliases->listUsersAliases($userKey);
+
+        if ($aliasesObject && isset($aliasesObject['aliases'])) {
+            foreach ($aliasesObject['aliases'] as $nextAliasObject) {
+                $usersAliases->delete($userKey, $nextAliasObject['alias']);
+            }
+        }
+
         $sqliteUtils = new SqliteUtils($this->_dbFile);
         $sqliteUtils->updateRecordById($userEntry['id'], json_encode($dbUserProps));
 
+        // Save the user's aliases
         if (isset($postBody->aliases) && $postBody->aliases) {
-            $usersAliases = new UsersAliasesResource($this->_dbFile);
 
             foreach($postBody->aliases as $alias) {
                 $newAlias = new \Google_Service_Directory_Alias();
@@ -201,7 +198,12 @@ class UsersResource {
 
     }
 
-
+    /**
+     * Retrieves a user record from the database (users.delete)
+     *
+     * @param string $userKey - The Email or immutable Id of the user
+     * @return null|nested array for the matching database entry
+     */
     private function getDbUser($userKey)
     {
 
