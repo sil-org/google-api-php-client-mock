@@ -1,0 +1,22 @@
+language: php
+php:
+  - "5.4"
+  - "5.5"
+  - "hhvm"
+
+services:
+  - redis-server
+
+addons:
+  hosts:
+
+
+before_script:
+  - curl -s https://getcomposer.org/installer | php && php composer.phar update --dev
+
+script:
+  - mkdir -p build/logs
+  - php vendor/bin/phpunit --coverage-clover ./build/logs/clover.xml tests/
+  
+after_script:
+  - php vendor/bin/coveralls -v
