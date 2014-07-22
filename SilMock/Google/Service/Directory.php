@@ -10,8 +10,11 @@ class Directory {
     public $users_aliases;
 
     /**
+     * Sets the users and users_aliases properties to be instances of
+     *    the corresponding mock classes.
      *
-     * @param  $client (normally it would be a Google_Client)
+     * @param $client mixed - Ignored (normally it would be a Google_Client)
+     * @param $dbFile string (optional) - The path and file name of the database file
      */
     public function __construct($client, $dbFile=null)
     {

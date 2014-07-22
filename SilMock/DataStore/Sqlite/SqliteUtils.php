@@ -10,7 +10,7 @@ class SqliteUtils {
 	private $_db = null;
 
     /**
-     * The SQLite database file.
+     * The SQLite database file (path with file name).
      * @var string
      */
     private $_dbFile;
@@ -18,6 +18,8 @@ class SqliteUtils {
     private $_dbTable = 'google_service';
 
     /**
+     *
+     * If needed, this creates the sqlite database and/or its structure
      * @param string $dbFile path and filename of the database for Mock Google
      */
     public function __construct($dbFile=null)
@@ -34,13 +36,15 @@ class SqliteUtils {
     }
 
     /**
-     * A utility function to get the GSD Mock data out of the data
-     *     file using json_decode for a particular GSD class
+     * A utility function to get the Google Mock data out of the data
+     *     file using json_decode for a particular Google class
      *
-     * @param string $className, the name of a GSD mock class
-     * @param string $dataFile, a path and file name
-     * @return null if exception or if no GSD data for that class name,
-     *        otherwise the json_decode version of the GSD data.
+     * @param string $dataType, the name of a Google mock service (e.g. 'directory')
+     * @param string $dataClass, the name of a Google mock class (e.g. 'users_alias')
+     * @return null if exception or if no data for that class name,
+     *        otherwise the json_decode version of the Google mock data.
+     *        If $dataType and $dataClass are not strings, returns everything
+     *        from the data table.
      */
     public function getData($dataType, $dataClass)
     {
@@ -72,17 +76,17 @@ class SqliteUtils {
     }
 
     /**
-     * Find and return a record in the database that matches the input values.
+     * Finds and returns the first record in the database that matches the input values.
      *
-     * @param $type string (e.g. "directory")
-     * @param $class string (e.g. "user")
+     * @param $dataType string (e.g. "directory")
+     * @param $dataClass string (e.g. "user")
      * @param $dataKey string|int  (e.g. "primaryEmail" or "id")
      * @param $dataValue string
      * @return null|nested array for the matching database entry
      */
-    public function getRecordByDataKey($type, $class, $dataKey, $dataValue)
+    public function getRecordByDataKey($dataType, $dataClass, $dataKey, $dataValue)
     {
-        $allOfClass = $this->getData($type, $class);
+        $allOfClass = $this->getData($dataType, $dataClass);
 
         foreach ($allOfClass as $nextEntry) {
             $nextData = json_decode($nextEntry['data'], true);
@@ -96,17 +100,17 @@ class SqliteUtils {
     }
 
     /**
-     * Find and return a record in the database that matches the input values.
+     * Finds and returns all records in the database that matches the input values.
      *
-     * @param $type string (e.g. "directory")
-     * @param $class string (e.g. "user")
+     * @param $dataType string (e.g. "directory")
+     * @param $dataClass string (e.g. "user")
      * @param $dataKey string|int  (e.g. "primaryEmail" or "id")
      * @param $dataValue string
      * @return null|nested array for the matching database entry
      */
-    public function getAllRecordsByDataKey($type, $class, $dataKey, $dataValue)
+    public function getAllRecordsByDataKey($dataType, $dataClass, $dataKey, $dataValue)
     {
-        $allOfClass = $this->getData($type, $class);
+        $allOfClass = $this->getData($dataType, $dataClass);
 
         $foundEntries = array();
 
@@ -122,6 +126,10 @@ class SqliteUtils {
     }
 
 
+    /**
+     * Deletes the database record whose "id" field matches the input value
+     * @param $recordId int
+     */
     public function deleteRecordById($recordId)
     {
         $this->runSql("DELETE FROM " .  $this->_dbTable .
@@ -132,7 +140,13 @@ class SqliteUtils {
             true);
     }
 
-
+    /**
+     * Updates the "data" field of the database record whose id field matches
+     *     the input value
+     * @param $recordId int
+     * @param $newData string
+     * @return null
+     */
     public function updateRecordById($recordId, $newData)
     {
         $this->runSql("UPDATE " .  $this->_dbTable .
@@ -145,6 +159,10 @@ class SqliteUtils {
                 true);
     }
 
+    /**
+     * Deletes all records from the database table
+     * @return null
+     */
     public function deleteAllData()
     {
         return $this->runSql(
@@ -153,11 +171,12 @@ class SqliteUtils {
     }
 
     /**
-     * Add a record of data
+     * Adds a record of data
      *
      * @param string $dataType The type of data e.g. "directory".
      * @param string $dataClass The class of data e.g. "user".
      * @param string $data The data itself )in json format).
+     * @returns true if no errors/exceptions
      * @throws \Exception
      */
     public function recordData($dataType, $dataClass, $data)
@@ -190,6 +209,7 @@ class SqliteUtils {
     /**
      *  If the database file does not exist, creates it with an empty string
      *  with 0644 permissions.
+     * @returns null
      */
     public function createDbIfNotExists()
     {
@@ -204,6 +224,7 @@ class SqliteUtils {
      *    type (e.g. "directory"),
      *    class_name (e.g. "user"),
      *    data (json dump)
+     * @returns null
      */
     public function createDbStructureAsNecessary()
     {

@@ -5,9 +5,9 @@ use SilMock\DataStore\Sqlite\SqliteUtils;
 
 class UsersAliasesResource {
 
-    private $_dbFile;  // path for the Sqlite database
-    private $_dataType = 'directory';
-    private $_dataClass = 'users_alias';
+    private $_dbFile;  // string for the path (with file name) for the Sqlite database
+    private $_dataType = 'directory';  // string to put in the 'type' field in the database
+    private $_dataClass = 'users_alias'; // string to put in the 'class' field in the database
 
 
     public function __construct($dbFile=null)
@@ -18,19 +18,14 @@ class UsersAliasesResource {
     /**
      * Remove a alias for the user (aliases.delete)
      *
-     * @param string $userKey
-     * Email or immutable Id of the user
-     * @param string $alias
-     * The alias to be removed
-     * @param array $optParams Optional parameters.
+     * @param string $userKey  The email or immutable Id of the user
+     * @param string $alias  The alias to be removed
+     * @return true|null depending on if an alias was deleted
      * @throws \Exception with code 201407101645
      */
-    public function delete($userKey, $alias, $optParams = array())
+    public function delete($userKey, $alias)
     {
-        // TODO: Consider doing something with $params
-        $params = array('userKey' => $userKey, 'alias' => $alias);
-        $params = array_merge($params, $optParams);
-
+        // If the $userKey is not an email address, it must be an id
         $key = 'primaryEmail';
         if ( ! filter_var($userKey, FILTER_VALIDATE_EMAIL)) {
             $key = 'id';
@@ -45,6 +40,7 @@ class UsersAliasesResource {
             throw new \Exception("Account doesn't exist: " . $userKey, 201407101645);
         }
 
+        // Get all the aliases for that user
         $sqliteUtils = new SqliteUtils($this->_dbFile);
         $aliases =  $sqliteUtils->getAllRecordsByDataKey($this->_dataType,
             $this->_dataClass, $key, $userKey);
@@ -53,6 +49,8 @@ class UsersAliasesResource {
             return null;
         }
 
+        // Check the data of each alias and when there is a match,
+        // delete that alias and return true
         foreach ($aliases as $nextAlias) {
             $aliasData = json_decode($nextAlias['data'], true);
             if ($aliasData['alias'] === $alias) {
@@ -65,21 +63,16 @@ class UsersAliasesResource {
     }
 
     /**
-     * Add a alias for the user (aliases.insert)
+     * Add an alias for the user (aliases.insert)
      *
-     * @param string $userKey
-     * Email or immutable Id of the user
-     * @param Alias $postBody
-     * @param array $optParams Optional parameters.
-     * @return Alias instance
-     * @throws \Exception with code 201407110830
+     * @param string $userKey  The email or immutable Id of the user
+     * @param Alias $postBody  The array/object with the data for that alias
+     * @return Alias - a real Google_Service_Directory_Alias instance
+     * @throws \Exception with code 201407110830 if a matching user is not found.
      */
-    public function insert($userKey, $postBody, $optParams = array())
+    public function insert($userKey, $postBody)
     {
-        // TODO: Consider doing something with $params
-        $params = array('userKey' => $userKey, 'postBody' => $postBody);
-        $params = array_merge($params, $optParams);
-
+        // If the $userKey is not an email address, it must be an id
         $key = 'primaryEmail';
         if ( ! filter_var($userKey, FILTER_VALIDATE_EMAIL)) {
             $key = 'id';
@@ -101,6 +94,12 @@ class UsersAliasesResource {
         return $this->insertAssumingUserExists($postBody);
     }
 
+    /**
+     * Adds an alias for a user that it assumes is already in the database (aliases.insert)
+     *
+     * @param Alias $postBody  The array/object with the data for that alias
+     * @return Alias - a real Google_Service_Directory_Alias instance
+     */
     public function insertAssumingUserExists($postBody)
     {
         $entryData = json_encode(get_object_vars($postBody));
@@ -120,20 +119,17 @@ class UsersAliasesResource {
     }
 
     /**
-     * List all aliases for a user (aliases.list)
+     * Gets a Google_Service_Directory_Aliases instance with its
+     *     aliases property populated with Google_Service_Directory_Alias
+     *     instances for that user
      *
-     * @param string $userKey
-     * Email or immutable Id of the user
-     * @param array $optParams Optional parameters.
-     * @return Google_Service_Directory_Aliases
-     * @throws \Exception with code 201407101420
+     * @param string $userKey - The Email or immutable Id of the user
+     * @return a real Google_Service_Directory_Aliases instance
+     * @throws \Exception with code 201407101420 if a matching user is not found.
      */
-    public function listUsersAliases($userKey, $optParams = array())
+    public function listUsersAliases($userKey)
     {
-        // TODO: Consider doing something with $params
-        $params = array('userKey' => $userKey);
-        $params = array_merge($params, $optParams);
-
+        // If the $userKey is not an email address, it must be an id
         $key = 'primaryEmail';
         if ( ! filter_var($userKey, FILTER_VALIDATE_EMAIL)) {
             $key = 'id';
@@ -152,6 +148,15 @@ class UsersAliasesResource {
         return $foundAliases;
     }
 
+    /**
+     * Gets a Google_Service_Directory_Aliases instance with its
+     *     aliases property populated with Google_Service_Directory_Alias
+     *     instances for that user
+     *
+     * @param string $keyType - "Email" or "Id"
+     * @param string $userKey - The Email or immutable Id of the user
+     * @return null|a real Google_Service_Directory_Aliases instance
+     */
     public function fetchAliasesByUser($keyType, $userKey) {
         $sqliteUtils = new SqliteUtils($this->_dbFile);
         $aliases =  $sqliteUtils->getAllRecordsByDataKey($this->_dataType,

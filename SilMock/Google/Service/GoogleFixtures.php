@@ -20,6 +20,8 @@ class GoogleFixtures {
     }
 
     /**
+     * Adds data to the database based on the input
+     *
      * @param array of arrays $fixtures ...
      *    Each array should have 3 string elements ...
      *    - the type of Google Service (e.g. "directory")

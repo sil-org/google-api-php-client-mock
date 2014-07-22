@@ -5,7 +5,14 @@ namespace SilMock\Google\Service\Directory;
 class ObjectUtils
 {
 
-    public static function initialize($newUser, $properties)
+    /**
+     * Assigns given values to the matching properties of a Google Mock object
+     *
+     * @param $newObject a Google mock object
+     * @param $properties object|associative array
+     * @returns null
+     **/
+    public static function initialize($newObject, $properties)
     {
         $propArray = $properties;
         if (is_object($properties)) {
@@ -13,7 +20,7 @@ class ObjectUtils
         }
 
         foreach ($propArray as $key=>$value) {
-            $newUser->$key = $value;
+            $newObject->$key = $value;
         }
     }
 
