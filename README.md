@@ -32,7 +32,7 @@ ones implemented by this mock are ...
 Data Persistence
 ----------------
 In order to keep data available for use by this mock, it makes use of a **Sqlite**
-database file. Then default path and name of this file are ...
+database file. The default path and name of this file are ...
 **SilMock/DataStore/Sqlite/Google_Service_Data.db**.  To override this,
 the constructors for the UsersResource and UsersAliasesResource class accept
 an optional string parameter.
@@ -46,7 +46,7 @@ It has one table with four columns ...
 4. data = TEXT
 
 The **data** field contains json with key-value pairs related to the properties
-of the GSD objects.  The data is prepared by using the php json_encode.
+of the GSD objects.  The data is prepared by using the php json_encode function.
 
 Test Fixtures
 -------------
@@ -54,6 +54,7 @@ There is a class to assist with dealing with data for unit tests ...
 **SilMock\Google\Service\GoogleFixtures.php**.  Its constructor accepts an
 optional parameter for the path and name of the Sqlite database file.  It has
 two methods ...
+
 1. addFixtures($fixtures), expecting an array of 3-element arrays (type, class, data).
 2. removeAllFixtures()
 
