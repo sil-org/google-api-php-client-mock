@@ -7,10 +7,6 @@ php:
 services:
   - redis-server
 
-addons:
-  hosts:
-
-
 before_script:
   - curl -s https://getcomposer.org/installer | php && php composer.phar update --dev
 
