@@ -6,7 +6,7 @@ A small scale intelligent mock of the Google API PHP Client for unit and functio
 Overview
 --------
 This is intended to mock a portion of the Google Services Directory, particularly
-aspects dealing with users and users aliases.
+aspects that make calls to an external system relating to users and users aliases.
 
 Two primary properties of a Google Service Directory (GSD) are ...
 
@@ -22,8 +22,8 @@ that are implemented by this mock are ...
 3. update()
 
 ### UsersAliases_Resource
-A UsersAliases_Resource has various methods for managing Google Apps users.  The
-ones implemented by this mock are ...
+A UsersAliases_Resource has various methods for managing Google Apps users aliases.
+The ones implemented by this mock are ...
 
 1. delete()
 2. insert()
