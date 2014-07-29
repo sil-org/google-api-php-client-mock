@@ -148,7 +148,9 @@ class DirectoryTest extends PHPUnit_Framework_TestCase
         $this->assertEquals($expected, $results, $msg);
 
         $sqliteClass = new SqliteUtils($this->dataFile);
-        $lastDataEntry = end(array_values($sqliteClass->getData('', '')));
+        $sqliteData = $sqliteClass->getData('', '');
+        $sqliteDataValues = array_values($sqliteData);
+        $lastDataEntry = end($sqliteDataValues);
         $lastAliases = json_decode($lastDataEntry['data'], true);
 
         $results = $lastAliases['aliases']['aliases'];
@@ -581,7 +583,9 @@ class DirectoryTest extends PHPUnit_Framework_TestCase
 
 
         $sqliteClass = new SqliteUtils($this->dataFile);
-        $lastDataEntry = end(array_values($sqliteClass->getData('', '')));
+        $sqliteData = $sqliteClass->getData('', '');
+        $sqliteDataValues = array_values($sqliteData);
+        $lastDataEntry = end($sqliteDataValues);
         $results = $lastDataEntry['data'];
 
         $msg = " *** Bad data from sqlite database";
