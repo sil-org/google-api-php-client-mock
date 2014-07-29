@@ -79,8 +79,11 @@ class DirectoryTest extends PHPUnit_Framework_TestCase
         $this->assertEquals($expected, $results, $msg);
 
         $sqliteClass = new SqliteUtils($this->dataFile);
-        $lastDataEntry = end(array_values($sqliteClass->getData('', '')));
-        $results = $this->getProperties(json_decode($lastDataEntry['data']));
+        $sqliteData = $sqliteClass->getData('', '');
+        $sqliteDataValues = array_values($sqliteData);
+        $lastDataEntry = end($sqliteDataValues);
+        $dataObj = json_decode($lastDataEntry['data']);
+        $results = $this->getProperties($dataObj);
 
         $expected = array (
                             "changePasswordAtNextLogin" => false,
