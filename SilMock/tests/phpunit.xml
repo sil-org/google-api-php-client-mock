@@ -13,15 +13,4 @@
             <directory>./Sqlite</directory>
         </testsuite>
     </testsuites>
-    <!--    <filter>
-            <blacklist>
-                <directory suffix=".php">/var/lib/mailadmin/vendor</directory>
-                <directory suffix=".php">/var/lib/mailadmin/simplesamlphp</directory>
-                <directory suffix=".php">/var/lib/mailadmin/protected/extensions</directory>
-                <directory suffix=".php">/var/lib/mailadmin/protected/library</directory>
-            </blacklist>
-        </filter>
-        <logging>
-            <log type="coverage-text" target="/tmp/mailadmin-coverage.txt" showUncoveredFiles="false"/>
-        </logging>-->
 </phpunit>
