@@ -12,7 +12,7 @@ use SilMock\Google\Service\GoogleFixtures;
 
 class DirectoryTest extends PHPUnit_Framework_TestCase
 {
-    public $dataFile = '../DataStore/Sqlite/Test2_Google_Service_Data.db';
+    public $dataFile = DATAFILE2;
 
     public function getProperties($object, $propKeys = null) {
         if ($propKeys === null) {
@@ -49,6 +49,7 @@ class DirectoryTest extends PHPUnit_Framework_TestCase
 
     public function testUsersInsert()
     {
+
         $fixturesClass = new GoogleFixtures($this->dataFile);
         $fixturesClass->removeAllFixtures();
         $newUser = new Google_Service_Directory_User();
