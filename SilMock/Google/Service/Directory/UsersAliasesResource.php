@@ -1,0 +1,182 @@
+<?php
+namespace SilMock\Google\Service\Directory;
+
+use SilMock\DataStore\Sqlite\SqliteUtils;
+
+class UsersAliasesResource {
+
+    private $_dbFile;  // string for the path (with file name) for the Sqlite database
+    private $_dataType = 'directory';  // string to put in the 'type' field in the database
+    private $_dataClass = 'users_alias'; // string to put in the 'class' field in the database
+
+
+    public function __construct($dbFile=null)
+    {
+        $this->_dbFile = $dbFile;
+    }
+
+    /**
+     * Remove a alias for the user (aliases.delete)
+     *
+     * @param string $userKey  The email or immutable Id of the user
+     * @param string $alias  The alias to be removed
+     * @return true|null depending on if an alias was deleted
+     * @throws \Exception with code 201407101645
+     */
+    public function delete($userKey, $alias)
+    {
+        // If the $userKey is not an email address, it must be an id
+        $key = 'primaryEmail';
+        if ( ! filter_var($userKey, FILTER_VALIDATE_EMAIL)) {
+            $key = 'id';
+            $userKey = intval($userKey);
+        }
+
+        // ensure that user exists in db
+        $dir = new \SilMock\Google\Service\Directory('anything', $this->_dbFile);
+        $matchingUsers = $dir->users->get($userKey);
+
+        if ($matchingUsers === null) {
+            throw new \Exception("Account doesn't exist: " . $userKey, 201407101645);
+        }
+
+        // Get all the aliases for that user
+        $sqliteUtils = new SqliteUtils($this->_dbFile);
+        $aliases =  $sqliteUtils->getAllRecordsByDataKey($this->_dataType,
+            $this->_dataClass, $key, $userKey);
+
+        if ( ! $aliases) {
+            return null;
+        }
+
+        // Check the data of each alias and when there is a match,
+        // delete that alias and return true
+        foreach ($aliases as $nextAlias) {
+            $aliasData = json_decode($nextAlias['data'], true);
+            if ($aliasData['alias'] === $alias) {
+                $sqliteUtils->deleteRecordById(intval($nextAlias['id']));
+                return true;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Add an alias for the user (aliases.insert)
+     *
+     * @param string $userKey  The email or immutable Id of the user
+     * @param Alias $postBody  The array/object with the data for that alias
+     * @return Alias - a real Google_Service_Directory_Alias instance
+     * @throws \Exception with code 201407110830 if a matching user is not found.
+     */
+    public function insert($userKey, $postBody)
+    {
+        // If the $userKey is not an email address, it must be an id
+        $key = 'primaryEmail';
+        if ( ! filter_var($userKey, FILTER_VALIDATE_EMAIL)) {
+            $key = 'id';
+            $userKey = intval($userKey);
+        }
+
+        // ensure that user exists in db
+        $dir = new \SilMock\Google\Service\Directory('anything', $this->_dbFile);
+        $matchingUsers = $dir->users->get($userKey);
+
+        if ($matchingUsers === null) {
+            throw new \Exception("Account doesn't exist: " . $userKey, 201407110830);
+        }
+
+        if ($postBody->$key === null) {
+            $postBody->$key = $userKey;
+        }
+
+        return $this->insertAssumingUserExists($postBody);
+    }
+
+    /**
+     * Adds an alias for a user that it assumes is already in the database (aliases.insert)
+     *
+     * @param Alias $postBody  The array/object with the data for that alias
+     * @return Alias - a real Google_Service_Directory_Alias instance
+     */
+    public function insertAssumingUserExists($postBody)
+    {
+        $entryData = json_encode(get_object_vars($postBody));
+        $sqliteUtils = new SqliteUtils($this->_dbFile);
+        $sqliteUtils->recordData($this->_dataType, $this->_dataClass,
+            $entryData, true);
+        $allAliases = $sqliteUtils->getData($this->_dataType, $this->_dataClass);
+
+        if ( ! $allAliases) {
+            return null;
+        }
+
+        $newAlias = new \Google_Service_Directory_Alias();
+        ObjectUtils::initialize($newAlias, $postBody);
+
+        return $newAlias;
+    }
+
+    /**
+     * Gets a Google_Service_Directory_Aliases instance with its
+     *     aliases property populated with Google_Service_Directory_Alias
+     *     instances for that user
+     *
+     * @param string $userKey - The Email or immutable Id of the user
+     * @return a real Google_Service_Directory_Aliases instance
+     * @throws \Exception with code 201407101420 if a matching user is not found.
+     */
+    public function listUsersAliases($userKey)
+    {
+        // If the $userKey is not an email address, it must be an id
+        $key = 'primaryEmail';
+        if ( ! filter_var($userKey, FILTER_VALIDATE_EMAIL)) {
+            $key = 'id';
+            $userKey = intval($userKey);
+        }
+        // ensure that user exists in db
+        $dir = new \SilMock\Google\Service\Directory('anything', $this->_dbFile);
+        $matchingUsers = $dir->users->get($userKey);
+
+        if ($matchingUsers === null) {
+            throw new \Exception("Account doesn't exist: " . $userKey, 201407101420);
+        }
+
+        $foundAliases =  $this->fetchAliasesByUser($key, $userKey);
+
+        return $foundAliases;
+    }
+
+    /**
+     * Gets a Google_Service_Directory_Aliases instance with its
+     *     aliases property populated with Google_Service_Directory_Alias
+     *     instances for that user
+     *
+     * @param string $keyType - "Email" or "Id"
+     * @param string $userKey - The Email or immutable Id of the user
+     * @return null|a real Google_Service_Directory_Aliases instance
+     */
+    public function fetchAliasesByUser($keyType, $userKey) {
+        $sqliteUtils = new SqliteUtils($this->_dbFile);
+        $aliases =  $sqliteUtils->getAllRecordsByDataKey($this->_dataType,
+            $this->_dataClass, $keyType, $userKey);
+
+        if ( ! $aliases) {
+            return null;
+        }
+
+        $foundAliases = array();
+
+        foreach ($aliases as $nextAlias) {
+            $newAlias = new \Google_Service_Directory_Alias();
+            ObjectUtils::initialize($newAlias, json_decode($nextAlias['data'], true));
+
+            $foundAliases[] = $newAlias;
+        }
+
+        $newUsersAliases = new \Google_Service_Directory_Aliases();
+        $newUsersAliases->setAliases($foundAliases);
+        return $newUsersAliases;
+    }
+}
