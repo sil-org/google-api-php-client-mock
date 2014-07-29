@@ -7,7 +7,7 @@ use SilMock\DataStore\Sqlite\SqliteUtils;
 
 class GoogleFixturesTest extends PHPUnit_Framework_TestCase
 {
-    public $dataFile = '../DataStore/Sqlite/Test3_Google_Service_Data.db';
+    public $dataFile = DATAFILE3;
 
     public function testAddFixtures()
     {

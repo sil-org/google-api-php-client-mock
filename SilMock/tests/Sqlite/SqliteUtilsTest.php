@@ -4,7 +4,7 @@ use SilMock\DataStore\Sqlite\SqliteUtils;
 
 class SqliteUtilsTest extends PHPUnit_Framework_TestCase
 {
-    public $dataFile = '../DataStore/Sqlite/Test_Google_Service_Data.db';
+    public $dataFile = DATAFILE1;
 
     public function testRecordData()
     {

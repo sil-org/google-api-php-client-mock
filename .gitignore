@@ -6,4 +6,4 @@ build/
 .vagrant/
 .idea/
 composer.phar
-SilMock/DataStore/Sqlite/Google_Services_Data.db
+*.db

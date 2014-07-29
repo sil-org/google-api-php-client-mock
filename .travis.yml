@@ -1,5 +1,6 @@
 language: php
 php:
+  - "5.3"
   - "5.4"
   - "5.5"
   - "hhvm"
@@ -9,7 +10,7 @@ before_script:
 
 script:
   - mkdir -p build/logs
-  - php vendor/bin/phpunit --coverage-clover ./build/logs/clover.xml SilMock/tests/
+  - php vendor/bin/phpunit --coverage-clover ./build/logs/clover.xml -c SilMock/tests/phpunit.xml SilMock/tests/
   
 after_script:
   - php vendor/bin/coveralls -v
