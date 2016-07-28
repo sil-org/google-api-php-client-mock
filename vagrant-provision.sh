@@ -14,4 +14,4 @@ if [ ! -e composer.phar ]; then
 else
     sudo php composer.phar self-update
 fi
-sudo php composer.phar update --dev
+sudo php composer.phar update
