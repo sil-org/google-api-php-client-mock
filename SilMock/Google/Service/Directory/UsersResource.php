@@ -218,4 +218,60 @@ class UsersResource {
                                $this->_dataClass, $key, $userKey);
     }
 
+    /**
+     * This mocks the Google_Service_Directory_Users_Resource's listUser
+     * functionality.
+     *
+     * @param array $parameters -- This will have three keys.
+     *     domain: The domain to limit the search to. It's ignored.
+     *     maxResults: Used to limit the number of results.
+     *                 It defaults to 100.
+     *     query: A string of the form "foo:baz[*]".
+     *            Where foo is a field to search on.
+     *            And baz is what to partially match on.
+     *            The '*' syntax is ignored.
+     *
+     * @return \Google_Service_Directory_Users
+     */
+    public function listUsers($parameters = [])
+    {
+        $results = new \Google_Service_Directory_Users();
+        if (!key_exists('domain',$parameters)) {
+            $parameters['domain'] = 'ZZZZZZZ';
+        }
+        if (!key_exists('maxResults',$parameters)) {
+            $parameters['maxResults'] = 100;
+        }
+        if (!key_exists('query',$parameters)) {
+            $parameters['query'] = '';
+        }
+        $sqliteUtils = new SqliteUtils($this->_dbFile);
+        $allData = $sqliteUtils->getData($this->_dataType,$this->_dataClass);
+        foreach ($allData as $userRecord) {
+            $userEntry = json_decode($userRecord['data'],true);
+            if ($this->doesUserMatch($userEntry,$parameters['query'])) {
+                $allResultsUsers = $results->getUsers();
+                $allResultsUsers[] = $userEntry;
+                $results->setUsers($allResultsUsers);
+            }
+            if (count($results->getUsers())>= $parameters['maxResults']) {
+                break;
+            }
+        }
+        return $results;
+    }
+
+    public function doesUserMatch($entry,$query ='')
+    {
+        if ($query==='') {
+            return true;
+        }
+        $query = str_replace('*','',$query);
+        ($field,$value) = explode(':',$query);
+        if (mb_strpos($entry[$field],$value)!==false) {
+            return true;
+        } else {
+            return false;
+        }
+    }
 } 
