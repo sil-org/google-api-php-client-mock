@@ -268,8 +268,10 @@ class UsersResource {
         }
         $query = str_replace('*','',$query);
         list($field,$value) = explode(':',$query);
-        die(var_dump($entry));
-        if (mb_strpos($entry[$field],$value)!==false) {
+	$field = trim($field);
+	$value = trim($value);
+	$checkValue = $entry[$field] ?? $entry['name'][$field] ?? '';
+        if (mb_strpos($checkValue,$value)!==false) {
             return true;
         } else {
             return false;
