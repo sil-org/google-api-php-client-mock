@@ -268,9 +268,15 @@ class UsersResource {
         }
         $query = str_replace('*','',$query);
         list($field,$value) = explode(':',$query);
-	$field = trim($field);
-	$value = trim($value);
-	$checkValue = $entry[$field] ?? $entry['name'][$field] ?? '';
+	    $field = trim($field);
+	    $value = trim($value);
+	    $checkValue = $entry[$field] ?? $entry['name'][$field] ?? '';
+        if (!is_string($checkValue)) {
+            die("CHECKVALUE: " . var_dump($checkValue));
+        }
+        if (!is_string($value)) {
+            die("VALUE: " . var_dump($value));
+        }
         if (mb_strpos($checkValue,$value)!==false) {
             return true;
         } else {
