@@ -267,11 +267,11 @@ class UsersResource {
             return true;
         }
         $query = str_replace('*','',$query);
-        ($field,$value) = explode(':',$query);
+        list($field,$value) = explode(':',$query);
         if (mb_strpos($entry[$field],$value)!==false) {
             return true;
         } else {
             return false;
         }
     }
-} 
+}
