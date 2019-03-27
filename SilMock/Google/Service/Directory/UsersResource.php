@@ -57,14 +57,7 @@ class UsersResource {
 
         $newUser = new \Google_Service_Directory_User();
         ObjectUtils::initialize($newUser, json_decode($userEntry['data'], true));
-
-        // if the $userKey is not an email address, then it's an id
-        $key = 'primaryEmail';
-        if ( ! filter_var($userKey, FILTER_VALIDATE_EMAIL)) {
-            $key = 'id';
-            $userKey = intval($userKey);
-        }
-
+        
         // find its aliases in the database and populate its aliases property
         
         $aliases = $this->getAliasesForUser($userKey);
