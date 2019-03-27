@@ -155,7 +155,7 @@ class UsersAliasesResource {
      *
      * @param string $keyType - "Email" or "Id"
      * @param string $userKey - The Email or immutable Id of the user
-     * @return null|a real Google_Service_Directory_Aliases instance
+     * @return null|Google_Service_Directory_Aliases
      */
     public function fetchAliasesByUser($keyType, $userKey) {
         $sqliteUtils = new SqliteUtils($this->_dbFile);
