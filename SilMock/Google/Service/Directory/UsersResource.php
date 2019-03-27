@@ -104,7 +104,7 @@ class UsersResource {
      */
     protected function getDbUserByAlias($userKey)
     {
-        if ( ! filter_var($userKey, FILTER_VALIDATE_EMAIL)) {
+        if (! filter_var($userKey, FILTER_VALIDATE_EMAIL)) {
             // This function only makes sense for actual email addresses.
             return null;
         }
@@ -276,7 +276,7 @@ class UsersResource {
     {
 
         $key = 'primaryEmail';
-        if ( ! filter_var($userKey, FILTER_VALIDATE_EMAIL)) {
+        if (! filter_var($userKey, FILTER_VALIDATE_EMAIL)) {
             $key = 'id';
             $userKey = intval($userKey);
         }
