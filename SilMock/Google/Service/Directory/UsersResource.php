@@ -36,6 +36,10 @@ class UsersResource {
      * Retrieves a user (users.get) and sets its aliases property
      *     based on its aliases found in the database.
      *
+     * NOTE: This should also find any account that has that email address as an
+     * alias. See the documentation:
+     * https://developers.google.com/admin-sdk/directory/v1/reference/users/get
+     *
      * @param string $userKey - The Email or immutable Id of the user
      * @return null|a real Google_Service_Directory_User instance
      */
@@ -45,7 +49,10 @@ class UsersResource {
         $userEntry = $this->getDbUser($userKey);
 
         if ($userEntry === null) {
-            return null;
+            $userEntry = $this->getDbUserByAlias($userKey);
+            if ($userEntry === null) {
+                return null;
+            }
         }
 
         $newUser = new \Google_Service_Directory_User();
@@ -59,9 +66,8 @@ class UsersResource {
         }
 
         // find its aliases in the database and populate its aliases property
-
-        $usersAliases = new UsersAliasesResource($this->_dbFile);
-        $aliases =  $usersAliases->fetchAliasesByUser($key, $userKey);
+        
+        $aliases = $this->getAliasesForUser($userKey);
 
         if ( $aliases) {
             $foundAliases = array();
@@ -74,7 +80,76 @@ class UsersResource {
 
         return $newUser;
     }
-
+    
+    /**
+     * @param $userKey
+     * @return Google_Service_Directory_Aliases|null
+     */
+    protected function getAliasesForUser($userKey)
+    {
+        // If the $userKey is not an email address, then it's an id.
+        $key = 'primaryEmail';
+        if (! filter_var($userKey, FILTER_VALIDATE_EMAIL)) {
+            $key = 'id';
+            $userKey = intval($userKey);
+        }
+        
+        $usersAliases = new UsersAliasesResource($this->_dbFile);
+        return $usersAliases->fetchAliasesByUser($key, $userKey);
+    }
+    
+    /**
+     * Get the database record of the user (if any) that has the given email
+     * address as an alias.
+     *
+     * NOTE: This does NOT do things like populate the returned user info with
+     * its list of aliases. That is left to the calling function (such as
+     * `UsersResource->get()`).
+     *
+     * @param $userKey
+     * @return null|Google_Service_Directory_User
+     */
+    protected function getDbUserByAlias($userKey)
+    {
+        if ( ! filter_var($userKey, FILTER_VALIDATE_EMAIL)) {
+            // This function only makes sense for actual email addresses.
+            return null;
+        }
+        
+        $allUsers = $this->getAllDbUsers();
+        
+        foreach ($allUsers as $aUser) {
+            if (! isset($aUser['data'])) {
+                continue;
+            }
+            
+            $userData = json_decode($aUser['data'], true);
+            if ($userData === null) {
+                continue;
+            }
+            
+            $primaryEmail = isset($userData['primaryEmail']) ? $userData['primaryEmail'] : null;
+            
+            $aliasesResource = $this->getAliasesForUser($primaryEmail);
+            if ($aliasesResource) {
+                foreach ($aliasesResource['aliases'] as $aliasResource) {
+                    $alias = $aliasResource['alias'];
+                    if (strcasecmp($alias, $userKey) === 0) {
+                        return $aUser;
+                    }
+                }
+            }
+        }
+        
+        return null;
+    }
+    
+    protected function getAllDbUsers()
+    {
+        $sqliteUtils = new SqliteUtils($this->_dbFile);
+        return $sqliteUtils->getData($this->_dataType, $this->_dataClass);
+    }
+    
     /**
      * Creates a user (users.insert) and sets its aliases property if any
      *     are given.
