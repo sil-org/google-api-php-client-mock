@@ -310,6 +310,50 @@ class DirectoryTest extends PHPUnit_Framework_TestCase
         $this->assertEquals($expected, $results, $msg);
     }
 
+    public function testUsersGet_ByAlias()
+    {
+        $fixturesClass = new GoogleFixtures($this->dataFile);
+        $fixturesClass->removeAllFixtures();
+        $fixtures = $this->getFixtures();
+        $fixturesClass->addFixtures($fixtures);
+        
+        $userId = '999991';
+        $email = "user_test4@sil.org";
+        
+        $userData = array(
+            "changePasswordAtNextLogin" => false,
+            "hashFunction" => "SHA-1",
+            "id" => intval($userId),
+            "password" => "testP4ss",
+            "primaryEmail" => $email,
+            "suspended" => false,
+            "aliases" => array("users_alias1A@sil.org", "users_alias1B@sil.org"),
+        );
+        
+        
+        $aliasA = $this->getAliasFixture("users_alias1A@sil.org", $email, null);
+        $aliasB = $this->getAliasFixture("users_alias1B@sil.org", $email, null);
+        
+        $newFixtures = array(
+            array('directory', 'users_alias', json_encode($aliasA)),
+            array('directory', 'users_alias', json_encode($aliasB)),
+        );
+        $fixturesClass->addFixtures($newFixtures);
+        
+        $newDir = new Directory('anyclient', $this->dataFile);
+        $newUser = $newDir->users->get('users_alias1A@sil.org');
+    
+        $this->assertNotNull(
+            $newUser,
+            'Failed to get user by an alias'
+        );
+        $this->assertEquals(
+            $email,
+            $newUser->primaryEmail,
+            'Failed to get correct user by an alias'
+        );
+    }
+    
     public function testUsersUpdate()
     {
         $fixturesClass = new GoogleFixtures($this->dataFile);
