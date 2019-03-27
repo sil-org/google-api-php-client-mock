@@ -20,6 +20,7 @@
     ],
     "require": {
         "php": ">=5.3.3",
+        "ext-json": "*",
         "google/apiclient": "^1.1"
     },
     "require-dev": {
