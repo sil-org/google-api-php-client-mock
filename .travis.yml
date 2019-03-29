@@ -5,11 +5,7 @@ php:
   - "7.1"
 
 before_script:
-  - curl -s https://getcomposer.org/installer | php && php composer.phar update --dev
+  - curl -s https://getcomposer.org/installer | php && php composer.phar update
 
 script:
-  - mkdir -p build/logs
-  - php vendor/bin/phpunit --coverage-clover ./build/logs/clover.xml -c SilMock/tests/phpunit.xml SilMock/tests/
-  
-after_script:
-  - php vendor/bin/coveralls -v
+  - php vendor/bin/phpunit -c SilMock/tests/phpunit.xml SilMock/tests/
