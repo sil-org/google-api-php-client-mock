@@ -38,13 +38,22 @@ class DirectoryTest extends PHPUnit_Framework_TestCase
 
     public function testDirectory()
     {
-        $dir = new Directory('whatever', $this->dataFile);
-        $results = json_encode($dir);
-        $expected = '{"users":{},"users_aliases":{}}';
-        $msg = " *** Directory was not initialized properly";
-        $this->assertEquals($expected, $results, $msg);
-
-        $ma = array('a'=>1, 'b'=>2, 'c'=>array());
+        $expectedKeys = array(
+            'asps',
+            'tokens',
+            'users',
+            'users_aliases',
+        );
+        $errorMessage = " *** Directory was not initialized properly";
+        
+        $directory = new Directory('whatever', $this->dataFile);
+        
+        $directoryAsJson = json_encode($directory);
+        $directoryInfo = json_decode($directoryAsJson, true);
+        foreach ($expectedKeys as $expectedKey) {
+            $this->assertArrayHasKey($expectedKey, $directoryInfo, $errorMessage);
+            $this->assertEmpty($directoryInfo[$expectedKey], $errorMessage);
+        }
     }
 
     public function testUsersInsert()
