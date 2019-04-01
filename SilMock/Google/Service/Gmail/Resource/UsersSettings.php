@@ -2,6 +2,7 @@
 
 namespace SilMock\Google\Service\Gmail\Resource;
 
+use Google_Service_Gmail_ImapSettings;
 use Google_Service_Gmail_PopSettings;
 use SilMock\DataStore\Sqlite\SqliteUtils;
 use SilMock\Google\Service\Directory\ObjectUtils;
@@ -26,5 +27,10 @@ class UsersSettings
     public function updatePop($userId, Google_Service_Gmail_PopSettings $postBody, $optParams = array())
     {
         // No action necessary, since we do not yet mock any way to check the pop settings.
+    }
+    
+    public function updateImap($userId, Google_Service_Gmail_ImapSettings $postBody, $optParams = array())
+    {
+        // No action necessary, since we do not yet mock any way to check the IMAP settings.
     }
 }
