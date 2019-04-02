@@ -2,6 +2,7 @@
 
 namespace SilMock\Google\Service\Gmail\Resource;
 
+use Google_Service_Gmail_ListDelegatesResponse;
 use SilMock\DataStore\Sqlite\SqliteUtils;
 use SilMock\Google\Service\Directory\ObjectUtils;
 use Webmozart\Assert\Assert;
@@ -169,5 +170,12 @@ class UsersSettingsDelegates
     {
         $sqliteUtils = $this->getSqliteUtils();
         $sqliteUtils->deleteRecordById($recordId);
+    }
+    
+    public function listUsersSettingsDelegates($userId, $optParams = array())
+    {
+        return new Google_Service_Gmail_ListDelegatesResponse(array(
+            'delegates' => array(),
+        ));
     }
 }
