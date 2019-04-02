@@ -1,14 +1,16 @@
 <?php
 namespace SilMock\Google\Service;
 
+use SilMock\Google\Service\Directory\Asps;
+use SilMock\Google\Service\Directory\Tokens;
 use SilMock\Google\Service\Directory\UsersResource;
 use SilMock\Google\Service\Directory\UsersAliasesResource;
 
-class Directory {
-
+class Directory
+{
     public $users;
     public $users_aliases;
-
+    
     /**
      * Sets the users and users_aliases properties to be instances of
      *    the corresponding mock classes.
@@ -18,8 +20,9 @@ class Directory {
      */
     public function __construct($client, $dbFile=null)
     {
+        $this->asps = new Asps($dbFile);
+        $this->tokens = new Tokens($dbFile);
         $this->users = new UsersResource($dbFile);
         $this->users_aliases = new UsersAliasesResource($dbFile);
     }
-
-} 
+}
