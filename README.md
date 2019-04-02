@@ -1,20 +1,22 @@
 google-api-php-client-mock
 ==========================
-[![Travis-CI Build Status](https://api.travis-ci.org/silinternational/google-api-php-client-mock.png?branch=master)](https://travis-ci.org/silinternational/google-api-php-client-mock)
-[![Coverage Status](https://coveralls.io/repos/silinternational/google-api-php-client-mock/badge.png)](https://coveralls.io/r/silinternational/google-api-php-client-mock)
+[![Travis-CI Build Status](https://api.travis-ci.org/silinternational/google-api-php-client-mock.png?branch=develop)](https://travis-ci.org/silinternational/google-api-php-client-mock)
 
-
-A small scale intelligent mock of the Google API PHP Client for unit and functional testing.
+A small scale intelligent mock of the Google API PHP Client for unit and
+functional testing.
 
 Overview
 --------
-This is intended to mock a portion of the Google Services Directory, particularly
-aspects that make calls to an external system relating to users and users aliases.
+This is intended to mock a portion of the Google APIs related to G Suite
+accounts, particularly calls relating to users and users' aliases.
 
-Two primary properties of a Google Service Directory (GSD) are ...
+## Directory
+Properties of a Google Service Directory (GSD) include...
 
 1. $users, which gets set to a GSD Users_Resource
 2. $users_aliases, which gets set to a GSD UsersAliases_Resource
+3. $asps, which gets set to a GSD Asps_Resource
+3. $tokens, which gets set to a GSD Tokens_Resource
 
 ### Users_Resource
 A Users_Resource has various methods for managing Google Apps users.  Three of these
@@ -31,6 +33,46 @@ The ones implemented by this mock are ...
 1. delete()
 2. insert()
 3. listUsersAliases()
+
+### Asps_Resource
+An Asps_Resource is for managing a user's App Specific Passwords (ASPs). This
+mock implements...
+
+1. listAsps()
+
+### Tokens_Resource
+A Tokens_Resource is for managing a user's OAuth access tokens. This mock
+implements...
+
+1. listTokens()
+
+## Gmail
+Properties of the Gmail API object include...
+
+1. $users_settings
+2. $users_settings_delegates
+3. $users_settings_forwardingAddresses
+
+### UsersSettings
+Methods on the UsersSettings resource that this mock implements include...
+
+1. updateImap()
+2. updatePop()
+
+## UsersSettingsDelegates
+Methods on the UsersSettingsDelegates resource that this mock implements
+include...
+
+1. create()
+2. delete()
+3. get()
+4. listUsersSettingsDelegates()
+
+## UsersSettingsForwardingAddresses
+Methods on the UsersSettingsForwardingAddresses resource that this mock
+implements include...
+
+1. listUsersSettingsForwardingAddresses()
 
 Data Persistence
 ----------------
