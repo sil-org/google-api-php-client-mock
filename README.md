@@ -16,7 +16,7 @@ Properties of a Google Service Directory (GSD) include...
 1. $users, which gets set to a GSD Users_Resource
 2. $users_aliases, which gets set to a GSD UsersAliases_Resource
 3. $asps, which gets set to a GSD Asps_Resource
-3. $tokens, which gets set to a GSD Tokens_Resource
+4. $tokens, which gets set to a GSD Tokens_Resource
 
 ### Users_Resource
 A Users_Resource has various methods for managing Google Apps users.  Three of these
