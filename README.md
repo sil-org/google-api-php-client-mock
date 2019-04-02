@@ -1,6 +1,6 @@
 google-api-php-client-mock
 ==========================
-[![Travis-CI Build Status](https://api.travis-ci.org/silinternational/google-api-php-client-mock.png?branch=develop)](https://travis-ci.org/silinternational/google-api-php-client-mock)
+[![Travis-CI Build Status](https://api.travis-ci.org/silinternational/google-api-php-client-mock.png?branch=master)](https://travis-ci.org/silinternational/google-api-php-client-mock)
 
 A small scale intelligent mock of the Google API PHP Client for unit and
 functional testing.
