@@ -338,7 +338,13 @@ class UsersResource {
         list($field,$value) = explode(':',$query);
 	    $field = trim($field);
 	    $value = trim($value);
-	    $checkValue = $entry[$field] ?? $entry['name'][$field] ?? '';
+	    if (isset($entry[$field])) {
+            $checkValue = $entry[$field];
+        } elseif (isset($entry['name'][$field])) {
+            $checkValue = $entry['name'][$field];
+        } else {
+	        $checkValue = '';
+        }
         if (!is_string($checkValue)) {
             die("CHECKVALUE: " . var_dump($checkValue));
         }
