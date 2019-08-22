@@ -38,13 +38,22 @@ class DirectoryTest extends PHPUnit_Framework_TestCase
 
     public function testDirectory()
     {
-        $dir = new Directory('whatever', $this->dataFile);
-        $results = json_encode($dir);
-        $expected = '{"users":{},"users_aliases":{}}';
-        $msg = " *** Directory was not initialized properly";
-        $this->assertEquals($expected, $results, $msg);
-
-        $ma = array('a'=>1, 'b'=>2, 'c'=>array());
+        $expectedKeys = array(
+            'asps',
+            'tokens',
+            'users',
+            'users_aliases',
+        );
+        $errorMessage = " *** Directory was not initialized properly";
+        
+        $directory = new Directory('whatever', $this->dataFile);
+        
+        $directoryAsJson = json_encode($directory);
+        $directoryInfo = json_decode($directoryAsJson, true);
+        foreach ($expectedKeys as $expectedKey) {
+            $this->assertArrayHasKey($expectedKey, $directoryInfo, $errorMessage);
+            $this->assertEmpty($directoryInfo[$expectedKey], $errorMessage);
+        }
     }
 
     public function testUsersInsert()
@@ -310,6 +319,38 @@ class DirectoryTest extends PHPUnit_Framework_TestCase
         $this->assertEquals($expected, $results, $msg);
     }
 
+    public function testUsersGet_ByAlias()
+    {
+        $fixturesClass = new GoogleFixtures($this->dataFile);
+        $fixturesClass->removeAllFixtures();
+        $fixtures = $this->getFixtures();
+        $fixturesClass->addFixtures($fixtures);
+        
+        $email = "user_test4@sil.org";
+        
+        $aliasA = $this->getAliasFixture("users_alias1A@sil.org", $email, null);
+        $aliasB = $this->getAliasFixture("users_alias1B@sil.org", $email, null);
+        
+        $newFixtures = array(
+            array('directory', 'users_alias', json_encode($aliasA)),
+            array('directory', 'users_alias', json_encode($aliasB)),
+        );
+        $fixturesClass->addFixtures($newFixtures);
+        
+        $newDir = new Directory('anyclient', $this->dataFile);
+        $newUser = $newDir->users->get('users_alias1A@sil.org');
+        
+        $this->assertNotNull(
+            $newUser,
+            'Failed to get user by an alias'
+        );
+        $this->assertEquals(
+            $email,
+            $newUser['primaryEmail'],
+            'Failed to get correct user by an alias'
+        );
+    }
+    
     public function testUsersUpdate()
     {
         $fixturesClass = new GoogleFixtures($this->dataFile);
