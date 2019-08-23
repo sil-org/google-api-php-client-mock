@@ -349,10 +349,10 @@ class UsersResource {
                     $checkIndividualValues[] = $checkValue['givenName'];
                 }
                 if (isset($checkValue['familyName'])) {
-                    $checkIndividualValues[] = $checkValue['givenName'];
+                    $checkIndividualValues[] = $checkValue['familyName'];
                 }
                 if (isset($checkValue['fullName'])) {
-                    $checkIndividualValues[] = $checkValue['givenName'];
+                    $checkIndividualValues[] = $checkValue['fullName'];
                 }
                 foreach($checkIndividualValues as $checkIndividualValue) {
                     if (mb_strpos($checkIndividualValue,$value)!==false) {
@@ -367,6 +367,9 @@ class UsersResource {
         } elseif (isset($entry['name'][$field])) {
             $checkValue = $entry['name'][$field];
         } else {
+            $checkValue = '';
+        }
+        if ($checkValue === null) {
             $checkValue = '';
         }
         if (! is_string($checkValue)) {
