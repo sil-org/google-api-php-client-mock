@@ -317,9 +317,22 @@ class UsersResource {
         $allData = $sqliteUtils->getData($this->_dataType,$this->_dataClass);
         foreach ($allData as $userRecord) {
             $userEntry = json_decode($userRecord['data'],true);
-            if ($this->doesUserMatch($userEntry,$parameters['query'])) {
+            if ($this->doesUserMatch($userEntry, $parameters['query'])) {
+                /** @var \Google_Service_Directory_UserName $newName */
+                $newName = new \Google_Service_Directory_UserName([
+                    'familyName' => $userEntry['name']['familyName'],
+                    'fullName'   => $userEntry['name']['fullName'],
+                    'givenName'  => $userEntry['name']['givenName'],
+                ]);
+                /** @var \Google_Service_Directory_User $newEntry */
+                $newEntry = new \Google_Service_Directory_User([
+                    'primaryEmail' => $userEntry['primaryEmail'],
+                    'customerId' => $userEntry['primaryEmail'],
+                ]);
+                $newEntry->setName($newName);
+                
                 $allResultsUsers = $results->getUsers();
-                $allResultsUsers[] = $userEntry;
+                $allResultsUsers[] = $newEntry;
                 $results->setUsers($allResultsUsers);
             }
             if (count($results->getUsers())>= $parameters['maxResults']) {
@@ -354,6 +367,7 @@ class UsersResource {
                 if (isset($checkValue['fullName'])) {
                     $checkIndividualValues[] = $checkValue['fullName'];
                 }
+                $checkValue = '';
                 foreach($checkIndividualValues as $checkIndividualValue) {
                     if (mb_strpos($checkIndividualValue,$value)!==false) {
                         $checkValue = $checkIndividualValue;
@@ -366,6 +380,8 @@ class UsersResource {
             }
         } elseif (isset($entry['name'][$field])) {
             $checkValue = $entry['name'][$field];
+        } elseif ($field === 'email' && isset($entry['primaryEmail'])) {
+            $checkValue = $entry['primaryEmail'];
         } else {
             $checkValue = '';
         }
@@ -373,8 +389,12 @@ class UsersResource {
             $checkValue = '';
         }
         if (! is_string($checkValue)) {
-            throw new \Exception(
-                "Expecting a string. Got VALUE: " . var_dump($checkValue));
+            throw new \Exception( sprintf(
+                "Expecting a string.<br>\nGot Entry: %s<br>\nGot Field: %s<br>\nGot VALUE: %s",
+                var_dump($entry),
+                var_dump($field),
+                var_dump($checkValue)
+            ) );
         }
         if (mb_strpos($checkValue,$value)!==false) {
             return true;
