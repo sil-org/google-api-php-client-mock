@@ -336,25 +336,42 @@ class UsersResource {
         }
         $query = str_replace('*','',$query);
         list($field,$value) = explode(':',$query);
-	    $field = trim($field);
-	    $value = trim($value);
-	    if (isset($entry[$field])) {
+        $field = trim($field);
+        $value = trim($value);
+        if (!is_string($value)) {
+            throw new \Exception("String expected. Got VALUE: " . var_dump($value));
+        }
+        if (isset($entry[$field])) {
             $checkValue = $entry[$field];
+            if (is_array($checkValue) && $field === 'name') {
+                $checkIndividualValues = array();
+                if (isset($checkValue['givenName'])) {
+                    $checkIndividualValues[] = $checkValue['givenName'];
+                }
+                if (isset($checkValue['familyName'])) {
+                    $checkIndividualValues[] = $checkValue['givenName'];
+                }
+                if (isset($checkValue['fullName'])) {
+                    $checkIndividualValues[] = $checkValue['givenName'];
+                }
+                foreach($checkIndividualValues as $checkIndividualValue) {
+                    if (mb_strpos($checkIndividualValue,$value)!==false) {
+                        $checkValue = $checkIndividualValue;
+                        break;
+                    }
+                }
+            } elseif (is_array($checkValue)) {
+                throw new \Exception(
+                    "Did not expect something other than name as an array. Got VALUE: " . var_dump($checkValue));
+            }
         } elseif (isset($entry['name'][$field])) {
             $checkValue = $entry['name'][$field];
         } else {
-	        $checkValue = '';
+            $checkValue = '';
         }
-        if (!is_string($checkValue)) {
-            die( sprintf(
-                "CHECKVALUE: (%s)<br />\nfield: (%s)<br />\nvalue: (%s)<br />\n",
-                var_dump($checkValue),
-                $field,
-                $value
-            ) );
-        }
-        if (!is_string($value)) {
-            die("VALUE: " . var_dump($value));
+        if (! is_string($checkValue)) {
+            throw new \Exception(
+                "Expecting a string. Got VALUE: " . var_dump($checkValue));
         }
         if (mb_strpos($checkValue,$value)!==false) {
             return true;
