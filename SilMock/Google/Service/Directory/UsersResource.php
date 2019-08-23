@@ -346,7 +346,12 @@ class UsersResource {
 	        $checkValue = '';
         }
         if (!is_string($checkValue)) {
-            die("CHECKVALUE: " . var_dump($checkValue));
+            die( sprintf(
+                "CHECKVALUE: (%s)<br />\nfield: (%s)<br />\nvalue: (%s)<br />\n",
+                var_dump($checkValue),
+                $field,
+                $value
+            ) );
         }
         if (!is_string($value)) {
             die("VALUE: " . var_dump($value));
