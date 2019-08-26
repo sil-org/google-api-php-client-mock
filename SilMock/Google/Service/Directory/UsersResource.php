@@ -320,6 +320,7 @@ class UsersResource
         if (!key_exists('query', $parameters)) {
             $parameters['query'] = '';
         }
+        $parameters['query'] = urldecode($parameters['query']);
         $sqliteUtils = new SqliteUtils($this->_dbFile);
         $allData = $sqliteUtils->getData($this->_dataType, $this->_dataClass);
         foreach ($allData as $userRecord) {
