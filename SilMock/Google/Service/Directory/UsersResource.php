@@ -359,9 +359,6 @@ class UsersResource
         list($field, $value) = explode(':', $query);
         $field = trim($field);
         $value = trim($value);
-        if (!is_string($value)) {
-            throw new \Exception("String expected. Got VALUE: " . var_dump($value));
-        }
         if (isset($entry[$field])) {
             $checkValue = $entry[$field];
             if (is_array($checkValue) && $field === 'name') {
@@ -399,7 +396,7 @@ class UsersResource
         }
         if (! is_string($checkValue)) {
             throw new \Exception(sprintf(
-                "Expecting a string.<br>\nGot Entry: %s<br>\nGot Field: %s<br>\nGot VALUE: %s",
+                "Expecting a string.\nGot Entry: %s\nGot Field: %s\nGot VALUE: %s",
                 var_dump($entry),
                 var_dump($field),
                 var_dump($checkValue)
