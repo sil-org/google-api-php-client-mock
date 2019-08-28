@@ -350,7 +350,7 @@ class UsersResource
         return $results;
     }
 
-    public function doesUserMatch($entry, $query = '')
+    private function doesUserMatch($entry, $query = '')
     {
         if ($query==='') {
             return true;
