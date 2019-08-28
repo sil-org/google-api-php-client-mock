@@ -22,7 +22,8 @@
         "php": ">=5.3.3",
         "ext-json": "*",
         "google/apiclient": "^1.1",
-        "google/apiclient-services": "^0.83"
+        "google/apiclient-services": "^0.83",
+        "ext-mbstring": "*"
     },
     "require-dev": {
         "phpunit/phpunit": "3.7.*",

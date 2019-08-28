@@ -2,13 +2,14 @@
 namespace SilMock\Google\Service\Directory;
 
 use SilMock\DataStore\Sqlite\SqliteUtils;
-class UsersResource {
 
+class UsersResource
+{
     private $_dbFile;  // path (with file name) for the Sqlite database
     private $_dataType = 'directory'; // string to put in the 'type' field in the database
     private $_dataClass = 'user'; // string to put in the 'class' field in the database
 
-    public function __construct($dbFile=null)
+    public function __construct($dbFile = null)
     {
         $this->_dbFile = $dbFile;
     }
@@ -41,7 +42,8 @@ class UsersResource {
      * https://developers.google.com/admin-sdk/directory/v1/reference/users/get
      *
      * @param string $userKey - The Email or immutable Id of the user
-     * @return null|a real Google_Service_Directory_User instance
+     * @return \Google_Service_Directory_User|null -- built from db if exists,
+     *                                                null otherwise
      */
     public function get($userKey)
     {
@@ -59,10 +61,9 @@ class UsersResource {
         ObjectUtils::initialize($newUser, json_decode($userEntry['data'], true));
         
         // find its aliases in the database and populate its aliases property
-        
         $aliases = $this->getAliasesForUser($userKey);
 
-        if ( $aliases) {
+        if ($aliases) {
             $foundAliases = array();
             foreach ($aliases['aliases'] as $nextAlias) {
                 $foundAliases[] = $nextAlias['alias'];
@@ -154,7 +155,7 @@ class UsersResource {
     public function insert($postBody)
     {
         $defaults = array(
-            'id' => intval(str_replace(array(' ','.'),'',microtime())),
+            'id' => intval(str_replace(array(' ', '.'), '', microtime())),
             'suspended' => false,
             'changePasswordAtNextLogin' => false,
             'isAdmin' => false,
@@ -165,7 +166,7 @@ class UsersResource {
 
         // array_merge will not work, since $postBody is an object which only
         // implements ArrayAccess
-        foreach ($defaults as $key=>$value) {
+        foreach ($defaults as $key => $value) {
             if (!isset($postBody[$key])) {
                 $postBody[$key] = $value;
             }
@@ -174,9 +175,10 @@ class UsersResource {
         $currentUser = $this->get($postBody->primaryEmail);
 
         if ($currentUser) {
-            throw new \Exception("Account already exists: " .
-                $postBody['primaryEmail'],
-                201407101120);
+            throw new \Exception(
+                "Account already exists: " . $postBody['primaryEmail'],
+                201407101120
+            );
         }
 
         $newUser = new \Google_Service_Directory_User();
@@ -191,7 +193,7 @@ class UsersResource {
         if ($postBody->aliases) {
             $usersAliases = new UsersAliasesResource($this->_dbFile);
 
-            foreach($postBody->aliases as $alias) {
+            foreach ($postBody->aliases as $alias) {
                 $newAlias = new Alias();
                 $newAlias->alias = $alias;
                 $newAlias->kind = "personal";
@@ -209,7 +211,7 @@ class UsersResource {
      * Updates a user (users.update) in the database as well as its aliases
      *
      * @param string $userKey - The Email or immutable Id of the user.
-     * @param Google_User $postBody
+     * @param \Google_User $postBody
      * @return  null|a real Google_Service_Directory_User instance
      * @throws \Exception with code 201407101130 if a matching user is not found
      */
@@ -218,8 +220,10 @@ class UsersResource {
 
         $userEntry = $this->getDbUser($userKey);
         if ($userEntry === null) {
-            throw new \Exception("Account doesn't exist: " . $userKey,
-                201407101130);
+            throw new \Exception(
+                "Account doesn't exist: " . $userKey,
+                201407101130
+            );
         }
 
         /*
@@ -252,7 +256,7 @@ class UsersResource {
         // Save the user's aliases
         if (isset($postBody->aliases) && $postBody->aliases) {
 
-            foreach($postBody->aliases as $alias) {
+            foreach ($postBody->aliases as $alias) {
                 $newAlias = new \Google_Service_Directory_Alias();
                 $newAlias->alias = $alias;
                 $newAlias->kind = "personal";
@@ -263,7 +267,6 @@ class UsersResource {
         }
 
         return $this->get($userKey);
-
     }
 
     /**
@@ -282,8 +285,127 @@ class UsersResource {
         }
 
         $sqliteUtils = new SqliteUtils($this->_dbFile);
-        return $sqliteUtils->getRecordByDataKey($this->_dataType,
-                               $this->_dataClass, $key, $userKey);
+        return $sqliteUtils->getRecordByDataKey(
+            $this->_dataType,
+            $this->_dataClass,
+            $key,
+            $userKey
+        );
     }
 
-} 
+    /**
+     * This mocks the Google_Service_Directory_Users_Resource's listUser
+     * functionality.
+     *
+     * @param array $parameters -- This will have three keys.
+     *     domain: The domain to limit the search to. It's ignored.
+     *     maxResults: Used to limit the number of results.
+     *                 It defaults to 100.
+     *     query: A string of the form "foo:baz[*]".
+     *            Where foo is a field to search on.
+     *            And baz is what to partially match on.
+     *            The '*' syntax is ignored.
+     *
+     * @return \Google_Service_Directory_Users
+     */
+    public function listUsers($parameters = [])
+    {
+        $results = new \Google_Service_Directory_Users();
+        if (!key_exists('domain', $parameters)) {
+            $parameters['domain'] = 'ZZZZZZZ';
+        }
+        if (!key_exists('maxResults', $parameters)) {
+            $parameters['maxResults'] = 100;
+        }
+        if (!key_exists('query', $parameters)) {
+            $parameters['query'] = '';
+        }
+        $parameters['query'] = urldecode($parameters['query']);
+        $sqliteUtils = new SqliteUtils($this->_dbFile);
+        $allData = $sqliteUtils->getData($this->_dataType, $this->_dataClass);
+        foreach ($allData as $userRecord) {
+            $userEntry = json_decode($userRecord['data'], true);
+            if ($this->doesUserMatch($userEntry, $parameters['query'])) {
+                /** @var \Google_Service_Directory_UserName $newName */
+                $newName = new \Google_Service_Directory_UserName(array(
+                    'familyName' => $userEntry['name']['familyName'],
+                    'fullName'   => $userEntry['name']['fullName'],
+                    'givenName'  => $userEntry['name']['givenName'],
+                ));
+                /** @var \Google_Service_Directory_User $newEntry */
+                $newEntry = new \Google_Service_Directory_User(array(
+                    'primaryEmail' => $userEntry['primaryEmail'],
+                    'customerId' => $userEntry['primaryEmail'],
+                ));
+                $newEntry->setName($newName);
+                
+                $allResultsUsers = $results->getUsers();
+                $allResultsUsers[] = $newEntry;
+                $results->setUsers($allResultsUsers);
+            }
+            if (count($results->getUsers())>= $parameters['maxResults']) {
+                break;
+            }
+        }
+        return $results;
+    }
+
+    private function doesUserMatch($entry, $query = '')
+    {
+        if ($query==='') {
+            return true;
+        }
+        $query = str_replace('*', '', $query);
+        list($field, $value) = explode(':', $query);
+        $field = trim($field);
+        $value = trim($value);
+        if (isset($entry[$field])) {
+            $checkValue = $entry[$field];
+            if (is_array($checkValue) && $field === 'name') {
+                $checkIndividualValues = array();
+                if (isset($checkValue['givenName'])) {
+                    $checkIndividualValues[] = $checkValue['givenName'];
+                }
+                if (isset($checkValue['familyName'])) {
+                    $checkIndividualValues[] = $checkValue['familyName'];
+                }
+                if (isset($checkValue['fullName'])) {
+                    $checkIndividualValues[] = $checkValue['fullName'];
+                }
+                $checkValue = '';
+                foreach ($checkIndividualValues as $checkIndividualValue) {
+                    if (mb_strpos($checkIndividualValue, $value) !== false) {
+                        $checkValue = $checkIndividualValue;
+                        break;
+                    }
+                }
+            } elseif (is_array($checkValue)) {
+                throw new \Exception(
+                    "Did not expect something other than name as an array. Got VALUE: " . var_dump($checkValue)
+                );
+            }
+        } elseif (isset($entry['name'][$field])) {
+            $checkValue = $entry['name'][$field];
+        } elseif ($field === 'email' && isset($entry['primaryEmail'])) {
+            $checkValue = $entry['primaryEmail'];
+        } else {
+            $checkValue = '';
+        }
+        if ($checkValue === null) {
+            $checkValue = '';
+        }
+        if (! is_string($checkValue)) {
+            throw new \Exception(sprintf(
+                "Expecting a string.\nGot Entry: %s\nGot Field: %s\nGot VALUE: %s",
+                var_dump($entry),
+                var_dump($field),
+                var_dump($checkValue)
+            ));
+        }
+        if (mb_strpos($checkValue, $value) !== false) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+}

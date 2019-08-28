@@ -1,6 +1,6 @@
 google-api-php-client-mock
 ==========================
-[![Travis-CI Build Status](https://api.travis-ci.org/silinternational/google-api-php-client-mock.png?branch=master)](https://travis-ci.org/silinternational/google-api-php-client-mock)
+[![Travis-CI Build Status](https://api.travis-ci.org/silinternational/google-api-php-client-mock.png?branch=develop)](https://travis-ci.org/silinternational/google-api-php-client-mock)
 
 A small scale intelligent mock of the Google API PHP Client for unit and
 functional testing.
@@ -25,6 +25,7 @@ that are implemented by this mock are ...
 1. get()
 2. insert()
 3. update()
+4. listUsers()
 
 ### UsersAliases_Resource
 A UsersAliases_Resource has various methods for managing Google Apps users aliases.
