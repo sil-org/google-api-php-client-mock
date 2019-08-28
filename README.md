@@ -25,6 +25,7 @@ that are implemented by this mock are ...
 1. get()
 2. insert()
 3. update()
+4. listUsers()
 
 ### UsersAliases_Resource
 A UsersAliases_Resource has various methods for managing Google Apps users aliases.
