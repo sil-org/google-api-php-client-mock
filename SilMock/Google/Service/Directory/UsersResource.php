@@ -402,7 +402,7 @@ class UsersResource
                 var_dump($checkValue)
             ));
         }
-        if (mb_strpos($checkValue, $value) !== false) {
+        if (mb_strpos($checkValue, $value) === 0) {
             return true;
         } else {
             return false;
