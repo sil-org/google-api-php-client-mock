@@ -5,7 +5,7 @@
 use SilMock\Google\Service\GoogleFixtures;
 use SilMock\DataStore\Sqlite\SqliteUtils;
 
-class GoogleFixturesTest extends PHPUnit_Framework_TestCase
+class GoogleFixturesTest extends PHPUnit\Framework\TestCase
 {
     public $dataFile = DATAFILE3;
 

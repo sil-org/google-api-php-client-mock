@@ -2,7 +2,7 @@
 
 use SilMock\DataStore\Sqlite\SqliteUtils;
 
-class SqliteUtilsTest extends PHPUnit_Framework_TestCase
+class SqliteUtilsTest extends PHPUnit\Framework\TestCase
 {
     public $dataFile = DATAFILE1;
 
