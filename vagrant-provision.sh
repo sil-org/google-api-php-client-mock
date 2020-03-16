@@ -1,7 +1,15 @@
 #!/bin/bash
 
-# Install Apache and PHP (and any needed extensions).
-sudo yum install -y git php php-mcrypt php-pdo php-xml php-mbstring
+# Make sure apt has current list/updates
+sudo apt update
+sudo apt upgrade -y
+
+# Install necessary PHP building blocks
+# Install Apache and PHP (and any needed extensions). 
+# Install mock DB stuff
+sudo apt install -y zip unzip php php-dev php-pear \
+                    git php-pdo php-xml php-mbstring \
+                    sqlite php-sqlite3
 
 # Make sure the timezone is set in php.ini.
 sudo sed -i".bak" "s/^\;date\.timezone.*$/date\.timezone = \"America\\/New_York\" /g" /etc/php.ini
