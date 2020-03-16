@@ -7,7 +7,7 @@ sudo apt upgrade -y
 # Install necessary PHP building blocks
 # Install Apache and PHP (and any needed extensions). 
 # Install mock DB stuff
-sudo apt install -y zip unzip php php-dev php-pear \
+sudo apt install -y zip unzip php \
                     git php-pdo php-xml php-mbstring \
                     sqlite php-sqlite3
 
