@@ -16,19 +16,20 @@
         },
         {
             "name": "Matt Henderson"
+        },
+        {
+            "name": "Mark Tompsett"
         }
     ],
     "require": {
-        "php": ">=5.3.3",
+        "php": ">=7.2.0",
         "ext-json": "*",
         "google/apiclient": "^1.1",
         "google/apiclient-services": "^0.83",
         "ext-mbstring": "*"
     },
     "require-dev": {
-        "phpunit/phpunit": "3.7.*",
-        "apigen/apigen": "*",
-        "satooshi/php-coveralls": "*"
+        "phpunit/phpunit": "8.5.*"
     },
     "autoload": {
         "psr-0": {
