@@ -75,6 +75,17 @@ implements include...
 
 1. listUsersSettingsForwardingAddresses()
 
+Unit Testing
+------------
+If you are able to run docker natively, then:
+ - make it-now
+
+If not, then use vagrant up:
+ - vagrant up
+ - vagrant ssh
+ - cd /var/lib/GA_mock
+ - make test
+
 Data Persistence
 ----------------
 In order to keep data available for use by this mock, it makes use of a **Sqlite**
