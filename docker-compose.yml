@@ -1,0 +1,22 @@
+version: '2'
+services:
+    data:
+        image: silintl/data-volume:latest
+        volumes:
+            - ./:/data
+
+    cli:
+        build: ./
+        volumes_from:
+            - data
+        working_dir: /data
+        command: ["true"]
+
+networks:
+    default:
+        driver: bridge
+        ipam:
+            driver: default
+            config:
+            - subnet: 10.20.35.0/24
+              gateway: 10.20.35.1
