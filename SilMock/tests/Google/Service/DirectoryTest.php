@@ -10,7 +10,7 @@ use SilMock\DataStore\Sqlite\SqliteUtils;
 use SilMock\Google\Service\GoogleFixtures;
 
 
-class DirectoryTest extends PHPUnit_Framework_TestCase
+class DirectoryTest extends PHPUnit\Framework\TestCase
 {
     public $dataFile = DATAFILE2;
 
@@ -494,10 +494,6 @@ class DirectoryTest extends PHPUnit_Framework_TestCase
         $this->assertEquals($expected, $results, $msg);
     }
 
-    /**
-     * @expectedException \Exception
-     * @expectedExceptionCode 201407101130
-     */
     public function testUsersUpdate_NotThere()
     {
         $fixturesClass = new GoogleFixtures($this->dataFile);
@@ -521,6 +517,8 @@ class DirectoryTest extends PHPUnit_Framework_TestCase
         ObjectUtils::initialize($newUser, $userData);
 
         $newDir = new Directory('anyclient', $this->dataFile);
+        
+        $this->expectExceptionCode(201407101130);
         $newDir->users->update($userId, $newUser);
         // the assert is in the doc comment
     }
@@ -633,10 +631,6 @@ class DirectoryTest extends PHPUnit_Framework_TestCase
         $this->assertEquals($expected, $results, $msg);
     }
 
-    /**
-     * @expectedException \Exception
-     * @expectedExceptionCode 201407110830
-     */
     public function testUsersAliasesInsert_UserNotThere()
     {
         $fixturesClass = new GoogleFixtures($this->dataFile);
@@ -650,8 +644,9 @@ class DirectoryTest extends PHPUnit_Framework_TestCase
         $newAlias->kind = "personal";
 
         $newDir = new Directory('anyclient', $this->dataFile);
+        
+        $this->expectExceptionCode(201407110830);
         $newAlias = $newDir->users_aliases->insert("no_user@sil.org", $newAlias);
-        // the assert is in the doc comments with @expectedException
     }
 
     public function testUsersAliasesListUsersAliases_Email()
@@ -768,10 +763,6 @@ class DirectoryTest extends PHPUnit_Framework_TestCase
         $this->assertEquals($expected, $results, $msg);
     }
 
-    /**
-     * @expectedException \Exception
-     * @expectedExceptionCode 201407101420
-     */
     public function testUsersAliasesListUsersAliases_UserNotThere()
     {
         $fixturesClass = new GoogleFixtures($this->dataFile);
@@ -787,6 +778,8 @@ class DirectoryTest extends PHPUnit_Framework_TestCase
         $fixturesClass->addFixtures($newFixtures);
 
         $newDir = new Directory('anyclient', $this->dataFile);
+        
+        $this->expectExceptionCode(201407101420);
         $aliases = $newDir->users_aliases->listUsersAliases("no_user@sil.org");
     }
 

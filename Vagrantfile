@@ -10,7 +10,10 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # please see the online documentation at vagrantup.com.
 
   # Every Vagrant virtual environment requires a box to build off of.
-  config.vm.box = "fillup/centos-6.5-x86_64-minimal"
+  config.vm.box = "ubuntu/bionic64"
+  config.vm.provider "virtualbox" do |v|
+    v.memory = 1536
+  end
 
   # Create a private network, which allows host-only access to the machine
   # using a specific IP.
