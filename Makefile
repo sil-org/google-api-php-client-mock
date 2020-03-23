@@ -1,15 +1,18 @@
-it-now: clean composerupdate phpunit
+it-now: clean install phpunit
 
 clean:
 	sudo rm -rf ./vendor
-	rm -f composer.phar
 	rm -f composer.lock
 
-composerupdate:
-	docker-compose run cli bash -c "cd /data/; ./composer-update.sh"
+install:
+	docker-compose run --rm cli bash -c "cd /vagrant;composer install"
+
+update:
+	docker-compose run --rm cli bash -c "cd /vagrant;composer update"
 
 phpunit:
-	docker-compose run cli bash -c "cd /data/SilMock/tests;./phpunit"
+	docker-compose run --rm cli bash -c "cd /vagrant/SilMock/tests;./phpunit"
 
+# For use in virtualbox.
 test:
 	cd /var/lib/GA_mock/SilMock/tests; /var/lib/GA_mock/SilMock/tests/phpunit
