@@ -1,4 +1,4 @@
-FROM silintl/data-volume:latest
+FROM silintl/php7:7.2
 MAINTAINER Mark Tompsett <mark_tompsett@sil.org>
 
 ENV REFRESHED_AT 2020-03-16
@@ -14,9 +14,9 @@ RUN apt-get update -y && echo "America/New_York" > /etc/timezone; \
 RUN apt-get install -y zip unzip make curl wget \
     php php-pdo php-xml php-mbstring sqlite php-sqlite3
 
-RUN mkdir -p /vagrant
-WORKDIR /vagrant
-COPY ./ /vagrant
+RUN mkdir -p /data
+WORKDIR /data
+COPY ./ /data
 
-RUN cd /vagrant && ./composer-install.sh
-RUN mv /vagrant/composer.phar /usr/bin/composer
+RUN cd /data && ./composer-install.sh
+RUN mv /data/composer.phar /usr/bin/composer

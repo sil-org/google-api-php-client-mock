@@ -3,8 +3,8 @@ services:
     cli:
         build: ./
         volumes:
-            - ./:/vagrant
-        working_dir: /vagrant
+            - ./:/data
+        working_dir: /data
         command: ["true"]
 
 networks:
