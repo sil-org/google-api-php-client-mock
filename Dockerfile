@@ -1,4 +1,4 @@
-FROM silintl/php7:7.2
+FROM silintl/data-volume:latest
 MAINTAINER Mark Tompsett <mark_tompsett@sil.org>
 
 ENV REFRESHED_AT 2020-03-16
