@@ -1,15 +1,10 @@
-version: '2'
+version: '2.2'
 services:
-    data:
-        image: silintl/data-volume:latest
-        volumes:
-            - ./:/data
-
     cli:
         build: ./
-        volumes_from:
-            - data
-        working_dir: /data
+        volumes:
+            - ./:/vagrant
+        working_dir: /vagrant
         command: ["true"]
 
 networks:
