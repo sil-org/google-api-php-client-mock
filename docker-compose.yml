@@ -1,0 +1,17 @@
+version: '2.2'
+services:
+    cli:
+        build: ./
+        volumes:
+            - ./:/data
+        working_dir: /data
+        command: ["true"]
+
+networks:
+    default:
+        driver: bridge
+        ipam:
+            driver: default
+            config:
+            - subnet: 10.20.35.0/24
+              gateway: 10.20.35.1
