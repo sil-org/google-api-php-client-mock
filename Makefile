@@ -1,8 +1,8 @@
 it-now: clean install phpunit
 
 clean:
-	sudo rm -rf ./vendor
-	rm -f composer.lock
+	docker-compose kill
+	docker system prune -f
 
 install:
 	docker-compose run --rm cli bash -c "cd /data;composer install"
