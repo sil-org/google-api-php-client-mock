@@ -174,8 +174,8 @@ class UsersSettingsDelegates
     
     public function listUsersSettingsDelegates($userId, $optParams = array())
     {
-        return new Google_Service_Gmail_ListDelegatesResponse(array(
-            'delegates' => array(),
-        ));
+        $response = new Google_Service_Gmail_ListDelegatesResponse();
+        $response->setDelegates($this->listDelegatesFor($userId));
+        return $response;
     }
 }
