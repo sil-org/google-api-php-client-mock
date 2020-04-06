@@ -84,7 +84,7 @@ If not, then use vagrant up:
  - vagrant up
  - vagrant ssh
  - cd /var/lib/GA_mock
- - make test
+ - make vagrantTest
 
 Data Persistence
 ----------------
