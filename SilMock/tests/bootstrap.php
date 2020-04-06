@@ -6,6 +6,7 @@
 define('DATAFILE1', __DIR__.'/../DataStore/Sqlite/Test1_Google_Service_Data.db');
 define('DATAFILE2', __DIR__.'/../DataStore/Sqlite/Test2_Google_Service_Data.db');
 define('DATAFILE3', __DIR__.'/../DataStore/Sqlite/Test3_Google_Service_Data.db');
+define('DATAFILE4', __DIR__.'/../DataStore/Sqlite/Test4_Google_Service_Data.db');
 
 if(!file_exists(DATAFILE1)){
     touch(DATAFILE1);
@@ -17,4 +18,8 @@ if(!file_exists(DATAFILE2)){
 
 if(!file_exists(DATAFILE3)){
     touch(DATAFILE3);
+}
+
+if(!file_exists(DATAFILE4)){
+    touch(DATAFILE4);
 }
