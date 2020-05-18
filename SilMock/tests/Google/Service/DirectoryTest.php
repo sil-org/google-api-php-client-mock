@@ -69,8 +69,8 @@ class DirectoryTest extends PHPUnit\Framework\TestCase
         $newUser->password = 'testP4ss'; // string
         $newUser->primaryEmail = 'user_test1@sil.org'; // string email
         $newUser->suspended = false; // bool
-        $newUser->isEnforcedIn2Sv = 'false'; // enum
-        $newUser->isEnrolledIn2Sv = 'true'; // enum
+        $newUser->isEnforcedIn2Sv = false; // bool
+        $newUser->isEnrolledIn2Sv = true; //
       //  $newUser->$suspensionReason = ''; // string
         $newUser->aliases = array();
 
@@ -85,8 +85,8 @@ class DirectoryTest extends PHPUnit\Framework\TestCase
             "password" => "testP4ss",
             "primaryEmail" => "user_test1@sil.org",
             "suspended" => false,
-            "isEnforcedIn2Sv" => 'false',
-            "isEnrolledIn2Sv" => 'true',
+            "isEnforcedIn2Sv" => false,
+            "isEnrolledIn2Sv" => true,
             "aliases" => array(),
         );
         $msg = " *** Bad returned user";
@@ -106,8 +106,8 @@ class DirectoryTest extends PHPUnit\Framework\TestCase
             "password" => "testP4ss",
             "primaryEmail" => "user_test1@sil.org",
             "suspended" => false,
-            "isEnforcedIn2Sv" => 'false',
-            "isEnrolledIn2Sv" => 'true',
+            "isEnforcedIn2Sv" => false,
+            "isEnrolledIn2Sv" => true,
             "aliases" => array(),
         );
 
@@ -126,8 +126,8 @@ class DirectoryTest extends PHPUnit\Framework\TestCase
         $newUser->password = 'testP4ss'; // string
         $newUser->primaryEmail = 'user_test1@sil.org'; // string email
         $newUser->suspended = false; // bool
-        $newUser->isEnrolledIn2Sv = 'true';
-        $newUser->isEnforcedIn2Sv = 'false';
+        $newUser->isEnrolledIn2Sv = true;
+        $newUser->isEnforcedIn2Sv = false;
         //  $newUser->$suspensionReason = ''; // string
 
         $newAliases = new Google_Service_Directory_Aliases();
@@ -150,8 +150,8 @@ class DirectoryTest extends PHPUnit\Framework\TestCase
             "password" => "testP4ss",
             "primaryEmail" => "user_test1@sil.org",
             "suspended" => false,
-            "isEnforcedIn2Sv" => 'false',
-            "isEnrolledIn2Sv" => 'true',
+            "isEnforcedIn2Sv" => false,
+            "isEnrolledIn2Sv" => true,
             "aliases" => array(
                 'etag' => null,
                 'kind' => null,
