@@ -1,0 +1,3 @@
+- name: test
+  service: cli
+  command: "cd /data/SilMock/tests; ./phpunit"
