@@ -23,6 +23,8 @@ class DirectoryTest extends PHPUnit\Framework\TestCase
                 "password",
                 "primaryEmail",
                 "suspended",
+                "isEnforcedIn2Sv",
+                "isEnrolledIn2Sv",
                 "aliases",
             );
         }
@@ -58,7 +60,6 @@ class DirectoryTest extends PHPUnit\Framework\TestCase
 
     public function testUsersInsert()
     {
-
         $fixturesClass = new GoogleFixtures($this->dataFile);
         $fixturesClass->removeAllFixtures();
         $newUser = new Google_Service_Directory_User();
@@ -68,6 +69,8 @@ class DirectoryTest extends PHPUnit\Framework\TestCase
         $newUser->password = 'testP4ss'; // string
         $newUser->primaryEmail = 'user_test1@sil.org'; // string email
         $newUser->suspended = false; // bool
+        $newUser->isEnforcedIn2Sv = false; // bool
+        $newUser->isEnrolledIn2Sv = true; //
       //  $newUser->$suspensionReason = ''; // string
         $newUser->aliases = array();
 
@@ -82,6 +85,8 @@ class DirectoryTest extends PHPUnit\Framework\TestCase
             "password" => "testP4ss",
             "primaryEmail" => "user_test1@sil.org",
             "suspended" => false,
+            "isEnforcedIn2Sv" => false,
+            "isEnrolledIn2Sv" => true,
             "aliases" => array(),
         );
         $msg = " *** Bad returned user";
@@ -95,14 +100,16 @@ class DirectoryTest extends PHPUnit\Framework\TestCase
         $results = $this->getProperties($dataObj);
 
         $expected = array (
-                            "changePasswordAtNextLogin" => false,
-                            "hashFunction" => "SHA-1",
-                            "id" => 999991,
-                            "password" => "testP4ss",
-                            "primaryEmail" => "user_test1@sil.org",
-                            "suspended" => false,
-                            "aliases" => array(),
-                     );
+            "changePasswordAtNextLogin" => false,
+            "hashFunction" => "SHA-1",
+            "id" => 999991,
+            "password" => "testP4ss",
+            "primaryEmail" => "user_test1@sil.org",
+            "suspended" => false,
+            "isEnforcedIn2Sv" => false,
+            "isEnrolledIn2Sv" => true,
+            "aliases" => array(),
+        );
 
         $msg = " *** Bad data from sqlite database";
         $this->assertEquals($expected, $results, $msg);
@@ -119,6 +126,8 @@ class DirectoryTest extends PHPUnit\Framework\TestCase
         $newUser->password = 'testP4ss'; // string
         $newUser->primaryEmail = 'user_test1@sil.org'; // string email
         $newUser->suspended = false; // bool
+        $newUser->isEnrolledIn2Sv = true;
+        $newUser->isEnforcedIn2Sv = false;
         //  $newUser->$suspensionReason = ''; // string
 
         $newAliases = new Google_Service_Directory_Aliases();
@@ -141,6 +150,8 @@ class DirectoryTest extends PHPUnit\Framework\TestCase
             "password" => "testP4ss",
             "primaryEmail" => "user_test1@sil.org",
             "suspended" => false,
+            "isEnforcedIn2Sv" => false,
+            "isEnrolledIn2Sv" => true,
             "aliases" => array(
                 'etag' => null,
                 'kind' => null,
@@ -183,6 +194,8 @@ class DirectoryTest extends PHPUnit\Framework\TestCase
             '"hashFunction":"SHA-1",' .
             '"id":999991,"password":"testP4ss",' .
             '"primaryEmail":"user_test4@sil.org",' .
+            '"isEnforcedIn2Sv":false,' .
+            '"isEnrolledIn2Sv":true,' .
             '"suspended":false,"suspensionReason":null}';
 
         $alias2 = new Google_Service_Directory_Alias();
@@ -229,14 +242,16 @@ class DirectoryTest extends PHPUnit\Framework\TestCase
         $primaryEmail = 'user_test4@sil.org';
 
         $userData = array(
-                        "changePasswordAtNextLogin" => false,
-                        "hashFunction" => "SHA-1",
-                        "id" => 999991,
-                        "password" => "testP4ss",
-                        "primaryEmail" => $primaryEmail,
-                        "suspended" => false,
-                        "aliases" =>null,
-                    );
+            "changePasswordAtNextLogin" => false,
+            "hashFunction" => "SHA-1",
+            "id" => 999991,
+            "password" => "testP4ss",
+            "primaryEmail" => $primaryEmail,
+            "suspended" => false,
+            "isEnforcedIn2Sv" => false,
+            "isEnrolledIn2Sv" => true,
+            "aliases" =>null,
+        );
 
         $fixtures = $this->getFixtures();
         $fixturesClass->addFixtures($fixtures);
@@ -264,6 +279,8 @@ class DirectoryTest extends PHPUnit\Framework\TestCase
             "password" => "testP4ss",
             "primaryEmail" => "user_test4@sil.org",
             "suspended" => false,
+            "isEnforcedIn2Sv" => false,
+            "isEnrolledIn2Sv" => true,
             "aliases" =>null,
         );
 
@@ -297,6 +314,8 @@ class DirectoryTest extends PHPUnit\Framework\TestCase
             "password" => "testP4ss",
             "primaryEmail" => $email,
             "suspended" => false,
+            "isEnforcedIn2Sv" => false,
+            "isEnrolledIn2Sv" => true,
             "aliases" => array("users_alias1A@sil.org", "users_alias1B@sil.org"),
         );
 
@@ -365,6 +384,8 @@ class DirectoryTest extends PHPUnit\Framework\TestCase
             "password" => "testP4ss",
             "primaryEmail" => $primaryEmail,
             "suspended" => false,
+            "isEnforcedIn2Sv" => false,
+            "isEnrolledIn2Sv" => true,
             "aliases" => array(),
         );
 
@@ -399,6 +420,8 @@ class DirectoryTest extends PHPUnit\Framework\TestCase
             "password" => "testP4ss",
             "primaryEmail" => "user_test4@sil.org",
             "suspended" => false,
+            "isEnforcedIn2Sv" => false,
+            "isEnrolledIn2Sv" => true,
             "aliases" => array(),
         );
 
@@ -432,6 +455,8 @@ class DirectoryTest extends PHPUnit\Framework\TestCase
             "password" => "testP4ss",
             "primaryEmail" => $primaryEmail,
             "suspended" => false,
+            "isEnrolledIn2Sv" => true,
+            "isEnforcedIn2Sv" => false,
             "aliases" => array('user_alias4B@sil.org'),
         );
 
@@ -473,6 +498,8 @@ class DirectoryTest extends PHPUnit\Framework\TestCase
             "password" => "testP4ss",
             "primaryEmail" => $primaryEmail,
             "suspended" => false,
+            "isEnrolledIn2Sv" => true,
+            "isEnforcedIn2Sv" => false,
             "aliases" => array('user_alias4C@sil.org', 'user_alias4D@sil.org'),
         );
 
