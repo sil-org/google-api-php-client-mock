@@ -8,8 +8,8 @@ class ObjectUtils
     /**
      * Assigns given values to the matching properties of a Google Mock object
      *
-     * @param $newObject a Google mock object
-     * @param $properties object|associative array
+     * @param object $newObject -- a Google mock object
+     * @param object|array $properties -- object|associative array
      * @returns null
      **/
     public static function initialize($newObject, $properties)

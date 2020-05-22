@@ -3,6 +3,8 @@ namespace SilMock\Google\Service\Directory;
 
 use SilMock\DataStore\Sqlite\SqliteUtils;
 
+use Google_Service_Directory_User;
+
 class UsersResource
 {
     private $_dbFile;  // path (with file name) for the Sqlite database
@@ -148,8 +150,8 @@ class UsersResource
      * Creates a user (users.insert) and sets its aliases property if any
      *     are given.
      *
-     * @param Google_User $postBody
-     * @return null|a real Google_Service_Directory_User instance
+     * @param Google_Service_Directory_User|UsersResource $postBody
+     * @return Google_Service_Directory_User|null
      * @throws \Exception with code 201407101120, if the user already exists
      */
     public function insert($postBody)
@@ -211,8 +213,8 @@ class UsersResource
      * Updates a user (users.update) in the database as well as its aliases
      *
      * @param string $userKey - The Email or immutable Id of the user.
-     * @param \Google_User $postBody
-     * @return  null|a real Google_Service_Directory_User instance
+     * @param Google_Service_Directory_User $postBody
+     * @return Google_Service_Directory_User|null
      * @throws \Exception with code 201407101130 if a matching user is not found
      */
     public function update($userKey, $postBody)
