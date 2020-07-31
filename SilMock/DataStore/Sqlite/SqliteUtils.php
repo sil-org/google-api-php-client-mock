@@ -150,6 +150,39 @@ class SqliteUtils
     }
 
     /**
+     * A utility function to delete the Google Mock data based on a
+     * particular data type and data class for a specific email.
+     *
+     * @param string $dataType, the name of a Google mock service (e.g. 'directory')
+     * @param string $dataClass, the name of a Google mock class (e.g. 'users_alias')
+     *        If $dataType and $dataClass are not strings, nothing is deleted.
+     * @param string $emailAddress -- the primary email address.
+     * @return null -- If $dataKey user doesn't exist, just returns.
+     */
+    public function deleteDataByEmail(string $dataType, string $dataClass, string $emailAddress)
+    {
+        if (! file_exists($this->_dbFile)) {
+            return null;
+        }
+        if (empty($dataType)) {
+            return null;
+        }
+        if (empty($dataClass)) {
+            return null;
+        }
+        if (empty($emailAddress)) {
+            return null;
+        }
+
+        $matchingRecords = $this->getAllRecordsByDataKey($dataType, $dataClass, 'primaryEmail', $emailAddress);
+        foreach ($matchingRecords as $matchingRecord) {
+            $id = $matchingRecord['id'];
+            $this->deleteRecordById($id);
+        }
+        return null;
+    }
+
+    /**
      * Updates the "data" field of the database record whose id field matches
      *     the input value
      * @param $recordId int

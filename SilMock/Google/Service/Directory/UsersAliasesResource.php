@@ -104,8 +104,11 @@ class UsersAliasesResource {
     {
         $entryData = json_encode(get_object_vars($postBody));
         $sqliteUtils = new SqliteUtils($this->_dbFile);
-        $sqliteUtils->recordData($this->_dataType, $this->_dataClass,
-            $entryData, true);
+        $sqliteUtils->recordData(
+            $this->_dataType,
+            $this->_dataClass,
+            $entryData
+        );
         $allAliases = $sqliteUtils->getData($this->_dataType, $this->_dataClass);
 
         if ( ! $allAliases) {

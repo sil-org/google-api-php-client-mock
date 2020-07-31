@@ -227,7 +227,7 @@ class SqliteUtilsTest extends PHPUnit\Framework\TestCase
                 'type' => 'directory',
                 'class' => 'user',
                 'data' => '{"primaryEmail":"user_test1@sil.org",' .
-                          '"id":1,"password":"testPass1"}',
+                    '"id":1,"password":"testPass1"}',
             ),
             array('id' => '3',
                 'type' => 'app_engine',
@@ -238,17 +238,40 @@ class SqliteUtilsTest extends PHPUnit\Framework\TestCase
                 'type' => 'directory',
                 'class' => 'user',
                 'data' => '{"primaryEmail":"user_test4@sil.org",' .
-                          '"id":4,"password":"testPass4"}',
+                    '"id":4,"password":"testPass4"}',
             ),
             array('id' => '5',
                 'type' => 'directory',
                 'class' => 'users_alias',
                 'data' => '{"primaryEmail":"user_test1@sil.org",' .
-                          '"alias":"users_alias5@sil.org"}',
+                    '"alias":"users_alias5@sil.org"}',
             ),
         );
         $msg = " *** Mismatched data results for remaining data.";
         $this->assertEquals($expected, $results, $msg);
     }
 
-} 
+    public function testDeleteDataByEmail()
+    {
+        $newSql =  $this->loadData();
+        $newSql->deleteDataByEmail('directory','user', 'user_test1@sil.org');
+        $newSql->deleteDataByEmail('directory','users_alias', 'user_test1@sil.org');
+        $results = $newSql->getData('', '');
+
+        $expected = array(
+            array('id' => '3',
+                'type' => 'app_engine',
+                'class' => 'webapp',
+                'data' => 'webapp3 test data',
+            ),
+            array('id' => '4',
+                'type' => 'directory',
+                'class' => 'user',
+                'data' => '{"primaryEmail":"user_test4@sil.org",' .
+                    '"id":4,"password":"testPass4"}',
+            ),
+        );
+        $msg = " *** Mismatched data results for remaining data.";
+        $this->assertEquals($expected, $results, $msg);
+    }
+}
