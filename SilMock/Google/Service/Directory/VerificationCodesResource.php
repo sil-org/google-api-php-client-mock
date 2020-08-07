@@ -21,7 +21,7 @@ class VerificationCodesResource
      *
      * @param string|int $userKey The email or immutable Id of the user
      * @return true|null depending on if an alias was deleted
-     * @throws \Exception with code 201407101645
+     * @throws \Exception -- when account doesn't exist
      */
     public function invalidate($userKey)
     {
@@ -36,7 +36,7 @@ class VerificationCodesResource
         $dir = new Directory('anything', $this->_dbFile);
         $matchingUser = $dir->users->get($userKey);
         if ($matchingUser === null) {
-            throw new \Exception("Account doesn't exist: " . $userKey, 201407101645);
+            throw new \Exception("Account doesn't exist: " . $userKey);
         }
         $email = $matchingUser->getPrimaryEmail();
 
