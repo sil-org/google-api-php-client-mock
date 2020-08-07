@@ -1,17 +1,16 @@
 <?php
 
+namespace SilMock\tests\Google\Service;
+
+use PHPUnit\Framework\TestCase;
+use Google_Service_Directory_Alias;
+use Google_Service_Directory_User;
 use SilMock\Google\Service\Directory;
 use SilMock\Google\Service\Directory\ObjectUtils;
-use SilMock\Google\Service\Directory\User;
-use SilMock\Google\Service\Directory\FakeGoogleUser;
-use SilMock\Google\Service\Directory\Alias;
-use SilMock\Google\Service\Directory\FakeGoogleAlias;
 use SilMock\DataStore\Sqlite\SqliteUtils;
 use SilMock\Google\Service\GoogleFixtures;
-use SilMock\tests\Google\Service\SampleUser;
 
-
-class DirectoryTest extends PHPUnit\Framework\TestCase
+class DirectoryTest extends TestCase
 {
     use SampleUser;
     public $dataFile = DATAFILE2;
