@@ -155,9 +155,11 @@ class SqliteUtils
      *
      * @param string $dataType, the name of a Google mock service (e.g. 'directory')
      * @param string $dataClass, the name of a Google mock class (e.g. 'users_alias')
-     *        If $dataType and $dataClass are not strings, nothing is deleted.
+     *        If empty, then all the matching $dataType records
+     *          for the $emailAddress are deleted.
+     *        If $dataType and $dataClass are empty strings, nothing is deleted.
      * @param string $emailAddress -- the primary email address.
-     * @return null -- If $dataKey user doesn't exist, just returns.
+     * @return null
      */
     public function deleteDataByEmail(string $dataType, string $dataClass, string $emailAddress)
     {
@@ -165,9 +167,6 @@ class SqliteUtils
             return null;
         }
         if (empty($dataType)) {
-            return null;
-        }
-        if (empty($dataClass)) {
             return null;
         }
         if (empty($emailAddress)) {

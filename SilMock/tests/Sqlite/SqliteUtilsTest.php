@@ -1,10 +1,14 @@
 <?php
 
+namespace SilMock\tests\Sqlite;
+
+use PHPUnit\Framework\TestCase;
 use SilMock\DataStore\Sqlite\SqliteUtils;
 
-class SqliteUtilsTest extends PHPUnit\Framework\TestCase
+class SqliteUtilsTest extends TestCase
 {
     public $dataFile = DATAFILE1;
+    public const verificationRecordData = '{"primaryEmail":"user_test1@sil.org","data":{"etag":null,"kind":null,"items":[{"etag":null,"kind":null,"userId":null,"verificationCode":59837946},{"etag":null,"kind":null,"userId":null,"verificationCode":70637639},{"etag":null,"kind":null,"userId":null,"verificationCode":28377580},{"etag":null,"kind":null,"userId":null,"verificationCode":50819149},{"etag":null,"kind":null,"userId":null,"verificationCode":91732989},{"etag":null,"kind":null,"userId":null,"verificationCode":90318716},{"etag":null,"kind":null,"userId":null,"verificationCode":40781363},{"etag":null,"kind":null,"userId":null,"verificationCode":85614013},{"etag":null,"kind":null,"userId":null,"verificationCode":37077320},{"etag":null,"kind":null,"userId":null,"verificationCode":68994617}]}}';
 
     public function testRecordData()
     {
@@ -34,6 +38,11 @@ class SqliteUtilsTest extends PHPUnit\Framework\TestCase
             '{"primaryEmail":"user_test4@sil.org","id":4,"password":"testPass4"}');
         $results = $newSql->recordData('directory', 'users_alias',
             '{"primaryEmail":"user_test1@sil.org","alias":"users_alias5@sil.org"}');
+        $results = $newSql->recordData(
+            'directory',
+            'verification_codes',
+            self::verificationRecordData
+        );
 
         return $newSql;
     }
@@ -72,6 +81,12 @@ class SqliteUtilsTest extends PHPUnit\Framework\TestCase
                 'data' => '{"primaryEmail":"user_test1@sil.org",' .
                     '"alias":"users_alias5@sil.org"}',
             ),
+            array(
+                'id' => '6',
+                'type' => 'directory',
+                'class' => 'verification_codes',
+                'data' => self::verificationRecordData,
+            )
         );
         $msg = " *** Mismatched data results for all data.";
         $this->assertEquals($expected, $results, $msg);
@@ -106,6 +121,12 @@ class SqliteUtilsTest extends PHPUnit\Framework\TestCase
                 'data' => '{"primaryEmail":"user_test1@sil.org",' .
                           '"alias":"users_alias5@sil.org"}',
             ),
+            array(
+                'id' => '6',
+                'type' => 'directory',
+                'class' => 'verification_codes',
+                'data' => self::verificationRecordData,
+            )
         );
         $msg = " *** Mismatched data results for directory data.";
         $this->assertEquals($expected, $results, $msg);
@@ -246,6 +267,12 @@ class SqliteUtilsTest extends PHPUnit\Framework\TestCase
                 'data' => '{"primaryEmail":"user_test1@sil.org",' .
                     '"alias":"users_alias5@sil.org"}',
             ),
+            array(
+                'id' => '6',
+                'type' => 'directory',
+                'class' => 'verification_codes',
+                'data' => self::verificationRecordData,
+            )
         );
         $msg = " *** Mismatched data results for remaining data.";
         $this->assertEquals($expected, $results, $msg);
@@ -254,8 +281,7 @@ class SqliteUtilsTest extends PHPUnit\Framework\TestCase
     public function testDeleteDataByEmail()
     {
         $newSql =  $this->loadData();
-        $newSql->deleteDataByEmail('directory','user', 'user_test1@sil.org');
-        $newSql->deleteDataByEmail('directory','users_alias', 'user_test1@sil.org');
+        $newSql->deleteDataByEmail('directory','', 'user_test1@sil.org');
         $results = $newSql->getData('', '');
 
         $expected = array(
