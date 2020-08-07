@@ -1,10 +1,14 @@
 <?php
 
+namespace SilMock\tests\Google\Service\Gmail\Resource;
+
 use PHPUnit\Framework\Assert;
+use PHPUnit\Framework\TestCase;
+use Google_Service_Gmail_Delegate;
 use SilMock\Google\Service\Gmail\Resource\UsersSettingsDelegates;
 use SilMock\Google\Service\GoogleFixtures;
 
-class UsersSettingsDelegatesTest extends PHPUnit\Framework\TestCase
+class UsersSettingsDelegatesTest extends TestCase
 {
     public $dataFile = DATAFILE4;
     

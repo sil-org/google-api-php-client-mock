@@ -1,17 +1,18 @@
 <?php
 
+namespace SilMock\tests\Google\Service;
+
+use PHPUnit\Framework\TestCase;
+use Google_Service_Directory_Alias;
+use Google_Service_Directory_User;
 use SilMock\Google\Service\Directory;
 use SilMock\Google\Service\Directory\ObjectUtils;
-use SilMock\Google\Service\Directory\User;
-use SilMock\Google\Service\Directory\FakeGoogleUser;
-use SilMock\Google\Service\Directory\Alias;
-use SilMock\Google\Service\Directory\FakeGoogleAlias;
 use SilMock\DataStore\Sqlite\SqliteUtils;
 use SilMock\Google\Service\GoogleFixtures;
 
-
-class DirectoryTest extends PHPUnit\Framework\TestCase
+class DirectoryTest extends TestCase
 {
+    use SampleUser;
     public $dataFile = DATAFILE2;
 
     public function getProperties($object, $propKeys = null) {
@@ -45,6 +46,7 @@ class DirectoryTest extends PHPUnit\Framework\TestCase
             'tokens',
             'users',
             'users_aliases',
+            'verificationCodes',
         );
         $errorMessage = " *** Directory was not initialized properly";
         
@@ -60,22 +62,7 @@ class DirectoryTest extends PHPUnit\Framework\TestCase
 
     public function testUsersInsert()
     {
-        $fixturesClass = new GoogleFixtures($this->dataFile);
-        $fixturesClass->removeAllFixtures();
-        $newUser = new Google_Service_Directory_User();
-        $newUser->changePasswordAtNextLogin = false; // bool
-        $newUser->hashFunction = "SHA-1"; // string
-        $newUser->id = 999991; // int???
-        $newUser->password = 'testP4ss'; // string
-        $newUser->primaryEmail = 'user_test1@sil.org'; // string email
-        $newUser->suspended = false; // bool
-        $newUser->isEnforcedIn2Sv = false; // bool
-        $newUser->isEnrolledIn2Sv = true; //
-      //  $newUser->$suspensionReason = ''; // string
-        $newUser->aliases = array();
-
-        $newDir = new Directory('anyclient', $this->dataFile);
-        $newUser = $newDir->users->insert($newUser);
+        $newUser = $this->setupSampleUser($this->dataFile, false);
         $results = $this->getProperties($newUser);
 
         $expected = array(
@@ -87,7 +74,7 @@ class DirectoryTest extends PHPUnit\Framework\TestCase
             "suspended" => false,
             "isEnforcedIn2Sv" => false,
             "isEnrolledIn2Sv" => true,
-            "aliases" => array(),
+            "aliases" => null,
         );
         $msg = " *** Bad returned user";
         $this->assertEquals($expected, $results, $msg);
@@ -108,7 +95,7 @@ class DirectoryTest extends PHPUnit\Framework\TestCase
             "suspended" => false,
             "isEnforcedIn2Sv" => false,
             "isEnrolledIn2Sv" => true,
-            "aliases" => array(),
+            "aliases" => null,
         );
 
         $msg = " *** Bad data from sqlite database";
@@ -117,30 +104,7 @@ class DirectoryTest extends PHPUnit\Framework\TestCase
 
     public function testUsersInsert_WithAlias()
     {
-        $fixturesClass = new GoogleFixtures($this->dataFile);
-        $fixturesClass->removeAllFixtures();
-        $newUser = new Google_Service_Directory_User();
-        $newUser->changePasswordAtNextLogin = false; // bool
-        $newUser->hashFunction = "SHA-1"; // string
-        $newUser->id = 999991; // int???
-        $newUser->password = 'testP4ss'; // string
-        $newUser->primaryEmail = 'user_test1@sil.org'; // string email
-        $newUser->suspended = false; // bool
-        $newUser->isEnrolledIn2Sv = true;
-        $newUser->isEnforcedIn2Sv = false;
-        //  $newUser->$suspensionReason = ''; // string
-
-        $newAliases = new Google_Service_Directory_Aliases();
-        $newAlias = new Google_Service_Directory_Alias();
-        $newAlias->alias = 'user_alias1@sil.org';
-        $newAlias->setKind("personal");
-        $newAlias->primaryEmail = $newUser->primaryEmail;
-        $newAliases->setAliases(array($newAlias));
-
-        $newUser->aliases = $newAliases; // bool
-
-        $newDir = new Directory('anyclient', $this->dataFile);
-        $newUser = $newDir->users->insert($newUser);
+        $newUser = $this->setupSampleUser($this->dataFile, true);
 
         $results =  $this->getProperties($newUser);
         $expected = array(
