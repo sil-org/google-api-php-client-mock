@@ -1,11 +1,12 @@
 <?php
 
-//require_once(dirname(__FILE__).'/../../../../Google/Service/Directory.php');
+namespace SilMock\tests\Google\Service;
 
+use PHPUnit\Framework\TestCase;
 use SilMock\Google\Service\GoogleFixtures;
 use SilMock\DataStore\Sqlite\SqliteUtils;
 
-class GoogleFixturesTest extends PHPUnit\Framework\TestCase
+class GoogleFixturesTest extends TestCase
 {
     public $dataFile = DATAFILE3;
 
