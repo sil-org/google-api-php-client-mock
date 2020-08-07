@@ -89,7 +89,7 @@ class VerificationCodesResource
     }
 
     /**
-     * Generates a new set of verificationbs for the specified user.
+     * Generates a new set of verifications for the specified user.
      *
      * @param string|int $userKey - The Email or immutable Id of the user
      * @return array -- empty array which indicates success.
