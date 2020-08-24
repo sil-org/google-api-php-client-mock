@@ -79,12 +79,14 @@ class VerificationCodesResource
             $key,
             $userKey
         );
-        $verificationCodeData = $data[0]['data'];
-        $decodedVerificationCodeData = json_decode($verificationCodeData, true);
-        unset($decodedVerificationCodeData['primaryEmail']);
-
         $verificationCodes = new \Google_Service_Directory_VerificationCodes();
-        ObjectUtils::initialize($verificationCodes, $decodedVerificationCodeData['data']);
+        if (! empty($data)) {
+            $verificationCodeData = $data[0]['data'];
+            $decodedVerificationCodeData = json_decode($verificationCodeData, true);
+            unset($decodedVerificationCodeData['primaryEmail']);
+
+            ObjectUtils::initialize($verificationCodes, $decodedVerificationCodeData['data']);
+        }
         return $verificationCodes;
     }
 
