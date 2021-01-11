@@ -1,8 +1,8 @@
 <?php
+
 namespace SilMock\Google\Service\Directory;
 
 use SilMock\DataStore\Sqlite\SqliteUtils;
-
 use Google_Service_Directory_User;
 
 class UsersResource
@@ -87,7 +87,6 @@ class UsersResource
         $key = 'primaryEmail';
         if (! filter_var($userKey, FILTER_VALIDATE_EMAIL)) {
             $key = 'id';
-            $userKey = intval($userKey);
         }
         
         $usersAliases = new UsersAliasesResource($this->_dbFile);
@@ -157,7 +156,7 @@ class UsersResource
     public function insert($postBody)
     {
         $defaults = array(
-            'id' => intval(str_replace(array(' ', '.'), '', microtime())),
+            'id' => str_replace(array(' ', '.'), '', microtime()),
             'suspended' => false,
             'changePasswordAtNextLogin' => false,
             'isAdmin' => false,
@@ -219,11 +218,10 @@ class UsersResource
      */
     public function update($userKey, $postBody)
     {
-
         $userEntry = $this->getDbUser($userKey);
         if ($userEntry === null) {
             throw new \Exception(
-                "Account doesn't exist: " . $userKey,
+                "Account doesn't exist: " . json_encode($userKey, true),
                 201407101130
             );
         }
@@ -232,7 +230,6 @@ class UsersResource
          * only keep the non-null properties of the $postBody user,
          * except for suspensionReason.
          */
-
         $dbUserProps = json_decode($userEntry['data'], true);
         $newUserProps = get_object_vars($postBody);
 
@@ -257,7 +254,6 @@ class UsersResource
 
         // Save the user's aliases
         if (isset($postBody->aliases) && $postBody->aliases) {
-
             foreach ($postBody->aliases as $alias) {
                 $newAlias = new \Google_Service_Directory_Alias();
                 $newAlias->alias = $alias;
@@ -275,15 +271,14 @@ class UsersResource
      * Retrieves a user record from the database (users.delete)
      *
      * @param string $userKey - The Email or immutable Id of the user
-     * @return null|nested array for the matching database entry
+     * @return null|array -- nested array for the matching database entry
      */
-    private function getDbUser($userKey)
+    private function getDbUser(string $userKey)
     {
 
         $key = 'primaryEmail';
         if (! filter_var($userKey, FILTER_VALIDATE_EMAIL)) {
             $key = 'id';
-            $userKey = intval($userKey);
         }
 
         $sqliteUtils = new SqliteUtils($this->_dbFile);
@@ -345,7 +340,7 @@ class UsersResource
                 $allResultsUsers[] = $newEntry;
                 $results->setUsers($allResultsUsers);
             }
-            if (count($results->getUsers())>= $parameters['maxResults']) {
+            if (count($results->getUsers()) >= $parameters['maxResults']) {
                 break;
             }
         }
@@ -354,7 +349,7 @@ class UsersResource
 
     private function doesUserMatch($entry, $query = '')
     {
-        if ($query==='') {
+        if ($query === '') {
             return true;
         }
         $query = str_replace('*', '', $query);
