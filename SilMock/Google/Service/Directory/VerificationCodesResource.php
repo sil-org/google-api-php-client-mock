@@ -1,4 +1,5 @@
 <?php
+
 namespace SilMock\Google\Service\Directory;
 
 use SilMock\DataStore\Sqlite\SqliteUtils;
@@ -29,7 +30,6 @@ class VerificationCodesResource
         $key = 'primaryEmail';
         if (!filter_var($userKey, FILTER_VALIDATE_EMAIL)) {
             $key = 'id';
-            $userKey = intval($userKey);
         }
 
         // ensure that user exists in db
@@ -69,7 +69,6 @@ class VerificationCodesResource
         $key = 'primaryEmail';
         if (!filter_var($userKey, FILTER_VALIDATE_EMAIL)) {
             $key = 'id';
-            $userKey = intval($userKey);
         }
 
         $sqliteUtils = new SqliteUtils($this->_dbFile);
