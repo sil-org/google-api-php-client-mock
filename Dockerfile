@@ -1,18 +1,21 @@
-FROM silintl/php7:7.2
-MAINTAINER Mark Tompsett <mark_tompsett@sil.org>
+FROM php:7.3-apache-buster
+LABEL maintainer="Mark Tompsett <mark_tompsett@sil.org>"
 
-ENV REFRESHED_AT 2020-03-16
-
-# Fix timezone stuff from hanging.
-RUN apt-get update -y && echo "America/New_York" > /etc/timezone; \
-    apt-get install -y tzdata
+ENV REFRESHED_AT 2021-03-23
 
 # Make sure apt has current list/updates
-# Install necessary PHP building blocks
-# Install Apache and PHP (and any needed extensions).
-# Install mock DB stuff
-RUN apt-get install -y zip unzip make curl wget \
-    php php-pdo php-xml php-mbstring sqlite php-sqlite3
+RUN apt-get update -y \
+# Fix timezone stuff from hanging.
+    && echo "America/New_York" > /etc/timezone \
+    && apt-get install -y tzdata \
+    && apt-get upgrade -y \
+# Install some basics
+    && apt-get install -y zip unzip wget \
+# Needed for GoogleMock objects
+        sqlite sqlite3 \
+# Clean up to reduce docker image size
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
 
 RUN mkdir -p /data
 WORKDIR /data
