@@ -1,7 +1,7 @@
-FROM php:7.4-apache-buster
+FROM silintl/php7-apache:7.4.19
 LABEL maintainer="Mark Tompsett <mark_tompsett@sil.org>"
 
-ENV REFRESHED_AT 2021-03-23
+ENV REFRESHED_AT 2021-06-02
 
 # Make sure apt has current list/updates
 RUN apt-get update -y \
