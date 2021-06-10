@@ -22,12 +22,12 @@
         }
     ],
     "require": {
-        "php": ">=7.3.0",
+        "php": ">=7.4.0",
         "ext-json": "*",
         "ext-mbstring": "*",
         "ext-pdo": "*",
-        "google/apiclient": "^1.1",
-        "google/apiclient-services": "^0.83"
+        "google/apiclient": "1.1.x-dev#19d7d735ee4cff0f8c14a234b5094b99d00ef278",
+        "google/apiclient-services": "^0.176"
     },
     "require-dev": {
         "phpunit/phpunit": "^9.5.4"
