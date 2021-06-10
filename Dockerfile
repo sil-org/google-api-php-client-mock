@@ -1,7 +1,7 @@
-FROM silintl/php7-apache:7.4.19
+FROM php:7.4-apache
 LABEL maintainer="Mark Tompsett <mark_tompsett@sil.org>"
 
-ENV REFRESHED_AT 2021-06-02
+ENV REFRESHED_AT 2021-06-10
 
 # Make sure apt has current list/updates
 RUN apt-get update -y \
