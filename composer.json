@@ -26,7 +26,7 @@
         "ext-json": "*",
         "ext-mbstring": "*",
         "ext-pdo": "*",
-        "google/apiclient": "1.1.x-dev#19d7d735ee4cff0f8c14a234b5094b99d00ef278",
+        "google/apiclient": "^v1.1.9",
         "google/apiclient-services": "^0.176"
     },
     "require-dev": {
