@@ -12,7 +12,7 @@ RUN apt-get update -y \
 # Install some basics
     && apt-get install -y zip unzip wget \
 # Needed for GoogleMock objects
-        sqlite sqlite3 \
+        sqlite3 \
 # Clean up to reduce docker image size
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
