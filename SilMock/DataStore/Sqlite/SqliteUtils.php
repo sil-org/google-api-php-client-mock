@@ -1,4 +1,5 @@
 <?php
+
 namespace SilMock\DataStore\Sqlite;
 
 use PDO;
@@ -100,8 +101,8 @@ class SqliteUtils
 
         foreach ($allOfClass as $nextEntry) {
             $nextData = json_decode($nextEntry['data'], true);
-            if (isset($nextData[$dataKey]) &&
-                $nextData[$dataKey] === $dataValue) {
+            $nextDataValue = $nextData[$dataKey] ?? null;
+            if ($nextDataValue === $dataValue) {
                 return $nextEntry;
             }
         }
@@ -126,8 +127,8 @@ class SqliteUtils
 
         foreach ($allOfClass as $nextEntry) {
             $nextData = json_decode($nextEntry['data'], true);
-            if (isset($nextData[$dataKey]) &&
-                $nextData[$dataKey] === $dataValue) {
+            $nextDataValue = $nextData[$dataKey] ?? null;
+            if ($nextDataValue === $dataValue) {
                 $foundEntries[] = $nextEntry;
             }
         }
