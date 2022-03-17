@@ -5,6 +5,7 @@ namespace SilMock\tests\Google\Service;
 use PHPUnit\Framework\TestCase;
 use Google_Service_Directory_Alias;
 use Google_Service_Directory_User;
+use Sil\Psr3Adapters\Psr3EchoLogger;
 use SilMock\Google\Service\Directory;
 use SilMock\Google\Service\Directory\ObjectUtils;
 use SilMock\DataStore\Sqlite\SqliteUtils;
@@ -43,12 +44,13 @@ class DirectoryTest extends TestCase
 
     public function testDirectory()
     {
+        $logger = new Psr3EchoLogger();
         $expectedKeys = array(
             'asps',
-            'tokens',
             'users',
             'users_aliases',
             'verificationCodes',
+            'tokens',
         );
         $errorMessage = " *** Directory was not initialized properly";
         
@@ -57,8 +59,9 @@ class DirectoryTest extends TestCase
         $directoryAsJson = json_encode($directory);
         $directoryInfo = json_decode($directoryAsJson, true);
         foreach ($expectedKeys as $expectedKey) {
+            $logger->info($expectedKey);
             $this->assertArrayHasKey($expectedKey, $directoryInfo, $errorMessage);
-            $this->assertEmpty($directoryInfo[$expectedKey], $errorMessage);
+            $this->assertArrayHasKey('dbFile', $directoryInfo[$expectedKey], $errorMessage);
         }
     }
 
