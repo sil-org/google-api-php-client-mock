@@ -1,4 +1,5 @@
 <?php
+
 namespace SilMock\Google\Service;
 
 use SilMock\Google\Service\Gmail\Resource\UsersSettings;
@@ -13,8 +14,8 @@ class Gmail
     
     public function __construct($client, $dbFile = null)
     {
-        $this->users_settings = new UsersSettings();
-        $this->users_settings_delegates = new UsersSettingsDelegates();
-        $this->users_settings_forwardingAddresses = new UsersSettingsForwardingAddresses();
+        $this->users_settings = new UsersSettings($dbFile);
+        $this->users_settings_delegates = new UsersSettingsDelegates($dbFile);
+        $this->users_settings_forwardingAddresses = new UsersSettingsForwardingAddresses($dbFile);
     }
 }
