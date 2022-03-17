@@ -1,10 +1,11 @@
 <?php
+
 namespace SilMock\Google\Service;
 
 use SilMock\DataStore\Sqlite\SqliteUtils;
 
-class GoogleFixtures {
-
+class GoogleFixtures
+{
     /**
      * The SQLite database path and file.
      * @var string
@@ -14,7 +15,7 @@ class GoogleFixtures {
     /**
      * @param string $dbFile path and filename of the database for Mock Google
      */
-    public function __construct($dbFile=null)
+    public function __construct($dbFile = null)
     {
         $this->_dbFile = $dbFile;
     }
@@ -48,5 +49,4 @@ class GoogleFixtures {
         $newSqlite = new SqliteUtils($this->_dbFile);
         $newSqlite->deleteAllData();
     }
-
 }
