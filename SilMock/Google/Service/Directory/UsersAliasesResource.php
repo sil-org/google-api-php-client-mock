@@ -1,16 +1,18 @@
 <?php
+
 namespace SilMock\Google\Service\Directory;
 
 use SilMock\DataStore\Sqlite\SqliteUtils;
 
-class UsersAliasesResource {
+class UsersAliasesResource
+{
 
     private $_dbFile;  // string for the path (with file name) for the Sqlite database
     private $_dataType = 'directory';  // string to put in the 'type' field in the database
     private $_dataClass = 'users_alias'; // string to put in the 'class' field in the database
 
 
-    public function __construct($dbFile=null)
+    public function __construct($dbFile = null)
     {
         $this->_dbFile = $dbFile;
     }
@@ -27,9 +29,8 @@ class UsersAliasesResource {
     {
         // If the $userKey is not an email address, it must be an id
         $key = 'primaryEmail';
-        if ( ! filter_var($userKey, FILTER_VALIDATE_EMAIL)) {
+        if (! filter_var($userKey, FILTER_VALIDATE_EMAIL)) {
             $key = 'id';
-            $userKey = intval($userKey);
         }
 
         // ensure that user exists in db
@@ -42,10 +43,14 @@ class UsersAliasesResource {
 
         // Get all the aliases for that user
         $sqliteUtils = new SqliteUtils($this->_dbFile);
-        $aliases =  $sqliteUtils->getAllRecordsByDataKey($this->_dataType,
-            $this->_dataClass, $key, $userKey);
+        $aliases =  $sqliteUtils->getAllRecordsByDataKey(
+            $this->_dataType,
+            $this->_dataClass,
+            $key,
+            $userKey
+        );
 
-        if ( ! $aliases) {
+        if (! $aliases) {
             return null;
         }
 
@@ -74,9 +79,8 @@ class UsersAliasesResource {
     {
         // If the $userKey is not an email address, it must be an id
         $key = 'primaryEmail';
-        if ( ! filter_var($userKey, FILTER_VALIDATE_EMAIL)) {
+        if (! filter_var($userKey, FILTER_VALIDATE_EMAIL)) {
             $key = 'id';
-            $userKey = intval($userKey);
         }
 
         // ensure that user exists in db
@@ -104,11 +108,14 @@ class UsersAliasesResource {
     {
         $entryData = json_encode(get_object_vars($postBody));
         $sqliteUtils = new SqliteUtils($this->_dbFile);
-        $sqliteUtils->recordData($this->_dataType, $this->_dataClass,
-            $entryData, true);
+        $sqliteUtils->recordData(
+            $this->_dataType,
+            $this->_dataClass,
+            $entryData
+        );
         $allAliases = $sqliteUtils->getData($this->_dataType, $this->_dataClass);
 
-        if ( ! $allAliases) {
+        if (! $allAliases) {
             return null;
         }
 
@@ -131,9 +138,8 @@ class UsersAliasesResource {
     {
         // If the $userKey is not an email address, it must be an id
         $key = 'primaryEmail';
-        if ( ! filter_var($userKey, FILTER_VALIDATE_EMAIL)) {
+        if (! filter_var($userKey, FILTER_VALIDATE_EMAIL)) {
             $key = 'id';
-            $userKey = intval($userKey);
         }
         // ensure that user exists in db
         $dir = new \SilMock\Google\Service\Directory('anything', $this->_dbFile);
@@ -157,12 +163,17 @@ class UsersAliasesResource {
      * @param string $userKey - The Email or immutable Id of the user
      * @return null|Google_Service_Directory_Aliases
      */
-    public function fetchAliasesByUser($keyType, $userKey) {
+    public function fetchAliasesByUser($keyType, $userKey)
+    {
         $sqliteUtils = new SqliteUtils($this->_dbFile);
-        $aliases =  $sqliteUtils->getAllRecordsByDataKey($this->_dataType,
-            $this->_dataClass, $keyType, $userKey);
+        $aliases =  $sqliteUtils->getAllRecordsByDataKey(
+            $this->_dataType,
+            $this->_dataClass,
+            $keyType,
+            $userKey
+        );
 
-        if ( ! $aliases) {
+        if (! $aliases) {
             return null;
         }
 
