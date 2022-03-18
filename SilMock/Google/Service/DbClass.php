@@ -9,7 +9,7 @@ use Sil\Psr3Adapters\Psr3EchoLogger;
 class DbClass
 {
     /** @var string|null - The path (with file name) to the SQLite database. */
-    public ?string $dbFile;
+    protected ?string $dbFile;
 
     /** @var string - The 'type' field to use in the database. */
     protected string $dataType;
