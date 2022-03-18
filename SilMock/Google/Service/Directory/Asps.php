@@ -3,21 +3,13 @@
 namespace SilMock\Google\Service\Directory;
 
 use Google_Service_Directory_Asps;
+use SilMock\Google\Service\DbClass;
 
-class Asps
+class Asps extends DbClass
 {
-    /** @var string - The path (with file name) to the SQLite database. */
-    private $dbFile;
-    
-    /** @var string - The 'type' field to use in the database. */
-    private $dataType = 'directory';
-    
-    /** @var string - The 'class' field to use in the database */
-    private $dataClass = 'asps';
-    
     public function __construct($dbFile = null)
     {
-        $this->dbFile = $dbFile;
+        parent::__construct($dbFile, 'directory', 'asps');
     }
     
     public function listAsps($userKey, $optParams = array())

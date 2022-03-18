@@ -2,6 +2,7 @@
 
 namespace SilMock\tests\Google\Service\Gmail\Resource;
 
+use Google_Service_Gmail_ListDelegatesResponse;
 use PHPUnit\Framework\Assert;
 use PHPUnit\Framework\TestCase;
 use Google_Service_Gmail_Delegate;
@@ -73,9 +74,9 @@ class UsersSettingsDelegatesTest extends TestCase
         );
     }
     
-    private function getDelegatesForAccount(string $emailAddress)
+    private function getDelegatesForAccount(string $emailAddress): Google_Service_Gmail_ListDelegatesResponse
     {
         $userSettingsDelegates = new UsersSettingsDelegates($this->dataFile);
         return $userSettingsDelegates->listUsersSettingsDelegates($emailAddress);
     }
-} 
+}

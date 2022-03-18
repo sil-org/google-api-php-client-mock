@@ -2,18 +2,17 @@
 
 namespace SilMock\Google\Service\Directory;
 
+use Google_Service_Directory_Alias as Alias;
+use Google_Service_Directory_Aliases;
 use SilMock\DataStore\Sqlite\SqliteUtils;
 use Google_Service_Directory_User;
+use SilMock\Google\Service\DbClass;
 
-class UsersResource
+class UsersResource extends DbClass
 {
-    private $_dbFile;  // path (with file name) for the Sqlite database
-    private $_dataType = 'directory'; // string to put in the 'type' field in the database
-    private $_dataClass = 'user'; // string to put in the 'class' field in the database
-
     public function __construct($dbFile = null)
     {
-        $this->_dbFile = $dbFile;
+        parent::__construct($dbFile, 'directory', 'user');
     }
 
     /**
@@ -30,7 +29,7 @@ class UsersResource
             return null;
         }
 
-        $sqliteUtils = new SqliteUtils($this->_dbFile);
+        $sqliteUtils = new SqliteUtils($this->dbFile);
         $sqliteUtils->deleteRecordById($userEntry['id']);
         return true;
     }
@@ -81,7 +80,7 @@ class UsersResource
      * @param $userKey
      * @return Google_Service_Directory_Aliases|null
      */
-    protected function getAliasesForUser($userKey)
+    protected function getAliasesForUser($userKey): ?Google_Service_Directory_Aliases
     {
         // If the $userKey is not an email address, then it's an id.
         $key = 'primaryEmail';
@@ -89,7 +88,7 @@ class UsersResource
             $key = 'id';
         }
         
-        $usersAliases = new UsersAliasesResource($this->_dbFile);
+        $usersAliases = new UsersAliasesResource($this->dbFile);
         return $usersAliases->fetchAliasesByUser($key, $userKey);
     }
     
@@ -141,8 +140,8 @@ class UsersResource
     
     protected function getAllDbUsers()
     {
-        $sqliteUtils = new SqliteUtils($this->_dbFile);
-        return $sqliteUtils->getData($this->_dataType, $this->_dataClass);
+        $sqliteUtils = new SqliteUtils($this->dbFile);
+        return $sqliteUtils->getData($this->dataType, $this->dataClass);
     }
     
     /**
@@ -187,12 +186,12 @@ class UsersResource
         $userData = json_encode($newUser);
 
         // record the user in the database
-        $sqliteUtils = new SqliteUtils($this->_dbFile);
-        $sqliteUtils->recordData($this->_dataType, $this->_dataClass, $userData);
+        $sqliteUtils = new SqliteUtils($this->dbFile);
+        $sqliteUtils->recordData($this->dataType, $this->dataClass, $userData);
 
         // record the user's aliases in the database
         if ($postBody->aliases) {
-            $usersAliases = new UsersAliasesResource($this->_dbFile);
+            $usersAliases = new UsersAliasesResource($this->dbFile);
 
             foreach ($postBody->aliases as $alias) {
                 $newAlias = new Alias();
@@ -240,7 +239,7 @@ class UsersResource
         }
 
         // Delete the user's old aliases before adding the new ones
-        $usersAliases = new UsersAliasesResource($this->_dbFile);
+        $usersAliases = new UsersAliasesResource($this->dbFile);
         $aliasesObject = $usersAliases->listUsersAliases($userKey);
 
         if ($aliasesObject && isset($aliasesObject['aliases'])) {
@@ -249,7 +248,7 @@ class UsersResource
             }
         }
 
-        $sqliteUtils = new SqliteUtils($this->_dbFile);
+        $sqliteUtils = new SqliteUtils($this->dbFile);
         $sqliteUtils->updateRecordById($userEntry['id'], json_encode($dbUserProps));
 
         // Save the user's aliases
@@ -281,10 +280,10 @@ class UsersResource
             $key = 'id';
         }
 
-        $sqliteUtils = new SqliteUtils($this->_dbFile);
+        $sqliteUtils = new SqliteUtils($this->dbFile);
         return $sqliteUtils->getRecordByDataKey(
-            $this->_dataType,
-            $this->_dataClass,
+            $this->dataType,
+            $this->dataClass,
             $key,
             $userKey
         );
@@ -318,8 +317,8 @@ class UsersResource
             $parameters['query'] = '';
         }
         $parameters['query'] = urldecode($parameters['query']);
-        $sqliteUtils = new SqliteUtils($this->_dbFile);
-        $allData = $sqliteUtils->getData($this->_dataType, $this->_dataClass);
+        $sqliteUtils = new SqliteUtils($this->dbFile);
+        $allData = $sqliteUtils->getData($this->dataType, $this->dataClass);
         foreach ($allData as $userRecord) {
             $userEntry = json_decode($userRecord['data'], true);
             if ($this->doesUserMatch($userEntry, $parameters['query'])) {
@@ -394,9 +393,9 @@ class UsersResource
         if (! is_string($checkValue)) {
             throw new \Exception(sprintf(
                 "Expecting a string.\nGot Entry: %s\nGot Field: %s\nGot VALUE: %s",
-                var_dump($entry),
-                var_dump($field),
-                var_dump($checkValue)
+                var_export($entry, true),
+                var_export($field, true),
+                var_export($checkValue, true)
             ));
         }
         if (mb_strpos($checkValue, $value) === 0) {

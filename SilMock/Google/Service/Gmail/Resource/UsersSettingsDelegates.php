@@ -2,27 +2,19 @@
 
 namespace SilMock\Google\Service\Gmail\Resource;
 
+use Google_Service_Exception;
+use Google_Service_Gmail_Delegate;
 use Google_Service_Gmail_ListDelegatesResponse;
 use SilMock\DataStore\Sqlite\SqliteUtils;
-use SilMock\Google\Service\Directory\ObjectUtils;
-use Webmozart\Assert\Assert;
+use SilMock\Google\Service\DbClass;
 
-class UsersSettingsDelegates
+class UsersSettingsDelegates extends DbClass
 {
-    /** @var string - The path (with file name) to the SQLite database. */
-    private $dbFile;
-    
-    /** @var string - The 'type' field to use in the database. */
-    private $dataType = 'gmail';
-    
-    /** @var string - The 'class' field to use in the database */
-    private $dataClass = 'users_settings_delegate';
-    
-    public function __construct($dbFile = null)
+    public function __construct(?string $dbFile = null)
     {
-        $this->dbFile = $dbFile;
+        parent::__construct($dbFile, 'gmail', 'users_settings_delegate');
     }
-    
+
     /**
      * Add a delegate to the specified user account.
      *
@@ -31,14 +23,14 @@ class UsersSettingsDelegates
      *     for that delegate.
      * @return Google_Service_Gmail_Delegate - A real
      *     Google_Service_Gmail_Delegate instance.
-     * @throws \Google_Service_Exception - If something went wrong.
+     * @throws Google_Service_Exception - If something went wrong.
      */
     public function create($userId, \Google_Service_Gmail_Delegate $postBody, $optParams = array())
     {
         $this->assertIsValidUserId($userId);
         
         if ($this->hasDelegate($userId, $postBody->delegateEmail)) {
-            throw new \Google_Service_Exception('Already has delegate', 409);
+            throw new Google_Service_Exception('Already has delegate', 409);
         }
         
         return $this->addDelegate($userId, $postBody->delegateEmail);
@@ -86,23 +78,20 @@ class UsersSettingsDelegates
      */
     protected function getDelegateRecords(): array
     {
-        $sqliteUtils = $this->getSqliteUtils();
-        return $sqliteUtils->getData($this->dataType, $this->dataClass);
+        return $this->getRecords();
     }
     
     protected function addDelegate(string $userId, string $delegateEmail)
     {
-        $sqliteUtils = $this->getSqliteUtils();
-        $sqliteUtils->recordData(
-            $this->dataType,
-            $this->dataClass,
-            json_encode([
+        $data = json_encode(
+            [
                 'primaryEmail' => $userId,
                 'delegateEmail' => $delegateEmail,
                 'verificationStatus' => 'accepted',
-            ])
+            ]
         );
-        
+        $this->addRecord($data);
+
         return $this->get($userId, $delegateEmail);
     }
     
@@ -114,14 +103,14 @@ class UsersSettingsDelegates
     protected function assertIsValidUserId(string $userId)
     {
         if (! $this->isValidEmailAddress($userId)) {
-            throw new \Google_Service_Exception('Invalid userId: ' . $userId, 400);
+            throw new Google_Service_Exception('Invalid userId: ' . $userId, 400);
         }
     }
     
     protected function assertIsValidDelegateEmail($delegateEmail)
     {
         if (! $this->isValidEmailAddress($delegateEmail)) {
-            throw new \Google_Service_Exception('Invalid delegate: ' . $delegateEmail, 400);
+            throw new Google_Service_Exception('Invalid delegate: ' . $delegateEmail, 400);
         }
     }
     
@@ -149,7 +138,7 @@ class UsersSettingsDelegates
                 return $matchingRecord;
             }
         }
-        throw new \Google_Service_Exception('Invalid delegate', 404);
+        throw new Google_Service_Exception('Invalid delegate', 404);
     }
     
     public function delete($userId, $delegateEmail, $optParams = array())
@@ -163,13 +152,12 @@ class UsersSettingsDelegates
                 return;
             }
         }
-        throw new \Google_Service_Exception('Invalid delegate', 404);
+        throw new Google_Service_Exception('Invalid delegate', 404);
     }
     
     protected function removeDelegate(int $recordId)
     {
-        $sqliteUtils = $this->getSqliteUtils();
-        $sqliteUtils->deleteRecordById($recordId);
+        $this->deleteRecordById($recordId);
     }
     
     public function listUsersSettingsDelegates($userId, $optParams = array())
