@@ -1,5 +1,3 @@
 cli:
     build: ./
-    volumes:
-        - ./:/data
     working_dir: /data
