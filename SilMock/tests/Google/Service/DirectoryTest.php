@@ -45,10 +45,10 @@ class DirectoryTest extends TestCase
     {
         $expectedKeys = array(
             'asps',
-            'tokens',
             'users',
             'users_aliases',
             'verificationCodes',
+            'tokens',
         );
         $errorMessage = " *** Directory was not initialized properly";
         

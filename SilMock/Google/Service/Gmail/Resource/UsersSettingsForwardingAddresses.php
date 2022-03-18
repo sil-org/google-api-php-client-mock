@@ -4,22 +4,13 @@ namespace SilMock\Google\Service\Gmail\Resource;
 
 use Google_Service_Exception;
 use Google_Service_Gmail_ListForwardingAddressesResponse;
-use SilMock\DataStore\Sqlite\SqliteUtils;
+use SilMock\Google\Service\DbClass;
 
-class UsersSettingsForwardingAddresses
+class UsersSettingsForwardingAddresses extends DbClass
 {
-    /** @var string - The path (with file name) to the SQLite database. */
-    private $dbFile;
-    
-    /** @var string - The 'type' field to use in the database. */
-    private $dataType = 'gmail';
-    
-    /** @var string - The 'class' field to use in the database */
-    private $dataClass = 'users_settings_forwardingAddresses';
-    
-    public function __construct($dbFile = null)
+    public function __construct(?string $dbFile = null)
     {
-        $this->dbFile = $dbFile;
+        parent::__construct($dbFile, 'gmail', 'users_settings_forwardingAddresses');
     }
 
     public function listUsersSettingsForwardingAddresses($userId, $optParams = array())
@@ -27,11 +18,6 @@ class UsersSettingsForwardingAddresses
         return new Google_Service_Gmail_ListForwardingAddressesResponse(array(
             'forwardingAddresses' => array(),
         ));
-    }
-
-    protected function getSqliteUtils(): SqliteUtils
-    {
-        return new SqliteUtils($this->dbFile);
     }
 
     protected function assertIsValidUserId(string $userId)
@@ -82,7 +68,6 @@ class UsersSettingsForwardingAddresses
 
     protected function removeForwardingAddress($recordId)
     {
-        $sqliteUtils = $this->getSqliteUtils();
-        $sqliteUtils->deleteRecordById($recordId);
+        $this->deleteRecordById($recordId);
     }
 }

@@ -10,6 +10,7 @@ use SilMock\tests\Google\Service\SampleUser;
 class VerificationCodesTest extends TestCase
 {
     use SampleUser;
+
     public $dataFile = DATAFILE2;
 
     public function testVerificationCodesGenerateAndList()
@@ -31,5 +32,4 @@ class VerificationCodesTest extends TestCase
             'Expecting Google_Service_Directory_VerificationCodes class'
         );
     }
-
-} 
+}

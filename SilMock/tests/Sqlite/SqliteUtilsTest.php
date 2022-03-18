@@ -7,8 +7,8 @@ use SilMock\DataStore\Sqlite\SqliteUtils;
 
 class SqliteUtilsTest extends TestCase
 {
-    public $dataFile = DATAFILE1;
-    public const verificationRecordData = '{"primaryEmail":"user_test1@sil.org","data":{"etag":null,"kind":null,"items":[{"etag":null,"kind":null,"userId":null,"verificationCode":59837946},{"etag":null,"kind":null,"userId":null,"verificationCode":70637639},{"etag":null,"kind":null,"userId":null,"verificationCode":28377580},{"etag":null,"kind":null,"userId":null,"verificationCode":50819149},{"etag":null,"kind":null,"userId":null,"verificationCode":91732989},{"etag":null,"kind":null,"userId":null,"verificationCode":90318716},{"etag":null,"kind":null,"userId":null,"verificationCode":40781363},{"etag":null,"kind":null,"userId":null,"verificationCode":85614013},{"etag":null,"kind":null,"userId":null,"verificationCode":37077320},{"etag":null,"kind":null,"userId":null,"verificationCode":68994617}]}}';
+    public string $dataFile = DATAFILE1;
+    public const VERIFICATION_RECORD_DATA = '{"primaryEmail":"user_test1@sil.org","data":{"etag":null,"kind":null,"items":[{"etag":null,"kind":null,"userId":null,"verificationCode":59837946},{"etag":null,"kind":null,"userId":null,"verificationCode":70637639},{"etag":null,"kind":null,"userId":null,"verificationCode":28377580},{"etag":null,"kind":null,"userId":null,"verificationCode":50819149},{"etag":null,"kind":null,"userId":null,"verificationCode":91732989},{"etag":null,"kind":null,"userId":null,"verificationCode":90318716},{"etag":null,"kind":null,"userId":null,"verificationCode":40781363},{"etag":null,"kind":null,"userId":null,"verificationCode":85614013},{"etag":null,"kind":null,"userId":null,"verificationCode":37077320},{"etag":null,"kind":null,"userId":null,"verificationCode":68994617}]}}';
 
     public function testRecordData()
     {
@@ -16,32 +16,50 @@ class SqliteUtilsTest extends TestCase
         $newSql = new SqliteUtils($this->dataFile);
         $newSql->createDbStructureAsNecessary();
 
-        $results = $newSql->recordData('directory', 'user',
-                       'test data');
+        $results = $newSql->recordData(
+            'directory',
+            'user',
+            'test data'
+        );
         $msg = " *** Expected to add data successfully.";
         $this->assertTrue($results, $msg);
     }
 
-    public function loadData()
+    public function loadData(): SqliteUtils
     {
         file_put_contents($this->dataFile, '');
         $newSql = new SqliteUtils($this->dataFile);
         $newSql->createDbStructureAsNecessary();
 
-        $results = $newSql->recordData('directory', 'user',
-            '{"primaryEmail":"user_test1@sil.org","id":1,"password":"testPass1"}');
-        $results = $newSql->recordData('directory', 'users_alias',
-            '{"primaryEmail":"user_test1@sil.org","alias":"users_alias2@sil.org"}');
-        $results = $newSql->recordData('app_engine', 'webapp',
-            'webapp3 test data');
-        $results = $newSql->recordData('directory', 'user',
-            '{"primaryEmail":"user_test4@sil.org","id":4,"password":"testPass4"}');
-        $results = $newSql->recordData('directory', 'users_alias',
-            '{"primaryEmail":"user_test1@sil.org","alias":"users_alias5@sil.org"}');
-        $results = $newSql->recordData(
+        $newSql->recordData(
+            'directory',
+            'user',
+            '{"primaryEmail":"user_test1@sil.org","id":1,"password":"testPass1"}'
+        );
+        $newSql->recordData(
+            'directory',
+            'users_alias',
+            '{"primaryEmail":"user_test1@sil.org","alias":"users_alias2@sil.org"}'
+        );
+        $newSql->recordData(
+            'app_engine',
+            'webapp',
+            'webapp3 test data'
+        );
+        $newSql->recordData(
+            'directory',
+            'user',
+            '{"primaryEmail":"user_test4@sil.org","id":4,"password":"testPass4"}'
+        );
+        $newSql->recordData(
+            'directory',
+            'users_alias',
+            '{"primaryEmail":"user_test1@sil.org","alias":"users_alias5@sil.org"}'
+        );
+        $newSql->recordData(
             'directory',
             'verification_codes',
-            self::verificationRecordData
+            self::VERIFICATION_RECORD_DATA
         );
 
         return $newSql;
@@ -85,7 +103,7 @@ class SqliteUtilsTest extends TestCase
                 'id' => '6',
                 'type' => 'directory',
                 'class' => 'verification_codes',
-                'data' => self::verificationRecordData,
+                'data' => self::VERIFICATION_RECORD_DATA,
             )
         );
         $msg = " *** Mismatched data results for all data.";
@@ -125,7 +143,7 @@ class SqliteUtilsTest extends TestCase
                 'id' => '6',
                 'type' => 'directory',
                 'class' => 'verification_codes',
-                'data' => self::verificationRecordData,
+                'data' => self::VERIFICATION_RECORD_DATA,
             )
         );
         $msg = " *** Mismatched data results for directory data.";
@@ -192,14 +210,18 @@ class SqliteUtilsTest extends TestCase
     public function testGetRecordByDataKey_DirectoryUserPrimaryEmail()
     {
         $newSql =  $this->loadData();
-        $results = $newSql->getRecordByDataKey('directory', 'user',
-                                           'primaryEmail', 'user_test1@sil.org');
-        $expected =  array('id' => '1',
+        $results = $newSql->getRecordByDataKey(
+            'directory',
+            'user',
+            'primaryEmail',
+            'user_test1@sil.org'
+        );
+        $expected =  [
+            'id' => '1',
             'type' => 'directory',
             'class' => 'user',
-            'data' => '{"primaryEmail":"user_test1@sil.org",' .
-                '"id":1,"password":"testPass1"}',
-        );
+            'data' => '{"primaryEmail":"user_test1@sil.org","id":1,"password":"testPass1"}',
+        ];
         $msg = " *** Mismatched data results for user data.";
         $this->assertEquals($expected, $results, $msg);
     }
@@ -207,22 +229,26 @@ class SqliteUtilsTest extends TestCase
     public function testGetAllRecordsByDataKey_DirectoryUsersAliasPrimaryEmail()
     {
         $newSql =  $this->loadData();
-        $results = $newSql->getAllRecordsByDataKey('directory', 'users_alias',
-                                        'primaryEmail', 'user_test1@sil.org');
-        $expected =  array(
-            array('id' => '2',
-                  'type' => 'directory',
-                  'class' => 'users_alias',
-                  'data' => '{"primaryEmail":"user_test1@sil.org",' .
-                            '"alias":"users_alias2@sil.org"}',
-            ),
-            array('id' => '5',
-                  'type' => 'directory',
-                  'class' => 'users_alias',
-                  'data' => '{"primaryEmail":"user_test1@sil.org",' .
-                            '"alias":"users_alias5@sil.org"}',
-            ),
+        $results = $newSql->getAllRecordsByDataKey(
+            'directory',
+            'users_alias',
+            'primaryEmail',
+            'user_test1@sil.org'
         );
+        $expected =  [
+            [
+                'id' => '2',
+                'type' => 'directory',
+                'class' => 'users_alias',
+                'data' => '{"primaryEmail":"user_test1@sil.org","alias":"users_alias2@sil.org"}',
+            ],
+            [
+                'id' => '5',
+                'type' => 'directory',
+                'class' => 'users_alias',
+                'data' => '{"primaryEmail":"user_test1@sil.org","alias":"users_alias5@sil.org"}',
+            ],
+        ];
         $msg = " *** Mismatched data results for user data.";
         $this->assertEquals($expected, $results, $msg);
     }
@@ -243,37 +269,38 @@ class SqliteUtilsTest extends TestCase
         $newSql->deleteRecordById(2);
         $results = $newSql->getData('', '');
 
-        $expected = array(
-            array('id' => '1',
+        $expected = [
+            [
+                'id' => '1',
                 'type' => 'directory',
                 'class' => 'user',
-                'data' => '{"primaryEmail":"user_test1@sil.org",' .
-                    '"id":1,"password":"testPass1"}',
-            ),
-            array('id' => '3',
+                'data' => '{"primaryEmail":"user_test1@sil.org","id":1,"password":"testPass1"}',
+            ],
+            [
+                'id' => '3',
                 'type' => 'app_engine',
                 'class' => 'webapp',
                 'data' => 'webapp3 test data',
-            ),
-            array('id' => '4',
+            ],
+            [
+                'id' => '4',
                 'type' => 'directory',
                 'class' => 'user',
-                'data' => '{"primaryEmail":"user_test4@sil.org",' .
-                    '"id":4,"password":"testPass4"}',
-            ),
-            array('id' => '5',
+                'data' => '{"primaryEmail":"user_test4@sil.org","id":4,"password":"testPass4"}',
+            ],
+            [
+                'id' => '5',
                 'type' => 'directory',
                 'class' => 'users_alias',
-                'data' => '{"primaryEmail":"user_test1@sil.org",' .
-                    '"alias":"users_alias5@sil.org"}',
-            ),
-            array(
+                'data' => '{"primaryEmail":"user_test1@sil.org","alias":"users_alias5@sil.org"}',
+            ],
+            [
                 'id' => '6',
                 'type' => 'directory',
                 'class' => 'verification_codes',
-                'data' => self::verificationRecordData,
-            )
-        );
+                'data' => self::VERIFICATION_RECORD_DATA,
+            ]
+        ];
         $msg = " *** Mismatched data results for remaining data.";
         $this->assertEquals($expected, $results, $msg);
     }
@@ -284,19 +311,20 @@ class SqliteUtilsTest extends TestCase
         $newSql->deleteDataByEmail('directory','', 'user_test1@sil.org');
         $results = $newSql->getData('', '');
 
-        $expected = array(
-            array('id' => '3',
+        $expected = [
+            [
+                'id' => '3',
                 'type' => 'app_engine',
                 'class' => 'webapp',
                 'data' => 'webapp3 test data',
-            ),
-            array('id' => '4',
+            ],
+            [
+                'id' => '4',
                 'type' => 'directory',
                 'class' => 'user',
-                'data' => '{"primaryEmail":"user_test4@sil.org",' .
-                    '"id":4,"password":"testPass4"}',
-            ),
-        );
+                'data' => '{"primaryEmail":"user_test4@sil.org","id":4,"password":"testPass4"}',
+            ],
+        ];
         $msg = " *** Mismatched data results for remaining data.";
         $this->assertEquals($expected, $results, $msg);
     }

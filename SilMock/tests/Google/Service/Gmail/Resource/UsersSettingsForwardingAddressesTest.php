@@ -30,7 +30,7 @@ class UsersSettingsForwardingAddressesTest extends TestCase
     public function testListUsersSettingsForwardingAddresses()
     {
         $accountEmail = 'john_smith@example.org';
-        $forwardingAddresses = new UsersSettingsForwardingAddresses();
+        $forwardingAddresses = new UsersSettingsForwardingAddresses($this->dataFile);
         $result = $forwardingAddresses->listUsersSettingsForwardingAddresses($accountEmail);
         // Because this is totally a skeleton.
         Assert::assertEmpty($result);
@@ -39,7 +39,7 @@ class UsersSettingsForwardingAddressesTest extends TestCase
     public function testDelete()
     {
         $accountEmail = 'john_smith@example.org';
-        $forwardingAddresses = new UsersSettingsForwardingAddresses();
+        $forwardingAddresses = new UsersSettingsForwardingAddresses($this->dataFile);
         $forwardingAddresses->delete($accountEmail, $accountEmail);
         Assert::assertTrue(true, 'Because a skeleton should not explode.');
     }
