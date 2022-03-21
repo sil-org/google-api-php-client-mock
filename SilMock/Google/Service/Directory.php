@@ -1,4 +1,5 @@
 <?php
+
 namespace SilMock\Google\Service;
 
 use SilMock\Google\Service\Directory\Asps;
@@ -19,10 +20,10 @@ class Directory
      * Sets the users and users_aliases properties to be instances of
      *    the corresponding mock classes.
      *
-     * @param $client mixed - Ignored (normally it would be a Google_Client)
-     * @param $dbFile string (optional) - The path and file name of the database file
+     * @param mixed $client -- Ignored (normally it would be a Google_Client)
+     * @param string|null $dbFile -- (optional) The path and file name of the database file
      */
-    public function __construct($client, $dbFile=null)
+    public function __construct($client, $dbFile = null)
     {
         $this->asps = new Asps($dbFile);
         $this->tokens = new Tokens($dbFile);

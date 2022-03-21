@@ -4,24 +4,13 @@ namespace SilMock\Google\Service\Gmail\Resource;
 
 use Google_Service_Gmail_ImapSettings;
 use Google_Service_Gmail_PopSettings;
-use SilMock\DataStore\Sqlite\SqliteUtils;
-use SilMock\Google\Service\Directory\ObjectUtils;
-use Webmozart\Assert\Assert;
+use SilMock\Google\Service\DbClass;
 
-class UsersSettings
+class UsersSettings extends DbClass
 {
-    /** @var string - The path (with file name) to the SQLite database. */
-    private $dbFile;
-    
-    /** @var string - The 'type' field to use in the database. */
-    private $dataType = 'gmail';
-    
-    /** @var string - The 'class' field to use in the database */
-    private $dataClass = 'users_settings';
-    
-    public function __construct($dbFile = null)
+    public function __construct(?string $dbFile = null)
     {
-        $this->dbFile = $dbFile;
+        parent::__construct($dbFile, 'gmail', 'users_settings');
     }
     
     public function updatePop($userId, Google_Service_Gmail_PopSettings $postBody, $optParams = array())
