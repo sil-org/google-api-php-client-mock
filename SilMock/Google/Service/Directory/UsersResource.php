@@ -323,11 +323,13 @@ class UsersResource extends DbClass
             $userEntry = json_decode($userRecord['data'], true);
             if ($this->doesUserMatch($userEntry, $parameters['query'])) {
                 /** @var \Google_Service_Directory_UserName $newName */
-                $newName = new \Google_Service_Directory_UserName(array(
+                $newName = new \Google_Service_Directory_UserName([
                     'familyName' => $userEntry['name']['familyName'],
-                    'fullName'   => $userEntry['name']['fullName'],
+                    'fullName'   =>
+                        $userEntry['name']['fullName'] ??
+                        $userEntry['name']['givenName'] . ' ' . $userEntry['name']['familyName'],
                     'givenName'  => $userEntry['name']['givenName'],
-                ));
+                ]);
                 /** @var \Google_Service_Directory_User $newEntry */
                 $newEntry = new \Google_Service_Directory_User(array(
                     'primaryEmail' => $userEntry['primaryEmail'],
