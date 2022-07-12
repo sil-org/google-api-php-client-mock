@@ -2,6 +2,7 @@
 
 namespace SilMock\Google\Service\Directory;
 
+use DateTime;
 use Google_Service_Directory_Alias as Alias;
 use Google_Service_Directory_Aliases;
 use SilMock\DataStore\Sqlite\SqliteUtils;
@@ -154,14 +155,16 @@ class UsersResource extends DbClass
      */
     public function insert($postBody)
     {
+        $currentDateTime = new DateTime('now');
         $defaults = array(
             'id' => str_replace(array(' ', '.'), '', microtime()),
             'suspended' => false,
             'changePasswordAtNextLogin' => false,
             'isAdmin' => false,
             'isDelegatedAdmin' => false,
-            'lastLoginTime' => time(),
-            'creationTime' => time(),
+            'lastLoginTime' => $currentDateTime->format('c'),
+            'creationTime' => $currentDateTime->format('c'),
+            'agreedToTerms' => false,
         );
 
         // array_merge will not work, since $postBody is an object which only
