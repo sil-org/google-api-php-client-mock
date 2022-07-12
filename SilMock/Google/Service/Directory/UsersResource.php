@@ -357,7 +357,12 @@ class UsersResource extends DbClass
             return true;
         }
         $query = str_replace('*', '', $query);
-        list($field, $value) = explode(':', $query);
+        if (mb_strpos($query, '=') !== false) {
+            $separator = '=';
+        } else {
+            $separator = ':';
+        }
+        list($field, $value) = explode($separator, $query);
         $field = trim($field);
         $value = trim($value);
         if (isset($entry[$field])) {
