@@ -165,6 +165,8 @@ class UsersResource extends DbClass
             'lastLoginTime' => $currentDateTime->format('c'),
             'creationTime' => $currentDateTime->format('c'),
             'agreedToTerms' => false,
+            'isEnforcedIn2Sv' => false,
+            'isEnrolledIn2Sv' => false,
         );
 
         // array_merge will not work, since $postBody is an object which only
