@@ -165,8 +165,8 @@ class UsersResource extends DbClass
             'lastLoginTime' => $currentDateTime->format('c'),
             'creationTime' => $currentDateTime->format('c'),
             'agreedToTerms' => false,
-            'isEnforcedIn2Sv' => false,
-            'isEnrolledIn2Sv' => false,
+            'isEnforcedIn2Sv' => 'false',
+            'isEnrolledIn2Sv' => 'false',
         );
 
         // array_merge will not work, since $postBody is an object which only
@@ -241,6 +241,12 @@ class UsersResource extends DbClass
             if ($value !== null || $key === "suspensionReason") {
                 $dbUserProps[$key] = $value;
             }
+        }
+        if (!isset($dbUserProps['isEnforcedIn2Sv'])) {
+            $dbUserProps['isEnforcedIn2Sv'] = 'false';
+        }
+        if (!isset($dbUserProps['isEnrolledIn2Sv'])) {
+            $dbUserProps['isEnrolledIn2Sv'] = 'false';
         }
 
         // Delete the user's old aliases before adding the new ones
@@ -404,10 +410,11 @@ class UsersResource extends DbClass
         }
         if (! is_string($checkValue)) {
             throw new \Exception(sprintf(
-                "Expecting a string.\nGot Entry: %s\nGot Field: %s\nGot VALUE: %s",
+                "Expecting a string.\nGot Entry: %s\nGot Field: %s\nGot VALUE: %s (%s)",
                 var_export($entry, true),
                 var_export($field, true),
-                var_export($checkValue, true)
+                var_export($checkValue, true),
+                gettype($checkValue)
             ));
         }
         if (mb_strpos($checkValue, $value) === 0) {
