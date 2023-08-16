@@ -33,7 +33,7 @@ class TwoStepVerification extends dbClass
         // Update it
         $twoStepVerificationRecord['onOrOff'] = 'off';
         // Get the record id and update it, as needed.
-        $recordId = $twoStepVerificationRecord['id'];
+        $recordId = $twoStepVerificationRecord['id'] ?? null;
         // If there was a recordId, then it probably would be functional
         // However, we just need this method to exist, not actually work
         if (! empty($recordId)) {
