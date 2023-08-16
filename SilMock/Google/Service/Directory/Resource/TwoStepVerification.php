@@ -17,12 +17,12 @@ class TwoStepVerification extends dbClass
      * NOTE: This doesn't need to work. It just needs to exist.
      *
      * @param $userKey
-     * @param $optParams
+     * @param array $optParams
      * @return void
      */
     public function turnOff($userKey, $optParams = [])
     {
-        // Confirm verification codes exist.
+        // Grab the corresponding twoStepVerification record.
         $sqliteUtils = $this->getSqliteUtils();
         $twoStepVerificationRecord = $sqliteUtils->getAllRecordsByDataKey(
             $this->dataType,
@@ -30,8 +30,14 @@ class TwoStepVerification extends dbClass
             'twoStepVerification',
             $userKey
         );
-        $recordId = $twoStepVerificationRecord['id'];
+        // Update it
         $twoStepVerificationRecord['onOrOff'] = 'off';
-        $sqliteUtils->updateRecordById($recordId, json_encode($twoStepVerificationRecord));
+        // Get the record id and update it, as needed.
+        $recordId = $twoStepVerificationRecord['id'];
+        // If there was a recordId, then it probably would be functional
+        // However, we just need this method to exist, not actually work
+        if (! empty($recordId)) {
+            $sqliteUtils->updateRecordById($recordId, json_encode($twoStepVerificationRecord));
+        }
     }
 }
