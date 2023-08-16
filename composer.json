@@ -27,7 +27,7 @@
         "ext-mbstring": "*",
         "ext-pdo": "*",
         "google/apiclient": "^v2.15.0",
-        "google/apiclient-services": "^v0.308.0"
+        "google/apiclient-services": "^v0.312.0"
     },
     "require-dev": {
         "phpunit/phpunit": "^9.0",
