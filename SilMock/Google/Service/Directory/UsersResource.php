@@ -341,11 +341,9 @@ class UsersResource extends DbClass
                         $userEntry['name']['givenName'] . ' ' . $userEntry['name']['familyName'],
                     'givenName'  => $userEntry['name']['givenName'],
                 ]);
+                $userEntry['customerId'] = $userEntry['primaryEmail'];
                 /** @var \Google_Service_Directory_User $newEntry */
-                $newEntry = new \Google_Service_Directory_User(array(
-                    'primaryEmail' => $userEntry['primaryEmail'],
-                    'customerId' => $userEntry['primaryEmail'],
-                ));
+                $newEntry = new \Google_Service_Directory_User($userEntry);
                 $newEntry->setName($newName);
                 
                 $allResultsUsers = $results->getUsers();
