@@ -121,12 +121,16 @@ class DirectoryTest extends TestCase
             "isEnforcedIn2Sv" => false,
             "isEnrolledIn2Sv" => true,
             "aliases" => [
-                0 =>  [
+                'etag' => null,
+                'kind' => null,
+                'aliases' =>  [
+                    [
                         'alias' => "user_alias1@sil.org",
                         'etag' => null,
                         'id' => null,
                         'kind' => 'personal',
                         'primaryEmail' => 'user_test1@sil.org'
+                    ]
                 ],
             ],
         ];
@@ -139,14 +143,16 @@ class DirectoryTest extends TestCase
         $lastDataEntry = end($sqliteDataValues);
         $lastAliases = json_decode($lastDataEntry['data'], true);
 
-        $results = $lastAliases['alias'];
+        $results = $lastAliases['aliases']['aliases'];
 
         $expected = [
-            "alias" => "user_alias1@sil.org",
-            "kind" => "personal",
-            "primaryEmail" => "user_test1@sil.org",
-            'etag' => null,
-            'id' => null,
+            [
+                "alias" => "user_alias1@sil.org",
+                "kind" => "personal",
+                "primaryEmail" => "user_test1@sil.org",
+                'etag' => null,
+                'id' => null,
+            ]
         ];
 
         $msg = " *** Bad data from sqlite database";
