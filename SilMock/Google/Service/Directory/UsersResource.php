@@ -229,13 +229,26 @@ class UsersResource extends DbClass
                 201407101130
             );
         }
+        $dbUserProps = json_decode($userEntry['data'], true);
+        if ($this->keyType($userKey) === 'id') {
+            $oldEmailAddress = $dbUserProps['primaryEmail'];
+        } else {
+            $oldEmailAddress = '';
+        }
 
         /*
          * only keep the non-null properties of the $postBody user,
          * except for suspensionReason.
          */
-        $dbUserProps = json_decode($userEntry['data'], true);
         $newUserProps = get_object_vars($postBody);
+        if (! empty($oldEmailAddress) && $oldEmailAddress !== $postBody['primaryEmail']) {
+            $aliases = $newUserProps['aliases'];
+            $aliases[] = $oldEmailAddress;
+            $newUserProps['aliases'] = $aliases;
+            $aliases = $postBody['aliases'];
+            $aliases[] = $oldEmailAddress;
+            $postBody['aliases'] = $aliases;
+        }
 
         foreach ($newUserProps as $key => $value) {
             if ($value !== null || $key === "suspensionReason") {
@@ -277,6 +290,14 @@ class UsersResource extends DbClass
         return $this->get($userKey);
     }
 
+    private function keyType(string $userKey)
+    {
+        $keyType = 'primaryEmail';
+        if (! filter_var($userKey, FILTER_VALIDATE_EMAIL)) {
+            $keyType = 'id';
+        }
+        return $keyType;
+    }
     /**
      * Retrieves a user record from the database (users.delete)
      *
@@ -285,17 +306,11 @@ class UsersResource extends DbClass
      */
     private function getDbUser(string $userKey)
     {
-
-        $key = 'primaryEmail';
-        if (! filter_var($userKey, FILTER_VALIDATE_EMAIL)) {
-            $key = 'id';
-        }
-
         $sqliteUtils = new SqliteUtils($this->dbFile);
         return $sqliteUtils->getRecordByDataKey(
             $this->dataType,
             $this->dataClass,
-            $key,
+            $this->keyType($userKey),
             $userKey
         );
     }
