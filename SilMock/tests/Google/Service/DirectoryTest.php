@@ -18,26 +18,28 @@ class DirectoryTest extends TestCase
 
     public function getProperties($object, $propKeys = null): array
     {
-        if ($propKeys === null) {
-            $propKeys = [
-                "changePasswordAtNextLogin",
-                "hashFunction",
-                "id",
-                "password",
-                "primaryEmail",
-                "suspended",
-                "isEnforcedIn2Sv",
-                "isEnrolledIn2Sv",
-                "aliases",
-            ];
-        }
-
         $outArray = [];
 
-        foreach ($propKeys as $key) {
-            $outArray[$key] = $object->$key;
-        }
+        if ($object !== null) {
+            if ($propKeys === null) {
+                $propKeys = [
+                    "changePasswordAtNextLogin",
+                    "hashFunction",
+                    "id",
+                    "password",
+                    "primaryEmail",
+                    "suspended",
+                    "isEnforcedIn2Sv",
+                    "isEnrolledIn2Sv",
+                    "aliases",
+                ];
+            }
 
+
+            foreach ($propKeys as $key) {
+                $outArray[$key] = $object->$key;
+            }
+        }
         return $outArray;
     }
 
@@ -392,6 +394,50 @@ class DirectoryTest extends TestCase
 
         $results = $this->getProperties($newUser);
         $expected = $userData;
+        $msg = " *** Bad user data returned";
+        $this->assertEquals($expected, $results, $msg);
+    }
+
+    public function testUsersUpdate_ById_ChangeEmail()
+    {
+        $fixturesClass = new GoogleFixtures($this->dataFile);
+        $fixturesClass->removeAllFixtures();
+
+        $userId = '999991';
+        $oldEmailAddress = 'user_test4@sil.org';
+        $newEmailAddress = 'user_test4a@sil.org';
+
+        $userData = [
+            "changePasswordAtNextLogin" => false,
+            "hashFunction" => "SHA-1",
+            "id" => $userId,
+            "password" => "testP4ss",
+            "primaryEmail" => $newEmailAddress,
+            "suspended" => false,
+            "isEnforcedIn2Sv" => false,
+            "isEnrolledIn2Sv" => true,
+            "aliases" => [],
+        ];
+
+        $fixtures = $this->getFixtures();
+        $fixturesClass->addFixtures($fixtures);
+
+        $newUser = new Google_Service_Directory_User();
+        ObjectUtils::initialize($newUser, $userData);
+
+        $newDir = new Directory('anyclient', $this->dataFile);
+        $newDir->users->update($userId, $newUser);
+        $newUser = $newDir->users->get($userId);
+
+        $results = $this->getProperties($newUser);
+        $expected = $userData;
+        $expected['aliases'][] = $oldEmailAddress;
+        $msg = " *** Bad user data returned";
+        $this->assertEquals($expected, $results, $msg);
+
+        // Attempt to get the user by the alias, after updating the primary email address
+        $newUser = $newDir->users->get($oldEmailAddress);
+        $results = $this->getProperties($newUser);
         $msg = " *** Bad user data returned";
         $this->assertEquals($expected, $results, $msg);
     }
