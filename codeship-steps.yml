@@ -1,3 +1,0 @@
-- name: test
-  service: cli
-  command: "bash -c \"cd /data/SilMock/tests; ./phpunit\""
