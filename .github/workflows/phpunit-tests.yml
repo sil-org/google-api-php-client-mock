@@ -1,0 +1,22 @@
+name: PHP Unit Tests
+
+on:
+  push:
+
+env:
+  BRANCH_NAME: ${{ github.head_ref || github.ref_name }}
+  DF_RUN_TOKEN: ${{ secrets.DF_RUN_TOKEN }}
+  IMAGE_NAME: google-api-php-client-mock
+  AWS_REGION: ${{ vars.AWS_REGION }}
+  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+jobs:
+  unit-tests:
+    name: Unit Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Run unit tests
+        run: docker-compose -f actions-services.yml run --rm google-api-php-client-mock "./run-tests.sh"
