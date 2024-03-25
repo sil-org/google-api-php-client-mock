@@ -3,4 +3,3 @@ services:
     google-api-php-client-mock:
         build: .
         working_dir: /data
-        command: "./run-tests.sh"
