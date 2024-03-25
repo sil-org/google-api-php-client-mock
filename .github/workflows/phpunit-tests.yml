@@ -19,4 +19,4 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
       - name: Run unit tests
-        run: docker-compose -f actions-services.yml run --rm google-api-php-client-mock "cd /data/SilMock/tests; ./phpunit"
+        run: docker-compose -f actions-services.yml run --rm google-api-php-client-mock "./run-tests.sh"
