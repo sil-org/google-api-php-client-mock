@@ -12,7 +12,7 @@ jobs:
 
       - name: PHPUnit Tests
         uses: php-actions/phpunit@composer-version--user
-        working-directory: /data/SilMock/tests
         with:
+          working-directory: /data/SilMock/tests
           bootstrap: vendor/autoload.php
           configuration: /data/SilMock/tests/phpunit.xml
