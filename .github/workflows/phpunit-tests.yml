@@ -1,18 +1,22 @@
-name: PHPUnit Tests
+name: PHP Unit Tests
 
-on: [push]
+on:
+  push:
+
+env:
+  BRANCH_NAME: ${{ github.head_ref || github.ref_name }}
+  DF_RUN_TOKEN: ${{ secrets.DF_RUN_TOKEN }}
+  IMAGE_NAME: google-api-php-client-mock
+  AWS_REGION: ${{ vars.AWS_REGION }}
+  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
 jobs:
-  build-test:
+  unit-tests:
+    name: Unit Tests
     runs-on: ubuntu-latest
-
     steps:
-      - uses: actions/checkout@v3
-      - uses: php-actions/composer@run-as-current-user
-
-      - name: PHPUnit Tests
-        uses: php-actions/phpunit@composer-version-user
-        with:
-          working-directory: /data/SilMock/tests
-          bootstrap: vendor/autoload.php
-          configuration: /data/SilMock/tests/phpunit.xml
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Run unit tests
+        run: docker-compose -f actions-services.yml run --rm cli "cd /data/SilMock/tests; ./phpunit"
