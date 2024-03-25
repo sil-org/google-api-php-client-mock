@@ -1,4 +1,6 @@
 version: "3"
 services:
-    cli:
-        image: google-api-php-client-mock
+    google-api-php-client-mock:
+        build: .
+        working_dir: /data
+        command: "bash -c \"cd /data/SilMock/tests; ./phpunit\""
