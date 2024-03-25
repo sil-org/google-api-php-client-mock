@@ -2,4 +2,3 @@ version: "3"
 services:
     cli:
         image: google-api-php-client-mock
-        options: --build ./ --working-directory /data
