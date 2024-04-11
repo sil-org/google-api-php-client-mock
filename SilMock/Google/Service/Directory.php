@@ -3,6 +3,7 @@
 namespace SilMock\Google\Service;
 
 use SilMock\Google\Service\Directory\Asps;
+use SilMock\Google\Service\Directory\Members;
 use SilMock\Google\Service\Directory\Tokens;
 use SilMock\Google\Service\Directory\UsersResource;
 use SilMock\Google\Service\Directory\UsersAliasesResource;
@@ -12,6 +13,7 @@ use SilMock\Google\Service\Directory\Resource\TwoStepVerification;
 class Directory
 {
     public $asps;
+    public Members $members;
     public $tokens;
     public $users;
     public $users_aliases;
@@ -28,6 +30,7 @@ class Directory
     public function __construct($client, $dbFile = null)
     {
         $this->asps = new Asps($dbFile);
+        $this->members = new Members($dbFile);
         $this->tokens = new Tokens($dbFile);
         $this->users = new UsersResource($dbFile);
         $this->users_aliases = new UsersAliasesResource($dbFile);
