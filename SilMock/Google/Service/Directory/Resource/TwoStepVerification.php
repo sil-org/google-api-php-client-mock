@@ -6,7 +6,7 @@ use SilMock\Google\Service\DbClass;
 
 class TwoStepVerification extends dbClass
 {
-    public function __construct(string $dbFile = '')
+    public function __construct(?string $dbFile = null)
     {
         parent::__construct($dbFile, 'directory', 'twoStepVerification');
     }
