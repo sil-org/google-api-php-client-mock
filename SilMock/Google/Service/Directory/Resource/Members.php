@@ -22,16 +22,15 @@ class Members extends DbClass
             'groupKey' => $groupKey,
             'member' => get_object_vars($postBody),
         ]);
-        $sqliteUtils = $this->getSqliteUtils();
-        $sqliteUtils->recordData(
-            $this->dataType,
-            $this->dataClass,
-            $dataAsJson
-        );
+        $this->addRecord($dataAsJson);
 
         $newMember = new Member();
         ObjectUtils::initialize($newMember, $postBody);
 
         return $newMember;
+    }
+
+    public function listMembers(string $groupKey)
+    {
     }
 }
