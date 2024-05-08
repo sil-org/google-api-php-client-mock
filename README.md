@@ -7,8 +7,9 @@ functional testing.
 
 Overview
 --------
-This is intended to mock a portion of the Google APIs related to G Suite
-accounts, particularly calls relating to users and users' aliases.
+This is intended to mock a portion of the Google APIs related to
+Google Workspace accounts, particularly calls relating to users and users'
+aliases.
 
 ## Directory
 Properties of a Google Service Directory (GSD) include...
@@ -19,8 +20,8 @@ Properties of a Google Service Directory (GSD) include...
 4. $tokens, which gets set to a GSD Tokens_Resource
 
 ### Users_Resource
-A Users_Resource has various methods for managing Google Apps users.  Three of these
-that are implemented by this mock are ...
+A Users_Resource has various methods for managing Google Apps users.
+Three of these that are implemented by this mock are ...
 
 1. get()
 2. insert()
@@ -28,22 +29,22 @@ that are implemented by this mock are ...
 4. listUsers()
 
 ### UsersAliases_Resource
-A UsersAliases_Resource has various methods for managing Google Apps users aliases.
-The ones implemented by this mock are ...
+A UsersAliases_Resource has various methods for managing Google Apps
+users aliases.  The ones implemented by this mock are ...
 
 1. delete()
 2. insert()
 3. listUsersAliases()
 
 ### Asps_Resource
-An Asps_Resource is for managing a user's App Specific Passwords (ASPs). This
-mock implements...
+An Asps_Resource is for managing a user's App Specific Passwords
+(ASPs). This mock implements...
 
 1. listAsps()
 
 ### Tokens_Resource
-A Tokens_Resource is for managing a user's OAuth access tokens. This mock
-implements...
+A Tokens_Resource is for managing a user's OAuth access tokens. This
+mock implements...
 
 1. listTokens()
 
@@ -80,46 +81,43 @@ Unit Testing
 If you are able to run docker natively, then:
  - make it-now
 
-If not, then use vagrant up:
- - vagrant up
- - vagrant ssh
- - cd /var/lib/GA_mock
- - make vagrantTest
-
 Data Persistence
 ----------------
-In order to keep data available for use by this mock, it makes use of a **Sqlite**
-database file. The default path and name of this file are ...
+In order to keep data available for use by this mock, it makes use of a
+**Sqlite** database file. The default path and name of this file are ...
 **SilMock/DataStore/Sqlite/Google_Service_Data.db**.  To override this,
-the constructors for the UsersResource and UsersAliasesResource class accept
-an optional string parameter.
+the constructors for the UsersResource and UsersAliasesResource class
+accept an optional string parameter.
 
-The database is accessed/managed by **SilMock/DataStore/Sqlite/SqliteUtils.php**.
-It has one table with four columns ...
+The database is accessed/managed by
+**SilMock/DataStore/Sqlite/SqliteUtils.php**.  It has one table with
+four columns ...
 
 1. id  = INTEGER PRIMARY KEY,
 2. type = TEXT,  e.g. "directory",
 3. class = TEXT, e.g. "user" or "users_alias",
 4. data = TEXT
 
-The **data** field contains json with key-value pairs related to the properties
-of the GSD objects.  The data is prepared by using the php json_encode function.
+The **data** field contains json with key-value pairs related to the
+properties of the GSD objects.  The data is prepared by using the php
+json_encode function.
 
 Test Fixtures
 -------------
 There is a class to assist with dealing with data for unit tests ...
-**SilMock\Google\Service\GoogleFixtures.php**.  Its constructor accepts an
-optional parameter for the path and name of the Sqlite database file.  It has
-two methods ...
+**SilMock\Google\Service\GoogleFixtures.php**.  Its constructor accepts
+an optional parameter for the path and name of the Sqlite database file.
+It has two methods ...
 
-1. addFixtures($fixtures), expecting an array of 3-element arrays (type, class, data).
+1. addFixtures($fixtures), expecting an array of 3-element arrays
+    (type, class, data).
 2. removeAllFixtures()
 
 Unit Tests for the Mock Itself
 ------------------------------
-The SilMock/tests folder includes phpunit tests for the three main portions
-of this mock (Directory, GoogleFixtures, SqliteUtils).  These should help
-provide examples of how to use the mock.
+The SilMock/tests folder includes phpunit tests for the three main
+portions of this mock (Directory, GoogleFixtures, SqliteUtils).
+These should help provide examples of how to use the mock.
 
 Examples
 --------
