@@ -1,4 +1,4 @@
-version: '2.2'
+#version tag is obsolete
 services:
     cli:
         build: ./

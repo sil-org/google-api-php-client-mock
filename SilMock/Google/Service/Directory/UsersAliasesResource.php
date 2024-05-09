@@ -11,7 +11,7 @@ use SilMock\Google\Service\Directory;
 
 class UsersAliasesResource extends DbClass
 {
-    public function __construct($dbFile = null)
+    public function __construct(?string $dbFile = null)
     {
         parent::__construct($dbFile, 'directory', 'users_alias');
     }

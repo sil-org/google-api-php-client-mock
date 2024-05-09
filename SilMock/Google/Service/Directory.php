@@ -3,12 +3,12 @@
 namespace SilMock\Google\Service;
 
 use SilMock\Google\Service\Directory\Asps;
-use SilMock\Google\Service\Directory\Members;
-use SilMock\Google\Service\Directory\Tokens;
-use SilMock\Google\Service\Directory\UsersResource;
-use SilMock\Google\Service\Directory\UsersAliasesResource;
-use SilMock\Google\Service\Directory\VerificationCodesResource;
+use SilMock\Google\Service\Directory\Resource\Members;
 use SilMock\Google\Service\Directory\Resource\TwoStepVerification;
+use SilMock\Google\Service\Directory\Tokens;
+use SilMock\Google\Service\Directory\UsersAliasesResource;
+use SilMock\Google\Service\Directory\UsersResource;
+use SilMock\Google\Service\Directory\VerificationCodesResource;
 
 class Directory
 {
@@ -27,7 +27,7 @@ class Directory
      * @param mixed $client -- Ignored (normally it would be a Google_Client)
      * @param string|null $dbFile -- (optional) The path and file name of the database file
      */
-    public function __construct($client, $dbFile = null)
+    public function __construct($client, ?string $dbFile = null)
     {
         $this->asps = new Asps($dbFile);
         $this->members = new Members($dbFile);
