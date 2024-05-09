@@ -14,16 +14,33 @@ aliases.
 ## Directory
 Properties of a Google Service Directory (GSD) include...
 
-1. $users, which gets set to a GSD Users_Resource
-2. $users_aliases, which gets set to a GSD UsersAliases_Resource
-3. $asps, which gets set to a GSD Asps_Resource
-4. $tokens, which gets set to a GSD Tokens_Resource
+1. $asps, which gets set to a GSD Asps_Resource
+2. $memebers, which gets set to a GSD Members_Resource
+3. $users, which gets set to a GSD Users_Resource
+4. $users_aliases, which gets set to a GSD UsersAliases_Resource
+5. $tokens, which gets set to a GSD Tokens_Resource
+6. $twoStepVerification, which gets set to a GSD TwoStepVerification_Resource
+7. $verificationCodes, which gets ste to a GSD VerificationCodes_Resource 
+
+### Asps_Resource
+An Asps_Resource is for managing a user's App Specific Passwords
+(ASPs). This mock implements...
+
+1. listAsps()
+
+### Members_Resource
+A Members_Resource is for managing members of a group.
+This mock implements...
+
+1. insert()
+2. listMembers()
 
 ### Users_Resource
 A Users_Resource has various methods for managing Google Apps users.
 Three of these that are implemented by this mock are ...
 
-1. get()
+1. delete()
+2. get()
 2. insert()
 3. update()
 4. listUsers()
@@ -36,17 +53,26 @@ users aliases.  The ones implemented by this mock are ...
 2. insert()
 3. listUsersAliases()
 
-### Asps_Resource
-An Asps_Resource is for managing a user's App Specific Passwords
-(ASPs). This mock implements...
-
-1. listAsps()
-
 ### Tokens_Resource
 A Tokens_Resource is for managing a user's OAuth access tokens. This
 mock implements...
 
 1. listTokens()
+
+### TwoStepVerification_Resource
+A TwoStepVerification_Resource is for turning off 2SV. This
+mock implements...
+
+1. turnOff()
+
+### VerificationCodes_Resource
+A VerificationCodes_Resource is for managing a user's OAuth access tokens. This
+mock implements...
+
+1. generate()
+2. invalidate()
+3. listVerificationCodes()
+
 
 ## Gmail
 Properties of the Gmail API object include...
@@ -78,7 +104,8 @@ implements include...
 
 Unit Testing
 ------------
-If you are able to run docker natively, then:
+You should have docker and the docker compose plugin installed.
+To run testing:
  - make it-now
 
 Data Persistence
@@ -130,7 +157,7 @@ Examples
 
     public static function getGoogleServiceDirectory($client) {
         if (self::useRealGoogle()) {
-            return new Google_Service_Directory($client);
+            return new Google\Service\Directory($client);
         }
         $db_path = null;
         if (isset(\Yii::app()->params['googleMockDbPath'])) {
@@ -141,7 +168,7 @@ Examples
 
 ### Managing a User
     $dir = self::getGoogleServiceDirectory($client);
-    $google_user = new Google_Service_Directory_User();
+    $google_user = new Google\Service\Directory\User();
     $google_user = $dir->users->insert($google_user);
     $google_user = $dir->users->get($usersEmail);
 
@@ -151,7 +178,7 @@ Examples
 
 ### Managing a User's Aliases
     $dir = self::getGoogleServiceDirectory($client);
-    $google_alias = new Google_Service_Directory_Alias();
+    $google_alias = new Google\Service\Directory\Alias();
     $google_alias->setAlias($alias);
     $alias = $dir->users_aliases->insert($users_email, $google_alias);
 
