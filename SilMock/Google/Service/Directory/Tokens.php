@@ -9,7 +9,7 @@ use SilMock\Google\Service\DbClass;
 
 class Tokens extends DbClass
 {
-    public function __construct($dbFile = null)
+    public function __construct(?string $dbFile = null)
     {
         parent::__construct($dbFile, 'directory', 'tokens');
     }

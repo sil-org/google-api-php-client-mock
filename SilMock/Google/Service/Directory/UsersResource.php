@@ -11,7 +11,7 @@ use SilMock\Google\Service\DbClass;
 
 class UsersResource extends DbClass
 {
-    public function __construct($dbFile = null)
+    public function __construct(?string $dbFile = null)
     {
         parent::__construct($dbFile, 'directory', 'user');
     }
@@ -165,8 +165,8 @@ class UsersResource extends DbClass
             'lastLoginTime' => $currentDateTime->format('c'),
             'creationTime' => $currentDateTime->format('c'),
             'agreedToTerms' => false,
-            'isEnforcedIn2Sv' => 'false',
-            'isEnrolledIn2Sv' => 'false',
+            'isEnforcedIn2Sv' => false,
+            'isEnrolledIn2Sv' => false,
         );
 
         // array_merge will not work, since $postBody is an object which only
@@ -256,10 +256,10 @@ class UsersResource extends DbClass
             }
         }
         if (!isset($dbUserProps['isEnforcedIn2Sv'])) {
-            $dbUserProps['isEnforcedIn2Sv'] = 'false';
+            $dbUserProps['isEnforcedIn2Sv'] = false;
         }
         if (!isset($dbUserProps['isEnrolledIn2Sv'])) {
-            $dbUserProps['isEnrolledIn2Sv'] = 'false';
+            $dbUserProps['isEnrolledIn2Sv'] = false;
         }
 
         // Delete the user's old aliases before adding the new ones
