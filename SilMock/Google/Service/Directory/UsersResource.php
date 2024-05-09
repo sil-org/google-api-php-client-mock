@@ -421,6 +421,9 @@ class UsersResource extends DbClass
         if ($checkValue === null) {
             $checkValue = '';
         }
+        if (in_array($field, ['isEnforcedIn2Sv', 'isEnrolledIn2Sv'])) {
+            $checkValue = $checkValue ? 'true' : 'false';
+        }
         if (! is_string($checkValue)) {
             throw new \Exception(sprintf(
                 "Expecting a string.\nGot Entry: %s\nGot Field: %s\nGot VALUE: %s (%s)",
