@@ -20,7 +20,7 @@ Properties of a Google Service Directory (GSD) include...
 4. $users_aliases, which gets set to a GSD UsersAliases_Resource
 5. $tokens, which gets set to a GSD Tokens_Resource
 6. $twoStepVerification, which gets set to a GSD TwoStepVerification_Resource
-7. $verificationCodes, which gets ste to a GSD VerificationCodes_Resource 
+7. $verificationCodes, which gets set to a GSD VerificationCodes_Resource
 
 ### Asps_Resource
 An Asps_Resource is for managing a user's App Specific Passwords
