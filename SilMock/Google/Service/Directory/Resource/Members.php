@@ -20,11 +20,16 @@ class Members extends DbClass
      */
     public function insert(string $groupKey, GoogleDirectory_Member $postBody, $optParams = [])
     {
-        $dataAsJson = json_encode([
-            'groupKey' => $groupKey,
-            'member' => get_object_vars($postBody),
-        ]);
-        $this->addRecord($dataAsJson);
+        $this->validateGroupExists($groupKey);
+        if ($this->isNewMember($groupKey, $postBody)) {
+            $dataAsJson = json_encode(
+                [
+                    'groupKey' => $groupKey,
+                    'member' => get_object_vars($postBody),
+                ]
+            );
+            $this->addRecord($dataAsJson);
+        }
 
         $newMember = new GoogleDirectory_Member();
         ObjectUtils::initialize($newMember, $postBody);
@@ -34,6 +39,7 @@ class Members extends DbClass
 
     public function listMembers($groupKey, $optParams = [])
     {
+        $this->validateGroupExists($groupKey);
         $pageSize = $optParams['pageSize'] ?? 10;
         $pageToken = $optParams['pageToken'] ?? 0;
         $members = new GoogleDirectory_Members();
@@ -63,5 +69,44 @@ class Members extends DbClass
             $members->setNextPageToken(sprintf("%d", $pageToken + 1));
         }
         return $members;
+    }
+
+    protected function validateGroupExists(string $groupKey): void
+    {
+        $mockGroupsObject = new Groups($this->dbFile);
+        $groupsObject = $mockGroupsObject->listGroups();
+        $groups = $groupsObject->getGroups();
+        $groupEmailAddresses = [];
+        foreach ($groups as $group) {
+            $groupEmailAddresses[] = $group->getEmail();
+        }
+        $uppercaseGroupEmailAddresses = array_map('mb_strtoupper', $groupEmailAddresses);
+        $uppercaseGroupEmailAddress = mb_strtoupper($groupKey);
+        if (! in_array($uppercaseGroupEmailAddress, $uppercaseGroupEmailAddresses)) {
+            throw new Exception(
+                sprintf(
+                    'Group %s does not exist',
+                    $groupKey
+                )
+            );
+        }
+    }
+
+    protected function isNewMember(string $groupKey, GoogleDirectory_Member $postBody): bool
+    {
+        $memberRecords = $this->getRecords();
+        foreach ($memberRecords as $memberRecord) {
+            $memberJsonData = $memberRecord['data'];
+            $memberData = json_decode($memberJsonData, true);
+            $member = new GoogleDirectory_Member();
+            ObjectUtils::initialize($member, $memberData['member']);
+            if (
+                $member->getEmail() === $postBody->getEmail() &&
+                $memberData['groupKey'] === $groupKey
+            ) {
+                return false;
+            }
+        }
+        return true;
     }
 }

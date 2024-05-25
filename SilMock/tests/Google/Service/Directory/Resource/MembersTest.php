@@ -9,7 +9,10 @@ use SilMock\Google\Service\Directory as GoogleMock_Directory;
 
 class MembersTest extends TestCase
 {
-    public $dataFile = DATAFILE2;
+    // GroupsTest and MembersTest need to share same DB, also
+    // They are very dependent on order run.
+    // groups.insert, groups.listGroups, members.insert, members.listMembers
+    public $dataFile = DATAFILE5;
 
     public function testInsert()
     {
