@@ -43,7 +43,7 @@ class DbClass
         return new SqliteUtils($this->dbFile);
     }
 
-    protected function getRecords(): array
+    protected function getRecords(): ?array
     {
         $sqliteUtils = $this->getSqliteUtils();
         return $sqliteUtils->getData($this->dataType, $this->dataClass);
