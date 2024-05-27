@@ -3,11 +3,11 @@
 namespace Service\Directory\Resource;
 
 use Exception;
-use Google\Service\Directory\Member as GoogleDirectory_Member;
+use Google\Service\Directory\Group as GoogleDirectory_Group;
 use PHPUnit\Framework\TestCase;
 use SilMock\Google\Service\Directory as GoogleMock_Directory;
 
-class MembersTest extends TestCase
+class GroupsTest extends TestCase
 {
     // GroupsTest and MembersTest need to share same DB, also
     // They are very dependent on order run.
@@ -16,46 +16,49 @@ class MembersTest extends TestCase
 
     public function testInsert()
     {
-        $emailAddress = 'test@example.com';
         $groupEmailAddress = 'sample_group@groups.example.com';
 
-        $member = new GoogleDirectory_Member();
-        $member->setEmail($emailAddress);
+        $group = new GoogleDirectory_Group();
+        $group->setEmail($groupEmailAddress);
+        $group->setAliases([]);
+        $group->setName('Sample Group');
+        $group->setDescription('A Sample Group used for testing');
 
         $mockGoogleServiceDirectory = new GoogleMock_Directory('anyclient', $this->dataFile);
         try {
-            $addedMember = $mockGoogleServiceDirectory->members->insert($groupEmailAddress, $member);
+            $groups = $mockGoogleServiceDirectory->groups->listGroups($groupEmailAddress);
+            $addedGroup = $mockGoogleServiceDirectory->groups->insert($group);
         } catch (Exception $exception) {
             $this->assertFalse(
                 true,
                 sprintf(
-                    'Was expecting the members.insert method to function, but got: %s',
+                    'Was expecting the groups.insert method to function, but got: %s',
                     $exception->getMessage()
                 )
             );
         }
-        $this->assertTrue($addedMember instanceof GoogleDirectory_Member);
+        $this->assertTrue($addedGroup instanceof GoogleDirectory_Group);
     }
 
-    public function testListMembers()
+    public function testListGroups()
     {
         $groupEmailAddress = 'sample_group@groups.example.com';
         $mockGoogleServiceDirectory = new GoogleMock_Directory('anyclient', $this->dataFile);
-        $members = [];
+        $groups = [];
         try {
-            $members = $mockGoogleServiceDirectory->members->listMembers($groupEmailAddress);
+            $groups = $mockGoogleServiceDirectory->groups->listGroups($groupEmailAddress);
         } catch (Exception $exception) {
             $this->assertFalse(
                 true,
                 sprintf(
-                    'Was expecting the members.list method to function, but got: %s',
+                    'Was expecting the groups.list method to function, but got: %s',
                     $exception->getMessage()
                 )
             );
         }
         $this->assertNotEmpty(
-            $members,
-            'Was expecting the members.list method to have at least one member.'
+            $groups,
+            'Was expecting the groups.list method to have at least one group.'
         );
     }
 }
