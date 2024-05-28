@@ -15,6 +15,20 @@ class Members extends DbClass
         parent::__construct($dbFile, 'directory', 'members');
     }
 
+    public function hasMember(string $groupKey, string $memberKey): array
+    {
+        $members = $this->listMembers($groupKey);
+        $memberList = $members->getMembers();
+        $memberEmailAddresses = [];
+        foreach ($memberList as $member) {
+            $memberEmailAddresses[] = mb_strtolower($member->getEmail());
+        }
+        $isMember = in_array(mb_strtolower($memberKey), $memberEmailAddresses);
+        return [
+            'isMember' => $isMember,
+        ];
+    }
+
     /**
      * @throws Exception
      */
