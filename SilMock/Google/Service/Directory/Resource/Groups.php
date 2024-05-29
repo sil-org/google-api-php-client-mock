@@ -15,6 +15,19 @@ class Groups extends DbClass
         parent::__construct($dbFile, 'directory', 'groups');
     }
 
+    public function get(string $groupKey): ?GoogleDirectory_Group
+    {
+        $mockGroupsObject = new Groups($this->dbFile);
+        $groupsObject = $mockGroupsObject->listGroups();
+        $groups = $groupsObject->getGroups();
+        foreach ($groups as $group) {
+            if (mb_strtolower($group->getEmail()) === mb_strtolower($groupKey)) {
+                return $group;
+            }
+        }
+        return null;
+    }
+
     /**
      * @throws Exception
      */
@@ -73,10 +86,9 @@ class Groups extends DbClass
         $groups = $groupsObject->getGroups();
         $groupEmailAddresses = [];
         foreach ($groups as $group) {
-            $groupEmailAddresses[] = $group->getEmail();
+            $groupEmailAddresses[] = mb_strtoupper($group->getEmail());
         }
-        $uppercaseGroupEmailAddresses = array_map('mb_strtoupper', $groupEmailAddresses);
         $uppercaseGroupEmailAddress = mb_strtoupper($groupKey);
-        return ! in_array($uppercaseGroupEmailAddress, $uppercaseGroupEmailAddresses);
+        return ! in_array($uppercaseGroupEmailAddress, $groupEmailAddresses);
     }
 }
