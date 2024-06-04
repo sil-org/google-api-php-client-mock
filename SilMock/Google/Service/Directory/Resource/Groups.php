@@ -34,6 +34,7 @@ class Groups extends DbClass
     public function insert(GoogleDirectory_Group $postBody, $optParams = [])
     {
         if ($this->isNewGroup($postBody->getEmail())) {
+            $postBody['id'] = $postBody['id'] ?? microtime();
             $dataAsJson = json_encode(get_object_vars($postBody));
             $this->addRecord($dataAsJson);
         }
