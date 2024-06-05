@@ -36,6 +36,24 @@ class MembersTest extends TestCase
         self::assertTrue($addedMember instanceof GoogleDirectory_Member);
     }
 
+    public function testGet()
+    {
+        $groupEmailAddress = 'sample_group@groups.example.com';
+        $emailAddress = 'test@example.com';
+        $mockGoogleServiceDirectory = new GoogleMock_Directory('anyclient', $this->dataFile);
+        try {
+            $member = $mockGoogleServiceDirectory->members->get($groupEmailAddress, $emailAddress);
+        } catch (Exception $exception) {
+            self::fail(
+                sprintf(
+                    'Was expecting the members.get method to function, but got: %s',
+                    $exception->getMessage()
+                )
+            );
+        }
+        self::assertTrue($member instanceof GoogleDirectory_Member);
+    }
+
     public function testHasMember()
     {
         $groupEmailAddress = 'sample_group@groups.example.com';

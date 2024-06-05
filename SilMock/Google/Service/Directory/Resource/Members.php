@@ -15,6 +15,19 @@ class Members extends DbClass
         parent::__construct($dbFile, 'directory', 'members');
     }
 
+    public function get(string $groupKey, string $memberKey): GoogleDirectory_Member
+    {
+        $members = $this->listMembers($groupKey);
+        $memberList = $members->getMembers();
+        foreach ($memberList as $member) {
+            $memberEmailAddress = mb_strtolower($member->getEmail());
+            if ($memberEmailAddress === mb_strtolower($memberKey)) {
+                return $member;
+            }
+        }
+        throw new Exception('Member not found');
+    }
+
     public function hasMember(string $groupKey, string $memberKey): array
     {
         $members = $this->listMembers($groupKey);
