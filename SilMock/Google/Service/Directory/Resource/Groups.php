@@ -15,6 +15,17 @@ class Groups extends DbClass
         parent::__construct($dbFile, 'directory', 'groups');
     }
 
+    public function delete(string $groupKey)
+    {
+        $groupRecords = $this->getRecords();
+        foreach ($groupRecords as $groupRecord) {
+            $groupRecordData = json_decode($groupRecord['data'], true);
+            if ($groupRecordData['email'] === $groupKey) {
+                $this->deleteRecordById($groupRecord['id']);
+            }
+        }
+    }
+
     public function get(string $groupKey): ?GoogleDirectory_Group
     {
         $mockGroupsObject = new Groups($this->dbFile);
