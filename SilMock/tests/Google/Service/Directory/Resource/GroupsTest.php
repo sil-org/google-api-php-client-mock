@@ -37,6 +37,57 @@ class GroupsTest extends TestCase
         self::assertTrue($addedGroup instanceof GoogleDirectory_Group);
     }
 
+    public function testDelete()
+    {
+        // Set update a deletable email address
+        $group = new GoogleDirectory_Group();
+        $group->setEmail(self::GROUP_EMAIL_ADDRESS . 'delete');
+        $group->setAliases([]);
+        $group->setName('Sample Deletable Group');
+        $group->setDescription('A Sample Deletable Group used for testing');
+
+        $mockGoogleServiceDirectory = new GoogleMock_Directory('anyclient', $this->dataFile);
+        try {
+            $addedGroup = $mockGoogleServiceDirectory->groups->insert($group);
+        } catch (Exception $exception) {
+            self::fail(
+                sprintf(
+                    'Was expecting the groups.insert method to function, but got: %s',
+                    $exception->getMessage()
+                )
+            );
+        }
+        self::assertTrue($addedGroup instanceof GoogleDirectory_Group);
+
+        // Now try to delete it
+        $mockGoogleServiceDirectory = new GoogleMock_Directory('anyclient', $this->dataFile);
+        try {
+            $mockGoogleServiceDirectory->groups->delete(self::GROUP_EMAIL_ADDRESS . 'delete');
+        } catch (Exception $exception) {
+            self::fail(
+                sprintf(
+                    'Was expecting the groups.delete method to function, but got: %s',
+                    $exception->getMessage()
+                )
+            );
+        }
+
+        try {
+            $group = $mockGoogleServiceDirectory->groups->get(self::GROUP_EMAIL_ADDRESS . 'delete');
+            self::assertNull(
+                $group,
+                'Was expecting the group to be deleted, but found something'
+            );
+        } catch (Exception $exception) {
+            self::fail(
+                sprintf(
+                    'Was expecting to confirm the group was deleted, but got: %s',
+                    $exception->getMessage()
+                )
+            );
+        }
+    }
+
     public function testGet()
     {
         $mockGoogleServiceDirectory = new GoogleMock_Directory('anyclient', $this->dataFile);
