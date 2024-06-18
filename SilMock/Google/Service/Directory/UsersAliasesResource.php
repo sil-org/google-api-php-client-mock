@@ -11,6 +11,8 @@ use SilMock\Google\Service\Directory;
 
 class UsersAliasesResource extends DbClass
 {
+    public const ACCOUNT_DOESNT_EXIST = "Account doesn't exist: ";
+
     public function __construct(?string $dbFile = null)
     {
         parent::__construct($dbFile, 'directory', 'users_alias');
@@ -37,7 +39,7 @@ class UsersAliasesResource extends DbClass
         $matchingUsers = $dir->users->get($userKey);
 
         if ($matchingUsers === null) {
-            throw new Exception("Account doesn't exist: " . $userKey, 201407101645);
+            throw new Exception(self::ACCOUNT_DOESNT_EXIST . $userKey, 201407101645);
         }
 
         // Get all the aliases for that user
@@ -87,7 +89,7 @@ class UsersAliasesResource extends DbClass
         $matchingUsers = $dir->users->get($userKey);
 
         if ($matchingUsers === null) {
-            throw new Exception("Account doesn't exist: " . $userKey, 201407110830);
+            throw new Exception(self::ACCOUNT_DOESNT_EXIST . $userKey, 201407110830);
         }
 
         if ($postBody->$key === null) {
@@ -145,7 +147,7 @@ class UsersAliasesResource extends DbClass
         $matchingUsers = $dir->users->get($userKey);
 
         if ($matchingUsers === null) {
-            throw new Exception("Account doesn't exist: " . $userKey, 201407101420);
+            throw new Exception(self::ACCOUNT_DOESNT_EXIST . $userKey, 201407101420);
         }
 
         $foundAliases =  $this->fetchAliasesByUser($key, $userKey);
