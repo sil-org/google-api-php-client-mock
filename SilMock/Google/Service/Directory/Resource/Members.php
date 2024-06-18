@@ -70,7 +70,7 @@ class Members extends DbClass
         $pageSize = $optParams['pageSize'] ?? 10;
         $pageToken = $optParams['pageToken'] ?? 0;
         $query = $optParams['query'] ?? null;
-        $expectedRole = $query ? substr($query, strpos($query, '=') + 1) : null;
+        $expectedRoles = $this->extractRoles($query);
         $members = new GoogleDirectory_Members();
         $directoryMemberRecords = $this->getRecords();
         $memberCounter = 0;
@@ -78,7 +78,7 @@ class Members extends DbClass
             $memberData = json_decode($memberRecord['data'], true);
             if ($memberData['groupKey'] === $groupKey) {
                 if ($memberCounter >= ($pageToken * $pageSize)) {
-                    if (is_null($expectedRole) || $expectedRole === $memberData['member']['role']) {
+                    if (empty($expectedRoles) || in_array($memberData['member']['role'], $expectedRoles)) {
                         $memberCounter = $memberCounter + 1;
                         $this->addToMembers($memberData, $members);
                     }
@@ -96,6 +96,23 @@ class Members extends DbClass
             $members->setNextPageToken(sprintf("%d", $pageToken + 1));
         }
         return $members;
+    }
+
+    protected function extractRoles(?string $query): array
+    {
+        if (! empty($query) && str_contains($query, 'roles')) {
+            $roleSegmentStart = substr($query, strpos($query, 'roles'));
+            $roleSegmentEnd = strrpos($roleSegmentStart, ' ');
+            if ($roleSegmentEnd === false) {
+                $roleSegmentEnd = strlen($roleSegmentStart);
+            }
+            $roleSegment = trim(substr($roleSegmentStart, 0, $roleSegmentEnd));
+            $roleValue = substr($roleSegment, 6); // roles= is 0-5
+            $expectedRoles = explode(',', $roleValue);
+        } else {
+            $expectedRoles = [];
+        }
+        return $expectedRoles;
     }
 
     protected function addToMembers(array $memberData, GoogleDirectory_Members $members): void
