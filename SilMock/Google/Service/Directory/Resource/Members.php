@@ -76,13 +76,13 @@ class Members extends DbClass
         $memberCounter = 0;
         foreach ($directoryMemberRecords as $memberRecord) {
             $memberData = json_decode($memberRecord['data'], true);
-            if ($memberData['groupKey'] === $groupKey) {
-                if ($memberCounter >= ($pageToken * $pageSize)) {
-                    if (empty($expectedRoles) || in_array($memberData['member']['role'], $expectedRoles)) {
+            if (
+                $memberData['groupKey'] === $groupKey            // Matches the expected group
+                && $memberCounter >= ($pageToken * $pageSize)    // Matches the subsection of all the members
+                && (empty($expectedRoles) || in_array($memberData['member']['role'], $expectedRoles)) // Matches role
+            ) {
                         $memberCounter = $memberCounter + 1;
                         $this->addToMembers($memberData, $members);
-                    }
-                }
             }
             $currentMembers = $members->getMembers();
             $currentResultSize = count($currentMembers);
