@@ -112,18 +112,20 @@ class UsersResource extends DbClass
         }
         
         $allUsers = $this->getAllDbUsers();
-        
-        foreach ($allUsers as $aUser) {
-            if (! isset($aUser['data'])) {
-                continue;
+        $usersWithData = array_filter(
+            $allUsers,
+            function ($user) {
+                return isset($user['data']);
             }
-            
+        );
+
+        foreach ($usersWithData as $aUser) {
             $userData = json_decode($aUser['data'], true);
             if ($userData === null) {
                 continue;
             }
             
-            $primaryEmail = isset($userData['primaryEmail']) ? $userData['primaryEmail'] : null;
+            $primaryEmail = $userData['primaryEmail'] ?? null;
             
             $aliasesResource = $this->getAliasesForUser($primaryEmail);
             if ($aliasesResource) {
@@ -408,7 +410,8 @@ class UsersResource extends DbClass
                 }
             } elseif (is_array($checkValue)) {
                 throw new \Exception(
-                    "Did not expect something other than name as an array. Got VALUE: " . var_dump($checkValue)
+                    "Did not expect something other than name as an array. Got VALUE: "
+                    . var_export($checkValue, true)
                 );
             }
         } elseif (isset($entry['name'][$field])) {
