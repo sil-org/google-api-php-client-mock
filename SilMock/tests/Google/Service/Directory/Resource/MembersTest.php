@@ -81,12 +81,7 @@ class MembersTest extends TestCase
         try {
             $members = $mockGoogleServiceDirectory->members->listMembers($groupEmailAddress);
         } catch (Exception $exception) {
-            self::fail(
-                sprintf(
-                    'Was expecting the members.list method to function, but got: %s',
-                    $exception->getMessage()
-                )
-            );
+            $this->failure($exception);
         }
         self::assertNotEmpty(
             $members->getMembers(),
@@ -107,12 +102,7 @@ class MembersTest extends TestCase
                 ]
             );
         } catch (Exception $exception) {
-            self::fail(
-                sprintf(
-                    'Was expecting the members.list method to function, but got: %s',
-                    $exception->getMessage()
-                )
-            );
+            $this->failure($exception);
         }
         self::assertNotEmpty(
             $members->getMembers(),
@@ -133,16 +123,21 @@ class MembersTest extends TestCase
                 ]
             );
         } catch (Exception $exception) {
-            self::fail(
-                sprintf(
-                    'Was expecting the members.list method to function, but got: %s',
-                    $exception->getMessage()
-                )
-            );
+            $this->failure($exception);
         }
         self::assertEmpty(
             $members->getMembers(),
             'Was expecting the members.list method to have no owner types.'
+        );
+    }
+
+    protected function failure(Exception $exception): void
+    {
+        self::fail(
+            sprintf(
+                'Was expecting the members.insert method to function, but got: %s',
+                $exception->getMessage()
+            )
         );
     }
 }
