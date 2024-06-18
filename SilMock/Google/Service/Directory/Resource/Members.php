@@ -69,19 +69,19 @@ class Members extends DbClass
         $this->validateGroupExists($groupKey);
         $pageSize = $optParams['pageSize'] ?? 10;
         $pageToken = $optParams['pageToken'] ?? 0;
+        $query = $optParams['query'] ?? null;
+        $expectedRole = $query ? substr($query, strpos($query, '=') + 1) : null;
         $members = new GoogleDirectory_Members();
         $directoryMemberRecords = $this->getRecords();
         $memberCounter = 0;
         foreach ($directoryMemberRecords as $memberRecord) {
             $memberData = json_decode($memberRecord['data'], true);
             if ($memberData['groupKey'] === $groupKey) {
-                $memberCounter = $memberCounter + 1;
                 if ($memberCounter >= ($pageToken * $pageSize)) {
-                    $currentMembers = $members->getMembers();
-                    $currentMember = new GoogleDirectory_Member();
-                    ObjectUtils::initialize($currentMember, $memberData['member']);
-                    $currentMembers[] = $currentMember;
-                    $members->setMembers($currentMembers);
+                    if (is_null($expectedRole) || $expectedRole === $memberData['member']['role']) {
+                        $memberCounter = $memberCounter + 1;
+                        $this->addToMembers($memberData, $members);
+                    }
                 }
             }
             $currentMembers = $members->getMembers();
@@ -96,6 +96,15 @@ class Members extends DbClass
             $members->setNextPageToken(sprintf("%d", $pageToken + 1));
         }
         return $members;
+    }
+
+    protected function addToMembers(array $memberData, GoogleDirectory_Members $members): void
+    {
+        $currentMembers = $members->getMembers();
+        $currentMember = new GoogleDirectory_Member();
+        ObjectUtils::initialize($currentMember, $memberData['member']);
+        $currentMembers[] = $currentMember;
+        $members->setMembers($currentMembers);
     }
 
     protected function validateGroupExists(string $groupKey): void
