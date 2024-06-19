@@ -21,6 +21,7 @@ class MembersTest extends TestCase
 
         $member = new GoogleDirectory_Member();
         $member->setEmail($emailAddress);
+        $member->setRole('MEMBER');
 
         $mockGoogleServiceDirectory = new GoogleMock_Directory('anyclient', $this->dataFile);
         try {
@@ -72,7 +73,7 @@ class MembersTest extends TestCase
         self::assertTrue($hasMember);
     }
 
-    public function testListMembers()
+    public function testListMembersAll()
     {
         $groupEmailAddress = 'sample_group@groups.example.com';
         $mockGoogleServiceDirectory = new GoogleMock_Directory('anyclient', $this->dataFile);
@@ -80,16 +81,63 @@ class MembersTest extends TestCase
         try {
             $members = $mockGoogleServiceDirectory->members->listMembers($groupEmailAddress);
         } catch (Exception $exception) {
-            self::fail(
-                sprintf(
-                    'Was expecting the members.list method to function, but got: %s',
-                    $exception->getMessage()
-                )
-            );
+            $this->failure($exception);
         }
         self::assertNotEmpty(
-            $members,
-            'Was expecting the members.list method to have at least one member.'
+            $members->getMembers(),
+            'Was expecting the members.list method to have at least one member entry.'
+        );
+    }
+
+    public function testListMembersOnlyMember()
+    {
+        $groupEmailAddress = 'sample_group@groups.example.com';
+        $mockGoogleServiceDirectory = new GoogleMock_Directory('anyclient', $this->dataFile);
+        $members = [];
+        try {
+            $members = $mockGoogleServiceDirectory->members->listMembers(
+                $groupEmailAddress,
+                [
+                    'query' => 'roles=MEMBER'
+                ]
+            );
+        } catch (Exception $exception) {
+            $this->failure($exception);
+        }
+        self::assertNotEmpty(
+            $members->getMembers(),
+            'Was expecting the members.list method to have at least one member type entry.'
+        );
+    }
+
+    public function testListMembersOnlyOwner()
+    {
+        $groupEmailAddress = 'sample_group@groups.example.com';
+        $mockGoogleServiceDirectory = new GoogleMock_Directory('anyclient', $this->dataFile);
+        $members = [];
+        try {
+            $members = $mockGoogleServiceDirectory->members->listMembers(
+                $groupEmailAddress,
+                [
+                    'query' => 'roles=OWNER'
+                ]
+            );
+        } catch (Exception $exception) {
+            $this->failure($exception);
+        }
+        self::assertEmpty(
+            $members->getMembers(),
+            'Was expecting the members.list method to have no owner types.'
+        );
+    }
+
+    protected function failure(Exception $exception): void
+    {
+        self::fail(
+            sprintf(
+                'Was expecting the members.insert method to function, but got: %s',
+                $exception->getMessage()
+            )
         );
     }
 }

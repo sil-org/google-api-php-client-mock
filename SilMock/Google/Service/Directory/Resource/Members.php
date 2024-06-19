@@ -69,20 +69,20 @@ class Members extends DbClass
         $this->validateGroupExists($groupKey);
         $pageSize = $optParams['pageSize'] ?? 10;
         $pageToken = $optParams['pageToken'] ?? 0;
+        $query = $optParams['query'] ?? null;
+        $expectedRoles = $this->extractRoles($query);
         $members = new GoogleDirectory_Members();
         $directoryMemberRecords = $this->getRecords();
         $memberCounter = 0;
         foreach ($directoryMemberRecords as $memberRecord) {
             $memberData = json_decode($memberRecord['data'], true);
-            if ($memberData['groupKey'] === $groupKey) {
-                $memberCounter = $memberCounter + 1;
-                if ($memberCounter >= ($pageToken * $pageSize)) {
-                    $currentMembers = $members->getMembers();
-                    $currentMember = new GoogleDirectory_Member();
-                    ObjectUtils::initialize($currentMember, $memberData['member']);
-                    $currentMembers[] = $currentMember;
-                    $members->setMembers($currentMembers);
-                }
+            if (
+                $memberData['groupKey'] === $groupKey            // Matches the expected group
+                && $memberCounter >= ($pageToken * $pageSize)    // Matches the subsection of all the members
+                && (empty($expectedRoles) || in_array($memberData['member']['role'], $expectedRoles)) // Matches role
+            ) {
+                        $memberCounter = $memberCounter + 1;
+                        $this->addToMembers($memberData, $members);
             }
             $currentMembers = $members->getMembers();
             $currentResultSize = count($currentMembers);
@@ -96,6 +96,32 @@ class Members extends DbClass
             $members->setNextPageToken(sprintf("%d", $pageToken + 1));
         }
         return $members;
+    }
+
+    protected function extractRoles(?string $query): array
+    {
+        if (! empty($query) && str_contains($query, 'roles')) {
+            $roleSegmentStart = substr($query, strpos($query, 'roles'));
+            $roleSegmentEnd = strrpos($roleSegmentStart, ' ');
+            if ($roleSegmentEnd === false) {
+                $roleSegmentEnd = strlen($roleSegmentStart);
+            }
+            $roleSegment = trim(substr($roleSegmentStart, 0, $roleSegmentEnd));
+            $roleValue = substr($roleSegment, 6); // roles= is 0-5
+            $expectedRoles = explode(',', $roleValue);
+        } else {
+            $expectedRoles = [];
+        }
+        return $expectedRoles;
+    }
+
+    protected function addToMembers(array $memberData, GoogleDirectory_Members $members): void
+    {
+        $currentMembers = $members->getMembers();
+        $currentMember = new GoogleDirectory_Member();
+        ObjectUtils::initialize($currentMember, $memberData['member']);
+        $currentMembers[] = $currentMember;
+        $members->setMembers($currentMembers);
     }
 
     protected function validateGroupExists(string $groupKey): void

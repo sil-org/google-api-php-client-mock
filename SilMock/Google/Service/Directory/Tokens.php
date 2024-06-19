@@ -50,7 +50,7 @@ class Tokens extends DbClass
      */
     protected function isValidEmailAddress(string $email): bool
     {
-        return (filter_var($email, FILTER_VALIDATE_EMAIL) !== false);
+        return filter_var($email, FILTER_VALIDATE_EMAIL) !== false;
     }
 
     protected function listTokensFor(string $userId): array
