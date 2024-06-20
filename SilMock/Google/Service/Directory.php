@@ -24,7 +24,7 @@ class Directory
     public $users_aliases;
     public $verificationCodes;
     public $twoStepVerification;
-    public $client;
+    public Client $client;
 
     /**
      * Sets the users and users_aliases properties to be instances of
