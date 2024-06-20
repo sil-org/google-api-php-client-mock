@@ -2,9 +2,12 @@
 
 namespace SilMock\tests\Google\Service;
 
+use Google\Client;
+use Google\Service\Directory\Alias as Google_Service_Directory_Alias;
+use Google\Service\Directory\User as  Google_Service_Directory_User;
+use PHPUnit\Framework\Assert;
 use PHPUnit\Framework\TestCase;
-use Google_Service_Directory_Alias;
-use Google_Service_Directory_User;
+use SilMock\Google\Http\Batch;
 use SilMock\Google\Service\Directory;
 use SilMock\Google\Service\Directory\ObjectUtils;
 use SilMock\DataStore\Sqlite\SqliteUtils;
@@ -43,6 +46,12 @@ class DirectoryTest extends TestCase
         return $outArray;
     }
 
+    public function testCreateBatch()
+    {
+        $batch = new Batch();
+        self::assertInstanceOf(Batch::class, $batch);
+    }
+
     public function testDirectory()
     {
         $expectedKeys = [
@@ -54,7 +63,7 @@ class DirectoryTest extends TestCase
         ];
         $errorMessage = " *** Directory was not initialized properly";
         
-        $directory = new Directory('whatever', $this->dataFile);
+        $directory = new Directory('anyclient', $this->dataFile);
         
         $directoryAsJson = json_encode($directory);
         $directoryInfo = json_decode($directoryAsJson, true);
@@ -62,6 +71,13 @@ class DirectoryTest extends TestCase
             $this->assertArrayHasKey($expectedKey, $directoryInfo, $errorMessage);
             $this->assertEmpty($directoryInfo[$expectedKey], $errorMessage);
         }
+    }
+
+    public function testGetClient()
+    {
+        $dir = new Directory('anyclient', $this->dataFile);
+        $client = $dir->getClient();
+        Assert::assertInstanceOf(Client::class, $client);
     }
 
     public function testUsersInsert()
