@@ -69,8 +69,8 @@ class Members extends DbClass
         $this->validateGroupExists($groupKey);
         $pageSize = $optParams['pageSize'] ?? 10;
         $pageToken = $optParams['pageToken'] ?? 0;
-        $query = $optParams['query'] ?? null;
-        $expectedRoles = $this->extractRoles($query);
+        $roles = $optParams['roles'] ?? null;
+        $expectedRoles = $this->extractRoles($roles);
         $members = new GoogleDirectory_Members();
         $directoryMemberRecords = $this->getRecords();
         $memberCounter = 0;
@@ -81,8 +81,8 @@ class Members extends DbClass
                 && $memberCounter >= ($pageToken * $pageSize)    // Matches the subsection of all the members
                 && (empty($expectedRoles) || in_array($memberData['member']['role'], $expectedRoles)) // Matches role
             ) {
-                        $memberCounter = $memberCounter + 1;
-                        $this->addToMembers($memberData, $members);
+                $memberCounter = $memberCounter + 1;
+                $this->addToMembers($memberData, $members);
             }
             $currentMembers = $members->getMembers();
             $currentResultSize = count($currentMembers);
@@ -98,17 +98,11 @@ class Members extends DbClass
         return $members;
     }
 
-    protected function extractRoles(?string $query): array
+    protected function extractRoles(?string $roles): array
     {
-        if (! empty($query) && str_contains($query, 'roles')) {
-            $roleSegmentStart = substr($query, strpos($query, 'roles'));
-            $roleSegmentEnd = strrpos($roleSegmentStart, ' ');
-            if ($roleSegmentEnd === false) {
-                $roleSegmentEnd = strlen($roleSegmentStart);
-            }
-            $roleSegment = trim(substr($roleSegmentStart, 0, $roleSegmentEnd));
-            $roleValue = substr($roleSegment, 6); // roles= is 0-5
-            $expectedRoles = explode(',', $roleValue);
+        if (! empty($roles)) {
+            $allExpectedRoles = explode(',', $roles);
+            $expectedRoles = array_map(function ($role) { return mb_strtoupper(trim($role)); }, $allExpectedRoles);
         } else {
             $expectedRoles = [];
         }

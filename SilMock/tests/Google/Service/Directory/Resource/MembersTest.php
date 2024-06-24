@@ -98,7 +98,7 @@ class MembersTest extends TestCase
             $members = $mockGoogleServiceDirectory->members->listMembers(
                 $groupEmailAddress,
                 [
-                    'query' => 'roles=MEMBER'
+                    'roles' => 'MEMBER'
                 ]
             );
         } catch (Exception $exception) {
@@ -119,7 +119,7 @@ class MembersTest extends TestCase
             $members = $mockGoogleServiceDirectory->members->listMembers(
                 $groupEmailAddress,
                 [
-                    'query' => 'roles=OWNER'
+                    'roles' => 'OWNER'
                 ]
             );
         } catch (Exception $exception) {
