@@ -5,7 +5,6 @@ on:
 
 env:
   BRANCH_NAME: ${{ github.head_ref || github.ref_name }}
-  DF_RUN_TOKEN: ${{ secrets.DF_RUN_TOKEN }}
   IMAGE_NAME: google-api-php-client-mock
   AWS_REGION: ${{ vars.AWS_REGION }}
   AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
