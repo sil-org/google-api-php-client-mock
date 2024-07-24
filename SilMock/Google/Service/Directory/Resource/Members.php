@@ -15,6 +15,21 @@ class Members extends DbClass
         parent::__construct($dbFile, 'directory', 'members');
     }
 
+    public function delete(string $groupKey, string $memberKey)
+    {
+        $directoryMemberRecords = $this->getRecords();
+        foreach ($directoryMemberRecords as $record) {
+            $decodedRecordData = json_decode($record['data'], true);
+            if (
+                $decodedRecordData['groupKey'] === $groupKey
+                && $decodedRecordData['member']['email'] === $memberKey
+            ) {
+                $recordId = $record['id'];
+                $this->deleteRecordById($recordId);
+            }
+        }
+    }
+
     public function get(string $groupKey, string $memberKey): GoogleDirectory_Member
     {
         $members = $this->listMembers($groupKey);
