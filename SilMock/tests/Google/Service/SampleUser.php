@@ -3,8 +3,7 @@
 namespace SilMock\tests\Google\Service;
 
 use Google_Service_Directory_User;
-use Google_Service_Directory_Aliases;
-use Google_Service_Directory_Alias;
+use Google\Service\Directory\UserName;
 use SilMock\Google\Service\GoogleFixtures;
 use SilMock\Google\Service\Directory;
 
@@ -24,6 +23,12 @@ trait SampleUser
         $newUser->isEnrolledIn2Sv = true;
         $newUser->isEnforcedIn2Sv = false;
         //  $newUser->$suspensionReason = ''; // string
+        $newName = new UserName();
+        $newName->givenName = 'Johnathan';
+        $newName->familyName = 'Smith';
+        $newName->fullName = 'Johnathan Doe Smith';
+        $newName->displayName = 'John Doe Smith';
+        $newUser->name = $newName;
 
         if ($withAliases) {
             $newUser->aliases = [ 'user_alias1@sil.org', 'user_alias2@sil.org' ];
