@@ -384,6 +384,9 @@ class UsersResource extends DbClass
         if ($query === '') {
             return true;
         }
+        if ($entry === null) {
+            return false;
+        }
         $query = str_replace('*', '', $query);
         if (mb_strpos($query, '=') !== false) {
             $separator = '=';
