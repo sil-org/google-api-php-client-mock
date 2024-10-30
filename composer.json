@@ -9,16 +9,8 @@
     "license": "MIT",
     "authors": [
         {
-            "name": "Steve Bagwell"
-        },
-        {
-            "name": "Phillip Shipley"
-        },
-        {
-            "name": "Matt Henderson"
-        },
-        {
-            "name": "Mark Tompsett"
+            "name": "SIL GTIS",
+            "email": "gtis_itse_support@sil.org"
         }
     ],
     "require": {
