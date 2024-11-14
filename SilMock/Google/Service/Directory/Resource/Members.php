@@ -117,7 +117,12 @@ class Members extends DbClass
     {
         if (! empty($roles)) {
             $allExpectedRoles = explode(',', $roles);
-            $expectedRoles = array_map(function ($role) { return mb_strtoupper(trim($role)); }, $allExpectedRoles);
+            $expectedRoles = array_map(
+                function ($role) {
+                    return mb_strtoupper(trim($role));
+                },
+                $allExpectedRoles
+            );
         } else {
             $expectedRoles = [];
         }

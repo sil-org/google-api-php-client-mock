@@ -10,23 +10,23 @@ use SilMock\Google\Service\GoogleFixtures;
 class UsersSettingsForwardingAddressesTest extends TestCase
 {
     public $dataFile = DATAFILE4;
-    
+
     protected function setUp(): void
     {
         $this->emptyFixturesDataFile();
     }
-    
+
     private function emptyFixturesDataFile()
     {
         $fixturesClass = new GoogleFixtures($this->dataFile);
         $fixturesClass->removeAllFixtures();
     }
-    
+
     protected function tearDown(): void
     {
         $this->emptyFixturesDataFile();
     }
-    
+
     public function testListUsersSettingsForwardingAddresses()
     {
         $accountEmail = 'john_smith@example.org';
@@ -35,7 +35,7 @@ class UsersSettingsForwardingAddressesTest extends TestCase
         // Because this is totally a skeleton.
         Assert::assertEmpty($result);
     }
-    
+
     public function testDelete()
     {
         $accountEmail = 'john_smith@example.org';

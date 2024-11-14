@@ -28,14 +28,14 @@ class UsersSettingsDelegates extends DbClass
     public function create($userId, \Google_Service_Gmail_Delegate $postBody, $optParams = array())
     {
         $this->assertIsValidUserId($userId);
-        
+
         if ($this->hasDelegate($userId, $postBody->delegateEmail)) {
             throw new Google_Service_Exception('Already has delegate', 409);
         }
-        
+
         return $this->addDelegate($userId, $postBody->delegateEmail);
     }
-    
+
     protected function hasDelegate(string $userId, string $delegateEmail): bool
     {
         foreach ($this->listDelegatesFor($userId) as $delegate) {
@@ -45,7 +45,7 @@ class UsersSettingsDelegates extends DbClass
         }
         return false;
     }
-    
+
     protected function listDelegatesFor(string $userId): array
     {
         $matchingRecords = [];
@@ -60,7 +60,7 @@ class UsersSettingsDelegates extends DbClass
         }
         return $matchingRecords;
     }
-    
+
     /**
      * Get the delegate records. Example result:
      *
@@ -80,7 +80,7 @@ class UsersSettingsDelegates extends DbClass
     {
         return $this->getRecords();
     }
-    
+
     protected function addDelegate(string $userId, string $delegateEmail)
     {
         $data = json_encode(
@@ -94,26 +94,26 @@ class UsersSettingsDelegates extends DbClass
 
         return $this->get($userId, $delegateEmail);
     }
-    
+
     protected function getSqliteUtils(): SqliteUtils
     {
         return new SqliteUtils($this->dbFile);
     }
-    
+
     protected function assertIsValidUserId(string $userId)
     {
         if (! $this->isValidEmailAddress($userId)) {
             throw new Google_Service_Exception('Invalid userId: ' . $userId, 400);
         }
     }
-    
+
     protected function assertIsValidDelegateEmail($delegateEmail)
     {
         if (! $this->isValidEmailAddress($delegateEmail)) {
             throw new Google_Service_Exception('Invalid delegate: ' . $delegateEmail, 400);
         }
     }
-    
+
     /**
      * Determine whether the given string is a valid email address.
      *
@@ -124,12 +124,12 @@ class UsersSettingsDelegates extends DbClass
     {
         return (filter_var($email, FILTER_VALIDATE_EMAIL) !== false);
     }
-    
+
     public function get($userId, $delegateEmail, $optParams = array())
     {
         $this->assertIsValidUserId($userId);
         $this->assertIsValidDelegateEmail($delegateEmail);
-        
+
         foreach ($this->listDelegatesFor($userId) as $delegate) {
             if ($delegate->delegateEmail === $delegateEmail) {
                 $matchingRecord = new \Google_Service_Gmail_Delegate();
@@ -140,12 +140,12 @@ class UsersSettingsDelegates extends DbClass
         }
         throw new Google_Service_Exception('Invalid delegate', 404);
     }
-    
+
     public function delete($userId, $delegateEmail, $optParams = array())
     {
         $this->assertIsValidUserId($userId);
         $this->assertIsValidDelegateEmail($delegateEmail);
-        
+
         foreach ($this->listDelegatesFor($userId) as $recordId => $delegate) {
             if ($delegate->delegateEmail === $delegateEmail) {
                 $this->removeDelegate($recordId);
@@ -154,12 +154,12 @@ class UsersSettingsDelegates extends DbClass
         }
         throw new Google_Service_Exception('Invalid delegate', 404);
     }
-    
+
     protected function removeDelegate(int $recordId)
     {
         $this->deleteRecordById($recordId);
     }
-    
+
     public function listUsersSettingsDelegates($userId, $optParams = array())
     {
         $response = new Google_Service_Gmail_ListDelegatesResponse();

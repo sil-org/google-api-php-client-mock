@@ -10,14 +10,14 @@ class GoogleFixtures
      * The SQLite database path and file.
      * @var string
      */
-    private $_dbFile;
+    private $dbFile;
 
     /**
      * @param string $dbFile path and filename of the database for Mock Google
      */
     public function __construct($dbFile = null)
     {
-        $this->_dbFile = $dbFile;
+        $this->dbFile = $dbFile;
     }
 
     /**
@@ -31,7 +31,7 @@ class GoogleFixtures
      */
     public function addFixtures($fixtures)
     {
-        $newSqlite = new SqliteUtils($this->_dbFile);
+        $newSqlite = new SqliteUtils($this->dbFile);
 
         foreach ($fixtures as $nextFixture) {
             $type = $nextFixture[0];
@@ -46,7 +46,7 @@ class GoogleFixtures
      */
     public function removeAllFixtures()
     {
-        $newSqlite = new SqliteUtils($this->_dbFile);
+        $newSqlite = new SqliteUtils($this->dbFile);
         $newSqlite->deleteAllData();
     }
 }

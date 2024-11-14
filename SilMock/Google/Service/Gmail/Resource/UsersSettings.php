@@ -12,12 +12,12 @@ class UsersSettings extends DbClass
     {
         parent::__construct($dbFile, 'gmail', 'users_settings');
     }
-    
+
     public function updatePop($userId, Google_Service_Gmail_PopSettings $postBody, $optParams = array())
     {
         // No action necessary, since we do not yet mock any way to check the pop settings.
     }
-    
+
     public function updateImap($userId, Google_Service_Gmail_ImapSettings $postBody, $optParams = array())
     {
         // No action necessary, since we do not yet mock any way to check the IMAP settings.

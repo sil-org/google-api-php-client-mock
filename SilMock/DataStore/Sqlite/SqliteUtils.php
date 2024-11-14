@@ -6,20 +6,19 @@ use PDO;
 
 class SqliteUtils
 {
-
     /**
      * The PDO connection to the database (or null if unititialized).
      * @var PDO|null
      */
-    private $_db = null;
+    private $db = null;
 
     /**
      * The SQLite database file (path with file name).
      * @var string
      */
-    private $_dbFile;
+    private $dbFile;
 
-    private $_dbTable = 'google_service';
+    private $dbTable = 'google_service';
 
     /**
      *
@@ -29,11 +28,11 @@ class SqliteUtils
     public function __construct($dbFile = null)
     {
         // default database path
-        $this->_dbFile = __DIR__ . '/Google_Service_Data.db';
+        $this->dbFile = __DIR__ . '/Google_Service_Data.db';
 
         // if database path given, use it instead
         if ($dbFile) {
-            $this->_dbFile = $dbFile;
+            $this->dbFile = $dbFile;
         }
 
         $this->createDbStructureAsNecessary();
@@ -52,7 +51,7 @@ class SqliteUtils
      */
     public function getData($dataType, $dataClass)
     {
-        if (! file_exists($this->_dbFile)) {
+        if (! file_exists($this->dbFile)) {
             return null;
         }
 
@@ -71,7 +70,7 @@ class SqliteUtils
 
         if (! $whereClause) {
             return $this->runSql(
-                "SELECT * FROM " . $this->_dbTable,
+                "SELECT * FROM " . $this->dbTable,
                 array(),
                 false,
                 true
@@ -79,7 +78,7 @@ class SqliteUtils
         }
 
         return $this->runSql(
-            "SELECT * FROM " . $this->_dbTable  . $whereClause,
+            "SELECT * FROM " . $this->dbTable  . $whereClause,
             $whereArray,
             false,
             true
@@ -144,7 +143,7 @@ class SqliteUtils
     public function deleteRecordById($recordId)
     {
         $this->runSql(
-            "DELETE FROM " .  $this->_dbTable . " WHERE id = :id",
+            "DELETE FROM " .  $this->dbTable . " WHERE id = :id",
             [':id' => $recordId],
             true
         );
@@ -164,7 +163,7 @@ class SqliteUtils
      */
     public function deleteDataByEmail(string $dataType, string $dataClass, string $emailAddress)
     {
-        if (! file_exists($this->_dbFile)) {
+        if (! file_exists($this->dbFile)) {
             return null;
         }
         if (empty($dataType)) {
@@ -187,12 +186,12 @@ class SqliteUtils
      *     the input value
      * @param $recordId int
      * @param $newData string
-     * @return null
+     * @return void
      */
-    public function updateRecordById($recordId, $newData)
+    public function updateRecordById($recordId, $newData): void
     {
         $this->runSql(
-            "UPDATE " .  $this->_dbTable . " SET data = :data WHERE id = :id",
+            "UPDATE " .  $this->dbTable . " SET data = :data WHERE id = :id",
             [':id' => $recordId, ':data' => $newData],
             true
         );
@@ -205,7 +204,7 @@ class SqliteUtils
     public function deleteAllData()
     {
         return $this->runSql(
-            "DELETE FROM " . $this->_dbTable . " WHERE id > -1"
+            "DELETE FROM " . $this->dbTable . " WHERE id > -1"
         );
     }
 
@@ -231,7 +230,7 @@ class SqliteUtils
 
         // Add the record.
         $this->runSql(
-            'INSERT INTO ' . $this->_dbTable . ' (type, class, data)' .
+            'INSERT INTO ' . $this->dbTable . ' (type, class, data)' .
             ' VALUES (:type, :class, :data)',
             [':type' => $dataType, ':class' => $dataClass, ':data' => $data],
             true
@@ -247,9 +246,9 @@ class SqliteUtils
      */
     public function createDbIfNotExists()
     {
-        if (! file_exists($this->_dbFile)) {
-            file_put_contents($this->_dbFile, '');
-            chmod($this->_dbFile, 0644);
+        if (! file_exists($this->dbFile)) {
+            file_put_contents($this->dbFile, '');
+            chmod($this->dbFile, 0644);
         }
     }
 
@@ -266,7 +265,7 @@ class SqliteUtils
         $this->createDbIfNotExists();
 
         $this->runSql(
-            "CREATE TABLE IF NOT EXISTS " . $this->_dbTable . " (" .
+            "CREATE TABLE IF NOT EXISTS " . $this->dbTable . " (" .
             "id INTEGER PRIMARY KEY, " .
             "type TEXT, " .        // e.g. "directory"
             "class TEXT, " .    // e.g. "user"
@@ -310,7 +309,7 @@ class SqliteUtils
         $this->setupDbConnIfNeeded();
 
         // Update the record in the database.
-        $stmt = $this->_db->prepare($sql);
+        $stmt = $this->db->prepare($sql);
 
         // Execute the prepared update statement with the desired data.
         $stmtSuccess = $stmt->execute($data);
@@ -340,15 +339,15 @@ class SqliteUtils
     protected function setupDbConnIfNeeded()
     {
         // If we have not yet setup the database connection...
-        if (is_null($this->_db)) {
+        if (is_null($this->db)) {
             // Make sure the database itself exists.
             $this->createDbIfNotExists();
 
             // Connect to the SQLite database file.
-            $this->_db = new PDO('sqlite:' . $this->_dbFile);
+            $this->db = new PDO('sqlite:' . $this->dbFile);
 
             // Set errormode to exceptions.
-            $this->_db->setAttribute(
+            $this->db->setAttribute(
                 PDO::ATTR_ERRMODE,
                 PDO::ERRMODE_EXCEPTION
             );

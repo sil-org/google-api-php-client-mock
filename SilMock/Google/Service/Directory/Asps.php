@@ -11,11 +11,9 @@ class Asps extends DbClass
     {
         parent::__construct($dbFile, 'directory', 'asps');
     }
-    
+
     public function listAsps($userKey, $optParams = array())
     {
-        return new Google_Service_Directory_Asps(array(
-            'items' => array(),
-        ));
+        return new Google_Service_Directory_Asps(['items' => []]);
     }
 }
