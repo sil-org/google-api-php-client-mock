@@ -6,6 +6,7 @@ use Google\Client;
 use SilMock\Google\Http\Batch;
 use SilMock\Google\Service\Directory\Asps;
 use SilMock\Google\Service\Directory\Resource\Groups;
+use SilMock\Google\Service\Directory\Resource\GroupsAliases;
 use SilMock\Google\Service\Directory\Resource\Members;
 use SilMock\Google\Service\Directory\Resource\TwoStepVerification;
 use SilMock\Google\Service\Directory\Tokens;
@@ -19,6 +20,7 @@ class Directory
     public $asps;
     public Members $members;
     public Groups $groups;
+    public GroupsAliases $groups_aliases;
     public $tokens;
     public $users;
     public $users_aliases;
@@ -38,6 +40,7 @@ class Directory
         $this->asps = new Asps($dbFile);
         $this->members = new Members($dbFile);
         $this->groups = new Groups($dbFile);
+        $this->groups_aliases = new GroupsAliases($dbFile);
         $this->tokens = new Tokens($dbFile);
         $this->users = new UsersResource($dbFile);
         $this->users_aliases = new UsersAliasesResource($dbFile);
