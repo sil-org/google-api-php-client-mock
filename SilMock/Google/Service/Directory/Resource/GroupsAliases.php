@@ -17,14 +17,14 @@ class GroupsAliases extends DbClass
 
     public function delete(string $groupKey, string $alias, array $optParams = [])
     {
-        $groupRecords = $this->getRecords();
-        foreach ($groupRecords as $groupRecord) {
-            $groupRecordData = json_decode($groupRecord['data'], true);
+        $groupAliasRecords = $this->getRecords();
+        foreach ($groupAliasRecords as $groupAliasRecord) {
+            $groupAliasRecordData = json_decode($groupAliasRecord['data'], true);
             if (
-                $groupRecordData['primaryEmail'] === $groupKey
-                && $groupRecordData['alias'] === $alias
+                $groupAliasRecordData['primaryEmail'] === $groupKey
+                && $groupAliasRecordData['alias'] === $alias
             ) {
-                $this->deleteRecordById($groupRecord['id']);
+                $this->deleteRecordById($groupAliasRecordData['id']);
             }
         }
     }
@@ -38,7 +38,8 @@ class GroupsAliases extends DbClass
         array $optParams = []
     ): GoogleDirectory_GroupsAlias {
         if ($this->isNewGroupAlias($groupKey, $postBody->getAlias())) {
-            $postBody['id'] = $postBody['id'] ?? microtime();
+            $id = str_replace(array(' ', '.'), '', microtime());
+            $postBody['id'] = $postBody['id'] ?? $id;
             $dataAsJson = json_encode(get_object_vars($postBody));
             $this->addRecord($dataAsJson);
         }
@@ -56,9 +57,9 @@ class GroupsAliases extends DbClass
     public function listGroupsAliases(string $groupKey, array $optParams = []): GoogleDirectory_GroupsAliases
     {
         $groupAliases = [];
-        $directoryGroupAliasRecords = $this->getRecords();
+        $groupAliasRecords = $this->getRecords();
         $groupAliasCounter = 0;
-        foreach ($directoryGroupAliasRecords as $groupAliasRecord) {
+        foreach ($groupAliasRecords as $groupAliasRecord) {
             $groupRecordData = json_decode($groupAliasRecord['data'], true);
             if ($groupRecordData['primaryEmail'] === $groupKey) {
                 $currentGroup = new GoogleDirectory_GroupsAlias();
@@ -80,11 +81,12 @@ class GroupsAliases extends DbClass
         $groupsAliasesObject = $mockGroupsObject->listGroupsAliases($groupKey);
         /** @var GoogleDirectory_GroupsAlias[] $aliasObjects */
         $aliasObjects = $groupsAliasesObject->getAliases();
-        $groupAliasesEmailAddresses = [];
-        foreach ($aliasObjects as $aliasObject) {
-            $groupAliasesEmailAddresses[] = mb_strtolower($aliasObject->getAlias());
-        }
         $lowercaseAliasEmailAddress = mb_strtolower($alias);
-        return ! in_array($lowercaseAliasEmailAddress, $groupAliasesEmailAddresses);
+        foreach ($aliasObjects as $aliasObject) {
+            if (mb_strtolower($aliasObject->getAlias()) === $lowercaseAliasEmailAddress) {
+                return false;
+            }
+        }
+        return true;
     }
 }
