@@ -11,7 +11,7 @@ class Gmail
     public $users_settings;
     public $users_settings_delegates;
     public $users_settings_forwardingAddresses;
-    
+
     public function __construct($client, $dbFile = null)
     {
         $this->users_settings = new UsersSettings($dbFile);

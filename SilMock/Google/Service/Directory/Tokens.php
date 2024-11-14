@@ -13,7 +13,7 @@ class Tokens extends DbClass
     {
         parent::__construct($dbFile, 'directory', 'tokens');
     }
-    
+
     public function listTokens($userKey, $optParams = []): Google_Service_Directory_Tokens
     {
         return new Google_Service_Directory_Tokens([ 'items' => [] ]);

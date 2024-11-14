@@ -62,9 +62,9 @@ class DirectoryTest extends TestCase
             'tokens',
         ];
         $errorMessage = " *** Directory was not initialized properly";
-        
+
         $directory = new Directory('anyclient', $this->dataFile);
-        
+
         $directoryAsJson = json_encode($directory);
         $directoryInfo = json_decode($directoryAsJson, true);
         foreach ($expectedKeys as $expectedKey) {
@@ -122,7 +122,7 @@ class DirectoryTest extends TestCase
         $this->assertEquals($expected, $results, $msg);
     }
 
-    public function testUsersInsert_WithAliases()
+    public function testUsersInsertWithAliases()
     {
         $newUser = $this->setupSampleUser($this->dataFile, true);
 
@@ -182,7 +182,7 @@ class DirectoryTest extends TestCase
         return [
             [
                 'directory', 'user', '{"primaryEmail":"user_test1@sil.org",' .
-                                       '"id":"999990"}'
+                '"id":"999990"}'
             ],
             ['directory', 'users_alias', json_encode($alias2)],
             ['app_engine', 'webapp', 'webapp3 test data'],
@@ -238,7 +238,7 @@ class DirectoryTest extends TestCase
         $this->assertEquals($expected, $results, $msg);
     }
 
-    public function testUsersGet_ById()
+    public function testUsersGetById()
     {
         $fixturesClass = new GoogleFixtures($this->dataFile);
         $fixturesClass->removeAllFixtures();
@@ -270,7 +270,7 @@ class DirectoryTest extends TestCase
     }
 
 
-    public function testUsersGet_Aliases()
+    public function testUsersGetAliases()
     {
         $fixturesClass = new GoogleFixtures($this->dataFile);
         $fixturesClass->removeAllFixtures();
@@ -311,27 +311,27 @@ class DirectoryTest extends TestCase
         $this->assertEquals($expected, $results, $msg);
     }
 
-    public function testUsersGet_ByAlias()
+    public function testUsersGetByAlias()
     {
         $fixturesClass = new GoogleFixtures($this->dataFile);
         $fixturesClass->removeAllFixtures();
         $fixtures = $this->getFixtures();
         $fixturesClass->addFixtures($fixtures);
-        
+
         $email = "user_test4@sil.org";
-        
+
         $aliasA = $this->getAliasFixture("users_alias1A@sil.org", $email, null);
         $aliasB = $this->getAliasFixture("users_alias1B@sil.org", $email, null);
-        
+
         $newFixtures = [
             ['directory', 'users_alias', json_encode($aliasA)],
             ['directory', 'users_alias', json_encode($aliasB)],
         ];
         $fixturesClass->addFixtures($newFixtures);
-        
+
         $newDir = new Directory('anyclient', $this->dataFile);
         $newUser = $newDir->users->get('users_alias1A@sil.org');
-        
+
         $this->assertNotNull(
             $newUser,
             'Failed to get user by an alias'
@@ -342,7 +342,7 @@ class DirectoryTest extends TestCase
             'Failed to get correct user by an alias'
         );
     }
-    
+
     public function testUsersUpdate()
     {
         $fixturesClass = new GoogleFixtures($this->dataFile);
@@ -379,7 +379,7 @@ class DirectoryTest extends TestCase
     }
 
 
-    public function testUsersUpdate_ById()
+    public function testUsersUpdateById()
     {
         $fixturesClass = new GoogleFixtures($this->dataFile);
         $fixturesClass->removeAllFixtures();
@@ -414,7 +414,7 @@ class DirectoryTest extends TestCase
         $this->assertEquals($expected, $results, $msg);
     }
 
-    public function testUsersUpdate_ById_ChangeEmail()
+    public function testUsersUpdateByIdChangeEmail()
     {
         $fixturesClass = new GoogleFixtures($this->dataFile);
         $fixturesClass->removeAllFixtures();
@@ -458,7 +458,7 @@ class DirectoryTest extends TestCase
         $this->assertEquals($expected, $results, $msg);
     }
 
-    public function testUsersUpdate_WithAlias()
+    public function testUsersUpdateWithAlias()
     {
         $fixturesClass = new GoogleFixtures($this->dataFile);
         $fixturesClass->removeAllFixtures();
@@ -493,7 +493,7 @@ class DirectoryTest extends TestCase
         $this->assertEquals($expected, $results, $msg);
     }
 
-    public function testUsersUpdate_WithDifferentAliases()
+    public function testUsersUpdateWithDifferentAliases()
     {
         $fixturesClass = new GoogleFixtures($this->dataFile);
         $fixturesClass->removeAllFixtures();
@@ -541,7 +541,7 @@ class DirectoryTest extends TestCase
         $this->assertEquals($expected, $results, $msg);
     }
 
-    public function testUsersUpdate_NotThere()
+    public function testUsersUpdateNotThere()
     {
         $fixturesClass = new GoogleFixtures($this->dataFile);
         $fixturesClass->removeAllFixtures();
@@ -564,7 +564,7 @@ class DirectoryTest extends TestCase
         ObjectUtils::initialize($newUser, $userData);
 
         $newDir = new Directory('anyclient', $this->dataFile);
-        
+
         $this->expectExceptionCode(201407101130);
         $newDir->users->update($userId, $newUser);
     }
@@ -589,13 +589,13 @@ class DirectoryTest extends TestCase
             [
                 'id' => 1, 'type' => 'directory', 'class' => 'user',
                 'data' => '{"primaryEmail":"user_test1@sil.org",' .
-                           '"id":"999990"}'
+                    '"id":"999990"}'
             ],
             [
                 'id' => 2, 'type' => 'directory', 'class' => 'users_alias',
                 'data' => '{"alias":"users_alias2@sil.org","etag":null,' .
-                           '"id":null,"kind":null,' .
-                           '"primaryEmail":"user_test1@sil.org"}'
+                    '"id":null,"kind":null,' .
+                    '"primaryEmail":"user_test1@sil.org"}'
             ],
             [
                 'id' => 3, 'type' => 'app_engine', 'class' => 'webapp',
@@ -608,7 +608,7 @@ class DirectoryTest extends TestCase
             [
                 'id' => 6, 'type' => 'directory', 'class' => 'users_alias',
                 'data' => '{"alias":"users_alias6@sil.org","etag":null,' .
-                           '"id":"1","kind":null,"primaryEmail":null}'
+                    '"id":"1","kind":null,"primaryEmail":null}'
             ],
         ];
 
@@ -616,7 +616,7 @@ class DirectoryTest extends TestCase
         $this->assertEquals($expected, $results, $msg);
     }
 
-    public function testUsersDelete_ById()
+    public function testUsersDeleteById()
     {
         $fixturesClass = new GoogleFixtures($this->dataFile);
         $fixturesClass->removeAllFixtures();
@@ -636,13 +636,13 @@ class DirectoryTest extends TestCase
             [
                 'id' => 1, 'type' => 'directory', 'class' => 'user',
                 'data' => '{"primaryEmail":"user_test1@sil.org",' .
-                           '"id":"999990"}'
+                    '"id":"999990"}'
             ],
             [
                 'id' => 2, 'type' => 'directory', 'class' => 'users_alias',
                 'data' => '{"alias":"users_alias2@sil.org","etag":null,' .
-                           '"id":null,"kind":null,' .
-                           '"primaryEmail":"user_test1@sil.org"}'
+                    '"id":null,"kind":null,' .
+                    '"primaryEmail":"user_test1@sil.org"}'
             ],
             [
                 'id' => 3, 'type' => 'app_engine', 'class' => 'webapp',
@@ -655,7 +655,7 @@ class DirectoryTest extends TestCase
             [
                 'id' => 6, 'type' => 'directory', 'class' => 'users_alias',
                 'data' => '{"alias":"users_alias6@sil.org","etag":null,' .
-                           '"id":"1","kind":null,"primaryEmail":null}'
+                    '"id":"1","kind":null,"primaryEmail":null}'
             ],
         ];
 
@@ -681,7 +681,7 @@ class DirectoryTest extends TestCase
 
         $results = json_encode($newAlias);
         $expected = '{"alias":"users_alias1@sil.org","etag":null,"id":null,' .
-                    '"kind":"personal","primaryEmail":"user_test1@sil.org"}'
+            '"kind":"personal","primaryEmail":"user_test1@sil.org"}'
         ;
         $msg = " *** Bad returned alias";
         $this->assertEquals($expected, $results, $msg);
@@ -697,7 +697,7 @@ class DirectoryTest extends TestCase
         $this->assertEquals($expected, $results, $msg);
     }
 
-    public function testUsersAliasesInsert_UserNotThere()
+    public function testUsersAliasesInsertUserNotThere()
     {
         $fixturesClass = new GoogleFixtures($this->dataFile);
         $fixturesClass->removeAllFixtures();
@@ -710,12 +710,12 @@ class DirectoryTest extends TestCase
         $newAlias->kind = "personal";
 
         $newDir = new Directory('anyclient', $this->dataFile);
-        
+
         $this->expectExceptionCode(201407110830);
         $newDir->users_aliases->insert("no_user@sil.org", $newAlias);
     }
 
-    public function testUsersAliasesListUsersAliases_Email()
+    public function testUsersAliasesListUsersAliasesEmail()
     {
         $fixturesClass = new GoogleFixtures($this->dataFile);
         $fixturesClass->removeAllFixtures();
@@ -744,16 +744,16 @@ class DirectoryTest extends TestCase
 
         $expected = [
             '{"alias":"users_alias2@sil.org","etag":null,"id":null,' .
-              '"kind":null,"primaryEmail":"user_test1@sil.org"}',
+            '"kind":null,"primaryEmail":"user_test1@sil.org"}',
             '{"alias":"users_alias7@sil.org","etag":null,"id":"1",' .
-              '"kind":null,"primaryEmail":"user_test1@sil.org"}'
+            '"kind":null,"primaryEmail":"user_test1@sil.org"}'
         ];
 
         $msg = " *** Bad returned Aliases";
         $this->assertEquals($expected, $results, $msg);
     }
 
-    public function testUsersAliasesListUsersAliases_ID()
+    public function testUsersAliasesListUsersAliasesId()
     {
         $fixturesClass = new GoogleFixtures($this->dataFile);
         $fixturesClass->removeAllFixtures();
@@ -769,7 +769,7 @@ class DirectoryTest extends TestCase
             [
                 'directory', 'user',
                 '{"id":"7","primaryEmail":"' . $email . '",' .
-                 '"aliases":[]}'
+                '"aliases":[]}'
             ],
             ['directory', 'users_alias', json_encode($aliasB)],
             ['directory', 'users_alias', json_encode($aliasC)],
@@ -786,16 +786,16 @@ class DirectoryTest extends TestCase
 
         $expected = [
             '{"alias":"users_alias7b@sil.org","etag":null,"id":"7","kind":null,' .
-               '"primaryEmail":"user_test7@sil.org"}',
+            '"primaryEmail":"user_test7@sil.org"}',
             '{"alias":"users_alias7c@sil.org","etag":null,"id":"7","kind":null,' .
-               '"primaryEmail":null}',
+            '"primaryEmail":null}',
         ];
 
         $msg = " *** Bad returned Aliases";
         $this->assertEquals($expected, $results, $msg);
     }
 
-    public function testUsersAliasesListUsersAliases_Structure()
+    public function testUsersAliasesListUsersAliasesStructure()
     {
         $fixturesClass = new GoogleFixtures($this->dataFile);
         $fixturesClass->removeAllFixtures();
@@ -832,7 +832,7 @@ class DirectoryTest extends TestCase
         $this->assertEquals($expected, $results, $msg);
     }
 
-    public function testUsersAliasesListUsersAliases_UserNotThere()
+    public function testUsersAliasesListUsersAliasesUserNotThere()
     {
         $fixturesClass = new GoogleFixtures($this->dataFile);
         $fixturesClass->removeAllFixtures();
@@ -850,7 +850,7 @@ class DirectoryTest extends TestCase
         $fixturesClass->addFixtures($newFixtures);
 
         $newDir = new Directory('anyclient', $this->dataFile);
-        
+
         $this->expectExceptionCode(201407101420);
         $newDir->users_aliases->listUsersAliases("no_user@sil.org");
     }
@@ -888,14 +888,14 @@ class DirectoryTest extends TestCase
                 'type' => 'directory',
                 'class' => 'users_alias',
                 'data' => '{"alias":"users_alias6@sil.org","etag":null,' .
-                           '"id":"1","kind":null,"primaryEmail":null}',
+                    '"id":"1","kind":null,"primaryEmail":null}',
             ],
             [
                 'id' => '7',
                 'type' => 'directory',
                 'class' => 'users_alias',
                 'data' => '{"alias":"users_alias7@sil.org","etag":null,' .
-                           '"id":"1","kind":null,"primaryEmail":"' . $email . '"}'
+                    '"id":"1","kind":null,"primaryEmail":"' . $email . '"}'
             ],
         ];
         $msg = " *** Mismatching users_aliases in db";
