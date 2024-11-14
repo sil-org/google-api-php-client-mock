@@ -4,7 +4,6 @@ namespace Service\Directory\Resource;
 
 use Exception;
 use Google\Service\Directory\Alias as GoogleDirectory_GroupsAlias;
-use Google\Service\Directory\Aliases as GoogleDirectory_GroupsAliases;
 use PHPUnit\Framework\TestCase;
 use SilMock\Google\Service\Directory as GoogleMock_Directory;
 
@@ -25,7 +24,10 @@ class GroupsAliasesTest extends TestCase
 
         $mockGoogleServiceDirectory = new GoogleMock_Directory('anyclient', $this->dataFile);
         try {
-            $addedGroupAlias = $mockGoogleServiceDirectory->groups_aliases->insert(self::GROUP_EMAIL_ADDRESS, $groupAlias);
+            $addedGroupAlias = $mockGoogleServiceDirectory->groups_aliases->insert(
+                self::GROUP_EMAIL_ADDRESS,
+                $groupAlias
+            );
         } catch (Exception $exception) {
             self::fail(
                 sprintf(
@@ -50,7 +52,7 @@ class GroupsAliasesTest extends TestCase
 
         $mockGoogleServiceDirectory = new GoogleMock_Directory('anyclient', $this->dataFile);
         try {
-            $addedGroupAlias = $mockGoogleServiceDirectory->groups_aliases->insert(self::GROUP_EMAIL_ADDRESS, $groupAlias);
+            $mockGoogleServiceDirectory->groups_aliases->insert(self::GROUP_EMAIL_ADDRESS, $groupAlias);
         } catch (Exception $exception) {
             self::fail(
                 sprintf(
