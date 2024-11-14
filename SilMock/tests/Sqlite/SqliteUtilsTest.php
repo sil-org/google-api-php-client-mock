@@ -8,14 +8,20 @@ use SilMock\DataStore\Sqlite\SqliteUtils;
 class SqliteUtilsTest extends TestCase
 {
     public string $dataFile = DATAFILE1;
-    public const VERIFICATION_RECORD_DATA = '{"primaryEmail":"user_test1@sil.org","data":{"etag":null,"kind":null,'
-    . '"items":[{"etag":null,"kind":null,"userId":null,"verificationCode":59837946},{"etag":null,"kind":null,'
-    . '"userId":null,"verificationCode":70637639},{"etag":null,"kind":null,"userId":null,"verificationCode":28377580},'
-    . '{"etag":null,"kind":null,"userId":null,"verificationCode":50819149},{"etag":null,"kind":null,"userId":null,'
-    . '"verificationCode":91732989},{"etag":null,"kind":null,"userId":null,"verificationCode":90318716},'
-    . '{"etag":null,"kind":null,"userId":null,"verificationCode":40781363},{"etag":null,"kind":null,"userId":null,'
-    . '"verificationCode":85614013},{"etag":null,"kind":null,"userId":null,"verificationCode":37077320},{"etag":null,'
-    . '"kind":null,"userId":null,"verificationCode":68994617}]}}';
+    public const VERIFICATION_RECORD_DATA = '{"primaryEmail":"user_test1@sil.org","data":'
+    . '{"etag":null,"kind":null,'
+    . '"items":['
+    . '{"etag":null,"kind":null,"userId":null,"verificationCode":59837946},'
+    . '{"etag":null,"kind":null,"userId":null,"verificationCode":70637639},'
+    . '{"etag":null,"kind":null,"userId":null,"verificationCode":28377580},'
+    . '{"etag":null,"kind":null,"userId":null,"verificationCode":50819149},'
+    . '{"etag":null,"kind":null,"userId":null,"verificationCode":91732989},'
+    . '{"etag":null,"kind":null,"userId":null,"verificationCode":90318716},'
+    . '{"etag":null,"kind":null,"userId":null,"verificationCode":40781363},'
+    . '{"etag":null,"kind":null,"userId":null,"verificationCode":85614013},'
+    . '{"etag":null,"kind":null,"userId":null,"verificationCode":37077320},'
+    . '{"etag":null,"kind":null,"userId":null,"verificationCode":68994617}'
+    . ']}}';
 
     public function testRecordData()
     {

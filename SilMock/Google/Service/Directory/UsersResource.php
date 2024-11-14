@@ -361,10 +361,10 @@ class UsersResource extends DbClass
                 $familyName = $nameEntry['familyName'] ?? null;
                 $fullName = $nameEntry['fullName'] ?? trim($givenName . ' ' . $familyName);
                 $newName = new \Google_Service_Directory_UserName([
-                                                                      'familyName' => $familyName,
-                                                                      'fullName'   => $fullName,
-                                                                      'givenName'  => $givenName,
-                                                                  ]);
+                        'familyName' => $familyName,
+                        'fullName'   => $fullName,
+                        'givenName'  => $givenName,
+                ]);
                 $userEntry['customerId'] = $userEntry['primaryEmail'];
                 /** @var \Google_Service_Directory_User $newEntry */
                 $newEntry = new \Google_Service_Directory_User($userEntry);
