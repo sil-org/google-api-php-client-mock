@@ -81,7 +81,7 @@ class UsersResource extends DbClass
 
         return $newUser;
     }
-    
+
     /**
      * @param $userKey
      * @return Google_Service_Directory_Aliases|null
@@ -93,11 +93,11 @@ class UsersResource extends DbClass
         if (! filter_var($userKey, FILTER_VALIDATE_EMAIL)) {
             $key = 'id';
         }
-        
+
         $usersAliases = new UsersAliasesResource($this->dbFile);
         return $usersAliases->fetchAliasesByUser($key, $userKey);
     }
-    
+
     /**
      * Get the database record of the user (if any) that has the given email
      * address as an alias.
@@ -115,7 +115,7 @@ class UsersResource extends DbClass
             // This function only makes sense for actual email addresses.
             return null;
         }
-        
+
         $allUsers = $this->getAllDbUsers();
         $usersWithData = array_filter(
             $allUsers,
@@ -129,9 +129,9 @@ class UsersResource extends DbClass
             if ($userData === null) {
                 continue;
             }
-            
+
             $primaryEmail = $userData['primaryEmail'] ?? null;
-            
+
             $aliasesResource = $this->getAliasesForUser($primaryEmail);
             if ($aliasesResource) {
                 foreach ($aliasesResource['aliases'] as $aliasResource) {
@@ -142,16 +142,16 @@ class UsersResource extends DbClass
                 }
             }
         }
-        
+
         return null;
     }
-    
+
     protected function getAllDbUsers()
     {
         $sqliteUtils = new SqliteUtils($this->dbFile);
         return $sqliteUtils->getData($this->dataType, $this->dataClass);
     }
-    
+
     /**
      * Creates a user (users.insert) and sets its aliases property if any
      *     are given.
@@ -361,15 +361,15 @@ class UsersResource extends DbClass
                 $familyName = $nameEntry['familyName'] ?? null;
                 $fullName = $nameEntry['fullName'] ?? trim($givenName . ' ' . $familyName);
                 $newName = new \Google_Service_Directory_UserName([
-                    'familyName' => $familyName,
-                    'fullName'   => $fullName,
-                    'givenName'  => $givenName,
-                ]);
+                                                                      'familyName' => $familyName,
+                                                                      'fullName'   => $fullName,
+                                                                      'givenName'  => $givenName,
+                                                                  ]);
                 $userEntry['customerId'] = $userEntry['primaryEmail'];
                 /** @var \Google_Service_Directory_User $newEntry */
                 $newEntry = new \Google_Service_Directory_User($userEntry);
                 $newEntry->setName($newName);
-                
+
                 $allResultsUsers = $results->getUsers();
                 $allResultsUsers[] = $newEntry;
                 $results->setUsers($allResultsUsers);
@@ -438,13 +438,15 @@ class UsersResource extends DbClass
             $checkValue = $checkValue ? 'true' : 'false';
         }
         if (! is_string($checkValue)) {
-            throw new \Exception(sprintf(
-                "Expecting a string.\nGot Entry: %s\nGot Field: %s\nGot VALUE: %s (%s)",
-                var_export($entry, true),
-                var_export($field, true),
-                var_export($checkValue, true),
-                gettype($checkValue)
-            ));
+            throw new \Exception(
+                sprintf(
+                    "Expecting a string.\nGot Entry: %s\nGot Field: %s\nGot VALUE: %s (%s)",
+                    var_export($entry, true),
+                    var_export($field, true),
+                    var_export($checkValue, true),
+                    gettype($checkValue)
+                )
+            );
         }
         if (mb_strpos($checkValue, $value) === 0) {
             return true;

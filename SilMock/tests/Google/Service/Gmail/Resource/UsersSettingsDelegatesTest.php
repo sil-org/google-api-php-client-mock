@@ -12,41 +12,41 @@ use SilMock\Google\Service\GoogleFixtures;
 class UsersSettingsDelegatesTest extends TestCase
 {
     public $dataFile = DATAFILE4;
-    
+
     protected function setUp(): void
     {
         $this->emptyFixturesDataFile();
     }
-    
+
     private function emptyFixturesDataFile()
     {
         $fixturesClass = new GoogleFixtures($this->dataFile);
         $fixturesClass->removeAllFixtures();
     }
-    
+
     protected function tearDown(): void
     {
         $this->emptyFixturesDataFile();
     }
-    
+
     public function testListUsersSettingsDelegates()
     {
         // Arrange:
         $accountEmail = 'john_smith@example.org';
         $delegateEmail = 'mike_manager@example.org';
-        
+
         // Act
         $before = $this->getDelegatesForAccount($accountEmail);
         $this->delegateAccessToAccountBy($accountEmail, $delegateEmail);
         $after = $this->getDelegatesForAccount($accountEmail);
-        
+
         // Assert:
         $delegatesBefore = $before->getDelegates();
         Assert::assertEmpty($delegatesBefore);
-        
+
         $delegatesAfter = $after->getDelegates();
         Assert::assertNotEmpty($delegatesAfter);
-        
+
         $foundExpectedDelegate = false;
         foreach ($delegatesAfter as $delegate) {
             if ($delegate->delegateEmail === $delegateEmail) {
@@ -60,7 +60,7 @@ class UsersSettingsDelegatesTest extends TestCase
             json_encode($delegatesAfter)
         ));
     }
-    
+
     private function delegateAccessToAccountBy(
         string $accountEmail,
         string $delegateEmail
@@ -73,7 +73,7 @@ class UsersSettingsDelegatesTest extends TestCase
             $gmailDelegate
         );
     }
-    
+
     private function getDelegatesForAccount(string $emailAddress): Google_Service_Gmail_ListDelegatesResponse
     {
         $userSettingsDelegates = new UsersSettingsDelegates($this->dataFile);
