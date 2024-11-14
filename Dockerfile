@@ -9,10 +9,12 @@ RUN apt-get update -y \
     && echo "America/New_York" > /etc/timezone \
     && apt-get install -y tzdata \
     && apt-get upgrade -y \
-# Install some basics
-    && apt-get install -y zip unzip wget \
-# Needed for GoogleMock objects
+# Install
+    && apt-get install -y \
+# things needed for GoogleMock objects
         sqlite3 \
+# some basics
+        unzip wget zip \
 # Clean up to reduce docker image size
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
