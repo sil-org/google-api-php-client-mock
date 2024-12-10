@@ -20,7 +20,9 @@ class Groups extends DbClass
         $groupRecords = $this->getRecords();
         foreach ($groupRecords as $groupRecord) {
             $groupRecordData = json_decode($groupRecord['data'], true);
-            if ($groupRecordData['email'] === $groupKey) {
+            $keysToCheck = $groupRecordData['aliases'];
+            $keysToCheck[] = $groupRecordData['email'];
+            if (in_array($groupKey, $keysToCheck)) {
                 $this->deleteRecordById($groupRecord['id']);
             }
         }
@@ -28,11 +30,24 @@ class Groups extends DbClass
 
     public function get(string $groupKey): ?GoogleDirectory_Group
     {
+        $matchingGroupKey = null;
+        $groupRecords = $this->getRecords();
+        foreach ($groupRecords as $groupRecord) {
+            $groupRecordData = json_decode($groupRecord['data'], true);
+            $keysToCheck = $groupRecordData['aliases'];
+            $keysToCheck[] = $groupRecordData['email'];
+            if (in_array($groupKey, $keysToCheck)) {
+                $matchingGroupKey = $groupRecordData['email'];
+            }
+        }
+        if ($matchingGroupKey === null) {
+            return null;
+        }
         $mockGroupsObject = new Groups($this->dbFile);
         $groupsObject = $mockGroupsObject->listGroups();
         $groups = $groupsObject->getGroups();
         foreach ($groups as $group) {
-            if (mb_strtolower($group->getEmail()) === mb_strtolower($groupKey)) {
+            if (mb_strtolower($group->getEmail()) === mb_strtolower($matchingGroupKey)) {
                 return $group;
             }
         }
