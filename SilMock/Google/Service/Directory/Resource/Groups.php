@@ -25,13 +25,8 @@ class Groups extends DbClass
             $keysToCheck[] = $groupRecordData['email'];
             if (in_array($groupKey, $keysToCheck)) {
                 $this->deleteRecordById($groupRecord['id']);
-                $mockGroupsAliasesObject = new GroupsAliases($this->dbFile);
-                foreach ($mockGroupsAliasesObject->getRecords() as $aliasRecord) {
-                    $aliasRecordData = json_decode($aliasRecord['data'], true);
-                    if ($aliasRecordData['primaryEmail'] === $groupRecordData['email']) {
-                        $mockGroupsAliasesObject->deleteRecordById($aliasRecord['id']);
-                    }
-                }
+                $groupAliasesObject = new GroupsAliases($this->dbFile);
+                $groupAliasesObject->deletedByGroup($groupRecordData['email']);
             }
         }
     }

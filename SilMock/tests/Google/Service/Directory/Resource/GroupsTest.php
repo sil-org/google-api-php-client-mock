@@ -17,28 +17,25 @@ class GroupsTest extends TestCase
     public const GROUP_EMAIL_ADDRESS = 'sample_group@example.com';
     public const GROUP_ALIAS_ADDRESS = 'ma_org_sample_group@groups.example.com';
 
-    public function testInitialSetup()
+    protected function deleteGroupAndAliasesIfTheyExists(string $groupName)
     {
         $mockGoogleServiceDirectory = new GoogleMock_Directory('anyclient', $this->dataFile);
-        $group = $mockGoogleServiceDirectory->groups->get(self::GROUP_EMAIL_ADDRESS);
+        $group = $mockGoogleServiceDirectory->groups->get($groupName);
         if ($group !== null) {
-            $mockGoogleServiceDirectory->groups->delete(self::GROUP_EMAIL_ADDRESS);
+            $mockGoogleServiceDirectory->groups->delete($groupName);
         }
-        $group = $mockGoogleServiceDirectory->groups->get(self::GROUP_EMAIL_ADDRESS);
-        self::assertNull($group, "Failed to clean up previous insert tests.");
-        $group = $mockGoogleServiceDirectory->groups->get(self::GROUP_EMAIL_ADDRESS . 'update');
-        if ($group !== null) {
-            $mockGoogleServiceDirectory->groups->delete(self::GROUP_EMAIL_ADDRESS . 'update');
-        }
-        $group = $mockGoogleServiceDirectory->groups->get(self::GROUP_EMAIL_ADDRESS . 'update');
-        self::assertNull($group, "Failed to clean up previous update tests.");
+        $group = $mockGoogleServiceDirectory->groups->get($groupName);
+        self::assertNull($group, "Failed to clean up previous tests.");
     }
 
     public function testInsert()
     {
+        $this->deleteGroupAndAliasesIfTheyExists(self::GROUP_EMAIL_ADDRESS);
         $group = new GoogleDirectory_Group();
         $group->setEmail(self::GROUP_EMAIL_ADDRESS);
-        $group->setAliases([self::GROUP_ALIAS_ADDRESS]); // read-only, should not save anything
+        // See https://developers.google.com/admin-sdk/directory/reference/rest/v1/groups#Group
+        // setting the aliases will not add, remove, or change aliases at all.
+        $group->setAliases([self::GROUP_ALIAS_ADDRESS]);
         $group->setName('Sample Group');
         $group->setDescription('A Sample Group used for testing');
 
@@ -59,9 +56,12 @@ class GroupsTest extends TestCase
 
     public function testUpdate()
     {
+        $this->deleteGroupAndAliasesIfTheyExists(self::GROUP_EMAIL_ADDRESS . 'update');
         $group = new GoogleDirectory_Group();
         $group->setEmail(self::GROUP_EMAIL_ADDRESS . 'update');
-        $group->setAliases([self::GROUP_ALIAS_ADDRESS . 'update']); // this shouldn't change aliases.
+        // See https://developers.google.com/admin-sdk/directory/reference/rest/v1/groups#Group
+        // setting the aliases will not add, remove, or change aliases at all.
+        $group->setAliases([self::GROUP_ALIAS_ADDRESS . 'update']);
         $group->setName('Sample Group Update');
         $group->setDescription('A Sample Group used for testing update');
 
@@ -79,11 +79,12 @@ class GroupsTest extends TestCase
         self::assertTrue($addedGroup instanceof GoogleDirectory_Group);
         self::assertEmpty($addedGroup->getAliases(), "Expecting no group aliases inserted by group.insert");
 
-        // Google group does not update aliases, but for coding simplicity the mock object does.
-        $group->setAliases([self::GROUP_ALIAS_ADDRESS . 'update-change']); // this shouldn't change aliases.
+        // See https://developers.google.com/admin-sdk/directory/reference/rest/v1/groups#Group
+        // setting the aliases will not add, remove, or change aliases at all.
+        $group->setAliases([self::GROUP_ALIAS_ADDRESS . 'update-change']);
         $updatedGroup = $mockGoogleServiceDirectory->groups->update($group->getEmail(), $group);
         self::assertTrue($updatedGroup instanceof GoogleDirectory_Group);
-        self::assertEmpty($updatedGroup->getAliases()); // this should confirm aliases are unset
+        self::assertEmpty($updatedGroup->getAliases(),  "Expecting no group aliases changed by group.update");
     }
 
     protected function deleteTestSetup()
@@ -91,7 +92,9 @@ class GroupsTest extends TestCase
         // Set update a deletable email address
         $group = new GoogleDirectory_Group();
         $group->setEmail(self::GROUP_EMAIL_ADDRESS . 'delete');
-        $group->setAliases([self::GROUP_ALIAS_ADDRESS . 'delete']); // read-only property, should have no effect
+        // See https://developers.google.com/admin-sdk/directory/reference/rest/v1/groups#Group
+        // setting the aliases will not add, remove, or change aliases at all.
+        $group->setAliases([self::GROUP_ALIAS_ADDRESS . 'delete']);
         $group->setName('Sample Deletable Group');
         $group->setDescription('A Sample Deletable Group used for testing');
 
