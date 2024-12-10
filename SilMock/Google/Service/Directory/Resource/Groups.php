@@ -5,6 +5,7 @@ namespace SilMock\Google\Service\Directory\Resource;
 use Exception;
 use Google\Service\Directory\Group as GoogleDirectory_Group;
 use Google\Service\Directory\Groups as GoogleDirectory_Groups;
+use Google\Service\Directory\Alias as GoogleDirectory_GroupAlias;
 use SilMock\Google\Service\DbClass;
 use SilMock\Google\Service\Directory\ObjectUtils;
 
@@ -20,23 +21,47 @@ class Groups extends DbClass
         $groupRecords = $this->getRecords();
         foreach ($groupRecords as $groupRecord) {
             $groupRecordData = json_decode($groupRecord['data'], true);
-            if ($groupRecordData['email'] === $groupKey) {
+            $keysToCheck = $groupRecordData['aliases'];
+            $keysToCheck[] = $groupRecordData['email'];
+            if (in_array($groupKey, $keysToCheck)) {
                 $this->deleteRecordById($groupRecord['id']);
+                $groupAliasesObject = new GroupsAliases($this->dbFile);
+                $groupAliasesObject->deletedByGroup($groupRecordData['email']);
             }
         }
     }
 
     public function get(string $groupKey): ?GoogleDirectory_Group
     {
+        $matchingGroupKey = null;
+        $groupRecords = $this->getRecords();
+        foreach ($groupRecords as $groupRecord) {
+            $groupRecordData = json_decode($groupRecord['data'], true);
+            $keysToCheck = $groupRecordData['aliases'];
+            $keysToCheck[] = $groupRecordData['email'];
+            if (in_array($groupKey, $keysToCheck)) {
+                $matchingGroupKey = $groupRecordData['email'];
+            }
+        }
+        if ($matchingGroupKey === null) {
+            return null;
+        }
         $mockGroupsObject = new Groups($this->dbFile);
         $groupsObject = $mockGroupsObject->listGroups();
         $groups = $groupsObject->getGroups();
+        $matchedGroup = null;
         foreach ($groups as $group) {
-            if (mb_strtolower($group->getEmail()) === mb_strtolower($groupKey)) {
-                return $group;
+            if (mb_strtolower($group->getEmail()) === mb_strtolower($matchingGroupKey)) {
+                $matchedGroup = $group;
+                break;
             }
         }
-        return null;
+        if ($matchedGroup !== null) {
+            $mockGroupsAliasesObject = new GroupsAliases($this->dbFile);
+            $aliases = $mockGroupsAliasesObject->listGroupsAliases($matchedGroup->getEmail());
+            $matchedGroup->setAliases($aliases->getAliases());
+        }
+        return $matchedGroup;
     }
 
     /**
@@ -49,12 +74,14 @@ class Groups extends DbClass
             $postBody['id'] = $postBody['id'] ?? $id;
             $dataAsJson = json_encode(get_object_vars($postBody));
             $this->addRecord($dataAsJson);
+        } else {
+            throw new Exception(
+                "Cannot group.insert an existing group: " . $postBody->getEmail()
+            );
         }
 
-        $newGroup = new GoogleDirectory_Group();
-        ObjectUtils::initialize($newGroup, $postBody);
-
-        return $newGroup;
+        // This should leave aliases as is.
+        return $this->get($postBody->getEmail());
     }
 
     /**
@@ -103,5 +130,32 @@ class Groups extends DbClass
         }
         $uppercaseGroupEmailAddress = mb_strtoupper($groupKey);
         return ! in_array($uppercaseGroupEmailAddress, $groupEmailAddresses);
+    }
+
+    public function update(string $groupKey, GoogleDirectory_Group $postBody, $optParams = []): GoogleDirectory_Group
+    {
+        if ($this->isNewGroup($postBody->getEmail())) {
+            throw new Exception("Group '{$groupKey}' does not exist.");
+        }
+        $group = $this->get($groupKey);
+
+        // remember aliases, because they don't change.
+        $aliases = $group->getAliases();
+
+        // update by deleting and reinserting, deletion causes a loss of aliases
+        $this->delete($groupKey);
+        ObjectUtils::initialize($group, $postBody);
+        $this->insert($group);
+
+        // re-add the aliases
+        $mockGroupAliasesObject = new GroupsAliases($this->dbFile);
+        foreach ($aliases as $alias) {
+            $aliasObject = new GoogleDirectory_GroupAlias();
+            $aliasObject->setAlias($alias);
+            $aliasObject->setPrimaryEmail($group->getEmail());
+            $mockGroupAliasesObject->insert($groupKey, $aliasObject);
+        }
+
+        return $this->get($groupKey);
     }
 }

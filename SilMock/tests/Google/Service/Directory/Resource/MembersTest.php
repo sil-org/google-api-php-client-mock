@@ -13,11 +13,12 @@ class MembersTest extends TestCase
     // They are very dependent on order run.
     // groups.insert, groups.listGroups, members.insert, members.listMembers
     public string $dataFile = DATAFILE5;
+    public const MEMBER_EMAIL_ADDRESS = 'member@example.com';
 
     public function testInsert()
     {
-        $emailAddress = 'test@example.com';
-        $groupEmailAddress = 'sample_group@groups.example.com';
+        $emailAddress = self::MEMBER_EMAIL_ADDRESS;
+        $groupEmailAddress = GroupsTest::GROUP_EMAIL_ADDRESS;
 
         $member = new GoogleDirectory_Member();
         $member->setEmail($emailAddress);
@@ -39,8 +40,8 @@ class MembersTest extends TestCase
 
     public function testGet()
     {
-        $groupEmailAddress = 'sample_group@groups.example.com';
-        $emailAddress = 'test@example.com';
+        $groupEmailAddress = GroupsTest::GROUP_EMAIL_ADDRESS;
+        $emailAddress = self::MEMBER_EMAIL_ADDRESS;
         $mockGoogleServiceDirectory = new GoogleMock_Directory('anyclient', $this->dataFile);
         try {
             $member = $mockGoogleServiceDirectory->members->get($groupEmailAddress, $emailAddress);
@@ -57,12 +58,12 @@ class MembersTest extends TestCase
 
     public function testHasMember()
     {
-        $groupEmailAddress = 'sample_group@groups.example.com';
+        $groupEmailAddress = GroupsTest::GROUP_EMAIL_ADDRESS;
         $mockGoogleServiceDirectory = new GoogleMock_Directory('anyclient', $this->dataFile);
         try {
             $result = $mockGoogleServiceDirectory->members->hasMember(
                 $groupEmailAddress,
-                'test@example.com'
+                self::MEMBER_EMAIL_ADDRESS
             );
             $hasMember = $result['isMember'] ?? false;
         } catch (Exception $exception) {
@@ -75,7 +76,7 @@ class MembersTest extends TestCase
 
     public function testListMembersAll()
     {
-        $groupEmailAddress = 'sample_group@groups.example.com';
+        $groupEmailAddress = GroupsTest::GROUP_EMAIL_ADDRESS;
         $mockGoogleServiceDirectory = new GoogleMock_Directory('anyclient', $this->dataFile);
         $members = [];
         try {
@@ -91,7 +92,7 @@ class MembersTest extends TestCase
 
     public function testListMembersOnlyMember()
     {
-        $groupEmailAddress = 'sample_group@groups.example.com';
+        $groupEmailAddress = GroupsTest::GROUP_EMAIL_ADDRESS;
         $mockGoogleServiceDirectory = new GoogleMock_Directory('anyclient', $this->dataFile);
         $members = [];
         try {
@@ -112,7 +113,7 @@ class MembersTest extends TestCase
 
     public function testListMembersOnlyOwner()
     {
-        $groupEmailAddress = 'sample_group@groups.example.com';
+        $groupEmailAddress = GroupsTest::GROUP_EMAIL_ADDRESS;
         $mockGoogleServiceDirectory = new GoogleMock_Directory('anyclient', $this->dataFile);
         $members = [];
         try {
@@ -134,8 +135,8 @@ class MembersTest extends TestCase
     public function testDelete()
     {
         $mockGoogleServiceDirectory = new GoogleMock_Directory('anyclient', $this->dataFile);
-        $groupEmailAddress = 'sample_group@groups.example.com';
-        $emailAddress = 'test@example.com';
+        $groupEmailAddress = GroupsTest::GROUP_EMAIL_ADDRESS;
+        $emailAddress = self::MEMBER_EMAIL_ADDRESS;
         try {
             $result = $mockGoogleServiceDirectory->members->hasMember(
                 $groupEmailAddress,
@@ -159,7 +160,7 @@ class MembersTest extends TestCase
         try {
             $result = $mockGoogleServiceDirectory->members->hasMember(
                 $groupEmailAddress,
-                'test@example.com'
+                self::MEMBER_EMAIL_ADDRESS
             );
             $hasMember = $result['isMember'] ?? false;
         } catch (Exception $exception) {
