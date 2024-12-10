@@ -5,6 +5,7 @@ namespace SilMock\Google\Service\Directory\Resource;
 use Exception;
 use Google\Service\Directory\Group as GoogleDirectory_Group;
 use Google\Service\Directory\Groups as GoogleDirectory_Groups;
+use Google\Service\Directory\Alias as GoogleDirectory_GroupAlias;
 use SilMock\Google\Service\DbClass;
 use SilMock\Google\Service\Directory\ObjectUtils;
 
@@ -78,12 +79,14 @@ class Groups extends DbClass
             $postBody['id'] = $postBody['id'] ?? $id;
             $dataAsJson = json_encode(get_object_vars($postBody));
             $this->addRecord($dataAsJson);
+        } else {
+            throw new Exception(
+                "Cannot group.insert an existing group: " . $postBody->getEmail()
+            );
         }
 
-        $newGroup = new GoogleDirectory_Group();
-        ObjectUtils::initialize($newGroup, $postBody);
-
-        return $newGroup;
+        // This should leave aliases as is.
+        return $this->get($postBody->getEmail());
     }
 
     /**
@@ -140,8 +143,24 @@ class Groups extends DbClass
             throw new Exception("Group '{$groupKey}' does not exist.");
         }
         $group = $this->get($groupKey);
+
+        // remember aliases, because they don't change.
+        $aliases = $group->getAliases();
+
+        // update by deleting and reinserting, deletion causes a loss of aliases
         $this->delete($groupKey);
         ObjectUtils::initialize($group, $postBody);
-        return $this->insert($group);
+        $this->insert($group);
+
+        // re-add the aliases
+        $mockGroupAliasesObject = new GroupsAliases($this->dbFile);
+        foreach ($aliases as $alias) {
+            $aliasObject = new GoogleDirectory_GroupAlias();
+            $aliasObject->setAlias($alias);
+            $aliasObject->setPrimaryEmail($group->getEmail());
+            $mockGroupAliasesObject->insert($groupKey, $aliasObject);
+        }
+
+        return $this->get($groupKey);
     }
 }
