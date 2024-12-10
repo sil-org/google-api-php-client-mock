@@ -24,6 +24,13 @@ class Groups extends DbClass
             $keysToCheck[] = $groupRecordData['email'];
             if (in_array($groupKey, $keysToCheck)) {
                 $this->deleteRecordById($groupRecord['id']);
+                $mockGroupsAliasesObject = new GroupsAliases($this->dbFile);
+                foreach ($mockGroupsAliasesObject->getRecords() as $aliasRecord) {
+                    $aliasRecordData = json_decode($aliasRecord['data'], true);
+                    if ($aliasRecordData['primaryEmail'] === $groupRecordData['email']) {
+                        $mockGroupsAliasesObject->deleteRecordById($aliasRecord['id']);
+                    }
+                }
             }
         }
     }
@@ -46,12 +53,19 @@ class Groups extends DbClass
         $mockGroupsObject = new Groups($this->dbFile);
         $groupsObject = $mockGroupsObject->listGroups();
         $groups = $groupsObject->getGroups();
+        $matchedGroup = null;
         foreach ($groups as $group) {
             if (mb_strtolower($group->getEmail()) === mb_strtolower($matchingGroupKey)) {
-                return $group;
+                $matchedGroup = $group;
+                break;
             }
         }
-        return null;
+        if ($matchedGroup !== null) {
+            $mockGroupsAliasesObject = new GroupsAliases($this->dbFile);
+            $aliases = $mockGroupsAliasesObject->listGroupsAliases($matchedGroup->getEmail());
+            $matchedGroup->setAliases($aliases->getAliases());
+        }
+        return $matchedGroup;
     }
 
     /**
@@ -118,5 +132,16 @@ class Groups extends DbClass
         }
         $uppercaseGroupEmailAddress = mb_strtoupper($groupKey);
         return ! in_array($uppercaseGroupEmailAddress, $groupEmailAddresses);
+    }
+
+    public function update(string $groupKey, GoogleDirectory_Group $postBody, $optParams = []): GoogleDirectory_Group
+    {
+        if ($this->isNewGroup($postBody->getEmail())) {
+            throw new Exception("Group '{$groupKey}' does not exist.");
+        }
+        $group = $this->get($groupKey);
+        $this->delete($groupKey);
+        ObjectUtils::initialize($group, $postBody);
+        return $this->insert($group);
     }
 }
