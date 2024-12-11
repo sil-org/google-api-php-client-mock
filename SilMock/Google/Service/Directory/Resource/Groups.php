@@ -116,6 +116,15 @@ class Groups extends DbClass
         if (0 < $currentResultSize && $currentResultSize <= $pageSize) {
             $groups->setNextPageToken(sprintf("%d", $pageToken + 1));
         }
+        // Thankfully, setting the aliases in the loop
+        // fixes the empty aliases in groups.
+        foreach ($groups->getGroups() as $group) {
+            $mockGroupsAliasesObject = new GroupsAliases($this->dbFile);
+            $aliasesObject = $mockGroupsAliasesObject->listGroupsAliases($group->getEmail());
+            $aliasesObjectArray = $aliasesObject->getAliases();
+            $aliases = array_map(function (GoogleDirectory_GroupAlias $alias) { return $alias->getAlias(); }, $aliasesObjectArray);
+            $group->setAliases($aliases);
+        }
         return $groups;
     }
 
