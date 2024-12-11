@@ -15,6 +15,16 @@ class GroupsAliases extends DbClass
         parent::__construct($dbFile, 'directory', 'groupsaliases');
     }
 
+    public function deletedByGroup(string $groupKey): void
+    {
+        foreach ($this->getRecords() as $aliasRecord) {
+            $aliasRecordData = json_decode($aliasRecord['data'], true);
+            if ($aliasRecordData['primaryEmail'] === $groupKey) {
+                $this->deleteRecordById($aliasRecord['id']);
+            }
+        }
+    }
+
     public function delete(string $groupKey, string $alias, array $optParams = [])
     {
         $groupAliasRecords = $this->getRecords();
