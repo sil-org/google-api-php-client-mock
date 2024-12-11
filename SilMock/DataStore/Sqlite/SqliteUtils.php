@@ -241,14 +241,14 @@ class SqliteUtils
 
     /**
      *  If the database file does not exist, creates it with an empty string
-     *  with 0644 permissions.
+     *  with 0640 permissions.
      * @returns null
      */
     public function createDbIfNotExists()
     {
         if (! file_exists($this->dbFile)) {
             file_put_contents($this->dbFile, '');
-            chmod($this->dbFile, 0644);
+            chmod($this->dbFile, 0640);
         }
     }
 
