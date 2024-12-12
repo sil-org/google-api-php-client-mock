@@ -2,4 +2,4 @@
 
 
 cd /data/SilMock/tests
-./phpunit
+DOMAIN_NAMES=groups.example.org,example.org ./phpunit
