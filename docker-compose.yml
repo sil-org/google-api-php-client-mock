@@ -5,6 +5,9 @@ services:
         volumes:
             - ./:/data
         working_dir: /data
+        environment:
+            # This should match the value in run-tests.sh
+            - DOMAIN_NAMES=groups.example.org,example.org
         command: ["true"]
 
 networks:
