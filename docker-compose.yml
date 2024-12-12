@@ -5,6 +5,8 @@ services:
         volumes:
             - ./:/data
         working_dir: /data
+        environment:
+            - DOMAIN_NAMES=groups.example.org,example.org
         command: ["true"]
 
 networks:
