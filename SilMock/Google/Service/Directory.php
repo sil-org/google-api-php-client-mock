@@ -5,6 +5,7 @@ namespace SilMock\Google\Service;
 use Google\Client;
 use SilMock\Google\Http\Batch;
 use SilMock\Google\Service\Directory\Asps;
+use SilMock\Google\Service\Directory\Resource\Domains;
 use SilMock\Google\Service\Directory\Resource\Groups;
 use SilMock\Google\Service\Directory\Resource\GroupsAliases;
 use SilMock\Google\Service\Directory\Resource\Members;
@@ -18,6 +19,7 @@ use Webmozart\Assert\Assert;
 class Directory
 {
     public $asps;
+    public Domains $domains;
     public Members $members;
     public Groups $groups;
     public GroupsAliases $groups_aliases;
@@ -38,6 +40,7 @@ class Directory
     public function __construct($client, ?string $dbFile = null)
     {
         $this->asps = new Asps($dbFile);
+        $this->domains = new Domains($dbFile);
         $this->members = new Members($dbFile);
         $this->groups = new Groups($dbFile);
         $this->groups_aliases = new GroupsAliases($dbFile);
