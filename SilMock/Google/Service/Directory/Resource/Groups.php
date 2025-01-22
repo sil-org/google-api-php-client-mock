@@ -6,8 +6,10 @@ use Exception;
 use Google\Service\Directory\Group as GoogleDirectory_Group;
 use Google\Service\Directory\Groups as GoogleDirectory_Groups;
 use Google\Service\Directory\Alias as GoogleDirectory_GroupAlias;
+use Google\Service\Groupssettings\Groups as GoogleGroupsSettings_Group;
 use SilMock\Google\Service\DbClass;
 use SilMock\Google\Service\Directory\ObjectUtils;
+use SilMock\Google\Service\Groupssettings\Resource\Groups as MockGroupssettings_ResourceGroups;
 
 class Groups extends DbClass
 {
@@ -27,6 +29,8 @@ class Groups extends DbClass
                 $this->deleteRecordById($groupRecord['id']);
                 $groupAliasesObject = new GroupsAliases($this->dbFile);
                 $groupAliasesObject->deletedByGroup($groupRecordData['email']);
+                $mockGroupsSettings = new MockGroupssettings_ResourceGroups($this->dbFile);
+                $mockGroupsSettings->delete($groupRecordData['email']);
             }
         }
     }
@@ -76,6 +80,12 @@ class Groups extends DbClass
             $postBody['id'] = $postBody['id'] ?? $id;
             $dataAsJson = json_encode(get_object_vars($postBody));
             $this->addRecord($dataAsJson);
+            $mockGroupSettings = new MockGroupsSettings_ResourceGroups($this->dbFile);
+            $groupSettings = new GoogleGroupssettings_Group();
+            $groupSettings->setEmail($postBody['email']);
+            $groupSettings->setIsArchived('false');
+            $groupSettings->setWhoCanViewGroup('ALL_MEMBERS_CAN_VIEW');
+            $mockGroupSettings->insert($groupSettings);
         } else {
             throw new Exception(
                 "Cannot group.insert an existing group: " . $postBody->getEmail()
