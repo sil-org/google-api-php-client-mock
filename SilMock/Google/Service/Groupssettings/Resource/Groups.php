@@ -32,11 +32,9 @@ class Groups extends DbClass
         }
     }
 
-    protected function doesGroupExist(string $groupKey): bool
+    protected function doGroupsSettingsExist(string $groupKey): bool
     {
-        echo "PASSED GROUPKEY: " . $groupKey . "\n";
         $groupsSettings = $this->get($groupKey);
-        echo "RESULTS: " . json_encode($groupsSettings, JSON_PRETTY_PRINT) . "\n";
         return ($groupsSettings !== null);
     }
 
@@ -67,7 +65,7 @@ class Groups extends DbClass
      */
     public function insert(GoogleGroupsSettings_Groups $postBody, $optParams = [])
     {
-        if (! $this->doesGroupExist($postBody->getEmail())) {
+        if (! $this->doGroupsSettingsExist($postBody->getEmail())) {
             $id = str_replace(array(' ', '.'), '', microtime());
             $postBody['id'] = $postBody['id'] ?? $id;
             $dataAsJson = json_encode(get_object_vars($postBody));
@@ -78,8 +76,8 @@ class Groups extends DbClass
 
     public function update(string $groupKey, GoogleGroupsSettings_Groups $postBody, $optParams = []): GoogleGroupsSettings_Groups
     {
-        if (! $this->doesGroupExist($postBody->getEmail())) {
-            throw new Exception("Group '{$groupKey}' does not exist.");
+        if (! $this->doGroupsSettingsExist($postBody->getEmail())) {
+            throw new Exception("Group Settings for '{$groupKey}' does not exist.");
         }
         $groupsSettings = $this->get($groupKey);
 
