@@ -155,7 +155,7 @@ class DirectoryTest extends TestCase
     {
         $user4Data = '{"changePasswordAtNextLogin":false,' .
             '"hashFunction":"SHA-512",' .
-            '"id":"999991","password":"testP4ss",' .
+            '"id":"' . $this->userId .'","password":"testP4ss",' .
             '"primaryEmail":"user_test4@sil.org",' .
             '"isEnforcedIn2Sv":false,' .
             '"isEnrolledIn2Sv":true,' .
