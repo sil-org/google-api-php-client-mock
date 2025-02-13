@@ -44,7 +44,6 @@ class Groups extends DbClass
         $groupRecords = $this->getRecords();
         foreach ($groupRecords as $groupRecord) {
             $groupRecordData = json_decode($groupRecord['data'], true);
-            echo "CHECKING " . $groupKey . " FOR: " . $groupRecordData['email'] . "\n";
             if (strcasecmp($groupKey, $groupRecordData['email']) === 0) {
                 $matchingData = $groupRecordData;
             }
