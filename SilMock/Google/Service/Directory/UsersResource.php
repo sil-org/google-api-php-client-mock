@@ -66,6 +66,7 @@ class UsersResource extends DbClass
         $newName = new \Google_Service_Directory_UserName();
         ObjectUtils::initialize($newName, $nameArray);
         $newUser->setName($newName);
+        $userKey = $decodedData['primaryEmail'] ?? $userKey; // correct for aliases.
 
         // find its aliases in the database and populate its aliases property
         $aliases = $this->getAliasesForUser($userKey);
@@ -77,6 +78,8 @@ class UsersResource extends DbClass
             }
 
             $newUser->aliases = $foundAliases;
+        } else {
+            $newUser->aliases = [];
         }
 
         return $newUser;
