@@ -15,8 +15,8 @@ trait SampleUser
         $fixturesClass->removeAllFixtures();
         $newUser = new Google_Service_Directory_User();
         $newUser->changePasswordAtNextLogin = false; // bool
-        $newUser->hashFunction = "SHA-1"; // string
-        $newUser->id = 999991; // int???
+        $newUser->hashFunction = "SHA-512"; // string
+        $newUser->id = '999991'; // using string
         $newUser->password = 'testP4ss'; // string
         $newUser->primaryEmail = 'user_test1@sil.org'; // string email
         $newUser->suspended = false; // bool

@@ -87,8 +87,8 @@ class DirectoryTest extends TestCase
 
         $expected = [
             "changePasswordAtNextLogin" => false,
-            "hashFunction" => "SHA-1",
-            "id" => 999991,
+            "hashFunction" => "SHA-512",
+            "id" => '999991',
             "password" => "testP4ss",
             "primaryEmail" => "user_test1@sil.org",
             "suspended" => false,
@@ -108,8 +108,8 @@ class DirectoryTest extends TestCase
 
         $expected = [
             "changePasswordAtNextLogin" => false,
-            "hashFunction" => "SHA-1",
-            "id" => 999991,
+            "hashFunction" => "SHA-512",
+            "id" => '999991',
             "password" => "testP4ss",
             "primaryEmail" => "user_test1@sil.org",
             "suspended" => false,
@@ -129,8 +129,8 @@ class DirectoryTest extends TestCase
         $results =  $this->getProperties($newUser);
         $expected = [
             "changePasswordAtNextLogin" => false,
-            "hashFunction" => "SHA-1",
-            "id" => 999991,
+            "hashFunction" => "SHA-512",
+            "id" => '999991',
             "password" => "testP4ss",
             "primaryEmail" => "user_test1@sil.org",
             "suspended" => false,
@@ -164,7 +164,7 @@ class DirectoryTest extends TestCase
     public function getFixtures(): array
     {
         $user4Data = '{"changePasswordAtNextLogin":false,' .
-            '"hashFunction":"SHA-1",' .
+            '"hashFunction":"SHA-512",' .
             '"id":"999991","password":"testP4ss",' .
             '"primaryEmail":"user_test4@sil.org",' .
             '"isEnforcedIn2Sv":false,' .
@@ -216,14 +216,14 @@ class DirectoryTest extends TestCase
 
         $userData = [
             "changePasswordAtNextLogin" => false,
-            "hashFunction" => "SHA-1",
-            "id" => 999991,
+            "hashFunction" => "SHA-512",
+            "id" => '999991',
             "password" => "testP4ss",
             "primaryEmail" => $primaryEmail,
             "suspended" => false,
             "isEnforcedIn2Sv" => false,
             "isEnrolledIn2Sv" => true,
-            "aliases" => null,
+            "aliases" => [],
         ];
 
         $fixtures = $this->getFixtures();
@@ -247,14 +247,14 @@ class DirectoryTest extends TestCase
 
         $userData = [
             "changePasswordAtNextLogin" => false,
-            "hashFunction" => "SHA-1",
+            "hashFunction" => "SHA-512",
             "id" => $userId,
             "password" => "testP4ss",
             "primaryEmail" => "user_test4@sil.org",
             "suspended" => false,
             "isEnforcedIn2Sv" => false,
             "isEnrolledIn2Sv" => true,
-            "aliases" => null,
+            "aliases" => [],
         ];
 
         $fixtures = $this->getFixtures();
@@ -282,7 +282,7 @@ class DirectoryTest extends TestCase
 
         $userData = [
             "changePasswordAtNextLogin" => false,
-            "hashFunction" => "SHA-1",
+            "hashFunction" => "SHA-512",
             "id" => $userId,
             "password" => "testP4ss",
             "primaryEmail" => $email,
@@ -352,8 +352,8 @@ class DirectoryTest extends TestCase
 
         $userData = [
             "changePasswordAtNextLogin" => false,
-            "hashFunction" => "SHA-1",
-            "id" => 999991,
+            "hashFunction" => "SHA-512",
+            "id" => '999991',
             "password" => "testP4ss",
             "primaryEmail" => $primaryEmail,
             "suspended" => false,
@@ -388,7 +388,7 @@ class DirectoryTest extends TestCase
 
         $userData = [
             "changePasswordAtNextLogin" => false,
-            "hashFunction" => "SHA-1",
+            "hashFunction" => "SHA-512",
             "id" => $userId,
             "password" => "testP4ss",
             "primaryEmail" => "user_test4@sil.org",
@@ -425,7 +425,7 @@ class DirectoryTest extends TestCase
 
         $userData = [
             "changePasswordAtNextLogin" => false,
-            "hashFunction" => "SHA-1",
+            "hashFunction" => "SHA-512",
             "id" => $userId,
             "password" => "testP4ss",
             "primaryEmail" => $newEmailAddress,
@@ -467,8 +467,8 @@ class DirectoryTest extends TestCase
 
         $userData = [
             "changePasswordAtNextLogin" => false,
-            "hashFunction" => "SHA-1",
-            "id" => 999991,
+            "hashFunction" => "SHA-512",
+            "id" => '999991',
             "password" => "testP4ss",
             "primaryEmail" => $primaryEmail,
             "suspended" => false,
@@ -513,8 +513,8 @@ class DirectoryTest extends TestCase
         // Different aliases
         $userData = [
             "changePasswordAtNextLogin" => false,
-            "hashFunction" => "SHA-1",
-            "id" => 999991,
+            "hashFunction" => "SHA-512",
+            "id" => '999991',
             "password" => "testP4ss",
             "primaryEmail" => $primaryEmail,
             "suspended" => false,
@@ -550,7 +550,7 @@ class DirectoryTest extends TestCase
 
         $userData = [
             "changePasswordAtNextLogin" => false,
-            "hashFunction" => "SHA-1",
+            "hashFunction" => "SHA-512",
             "id" => $userId,
             "password" => "testP4ss",
             "primaryEmail" => "user_test4@sil.org",
@@ -621,7 +621,7 @@ class DirectoryTest extends TestCase
         $fixturesClass = new GoogleFixtures($this->dataFile);
         $fixturesClass->removeAllFixtures();
 
-        $userId = 999991;
+        $userId = '999991';
 
         $fixtures = $this->getFixtures();
         $fixturesClass->addFixtures($fixtures);
