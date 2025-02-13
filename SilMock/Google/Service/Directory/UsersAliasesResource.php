@@ -42,8 +42,35 @@ class UsersAliasesResource extends DbClass
             throw new Exception(self::ACCOUNT_DOESNT_EXIST . $userKey, 201407101645);
         }
 
-        // Get all the aliases for that user
         $sqliteUtils = new SqliteUtils($this->dbFile);
+        // Get all the user records for that user
+        $userRecords = $sqliteUtils->getAllRecordsByDataKey(
+            $this->dataType,
+            'users',
+            $key,
+            $userKey,
+        );
+        // Check the data of each alias and when there is a match,
+        // delete that alias and return true
+        foreach ($userRecords as $userRecord) {
+            $userData = json_decode($userRecord['data'], true);
+            if (is_array($userData['aliases'])) {
+                $userRecordAliases = [];
+                foreach ($userData['aliases'] as $userAlias) {
+                    if (strcasecmp($userAlias, $alias) !== 0) {
+                        $userRecordAliases[] = $alias;
+                    }
+                }
+                $userData['aliases'] = $userRecordAliases;
+                $userRecordData = json_encode($userData, JSON_PRETTY_PRINT);
+                $sqliteUtils->updateRecordById(
+                    intval($userRecord['id']),
+                    $userRecordData
+                );
+            }
+        }
+
+        // Get all the aliases for that user
         $aliases =  $sqliteUtils->getAllRecordsByDataKey(
             $this->dataType,
             $this->dataClass,
