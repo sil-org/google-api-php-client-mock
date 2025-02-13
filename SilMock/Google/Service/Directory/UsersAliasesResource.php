@@ -50,25 +50,8 @@ class UsersAliasesResource extends DbClass
             $key,
             $userKey,
         );
-        // Check the data of each alias and when there is a match,
-        // delete that alias and return true
-        foreach ($userRecords as $userRecord) {
-            $userData = json_decode($userRecord['data'], true);
-            if (is_array($userData['aliases'])) {
-                $userRecordAliases = [];
-                foreach ($userData['aliases'] as $userAlias) {
-                    if (strcasecmp($userAlias, $alias) !== 0) {
-                        $userRecordAliases[] = $alias;
-                    }
-                }
-                $userData['aliases'] = $userRecordAliases;
-                $userRecordData = json_encode($userData, JSON_PRETTY_PRINT);
-                $sqliteUtils->updateRecordById(
-                    intval($userRecord['id']),
-                    $userRecordData
-                );
-            }
-        }
+
+        $this->makeUserRecordAliasesMatch($userRecords, $alias, $sqliteUtils);
 
         // Get all the aliases for that user
         $aliases =  $sqliteUtils->getAllRecordsByDataKey(
@@ -217,5 +200,29 @@ class UsersAliasesResource extends DbClass
         $newUsersAliases = new \Google_Service_Directory_Aliases();
         $newUsersAliases->setAliases($foundAliases);
         return $newUsersAliases;
+    }
+
+    private function makeUserRecordAliasesMatch(array $userRecords, string $alias, SqliteUtils $sqliteUtils): void
+    {
+        // Check the data of each alias and when there is a match,
+        // delete that alias and return true
+        foreach ($userRecords as $userRecord) {
+            $userData = json_decode($userRecord['data'], true);
+            if (is_array($userData['aliases'])) {
+                $userRecordAliases = [];
+                foreach ($userData['aliases'] as $userAlias) {
+                    if (strcasecmp($userAlias, $alias) !== 0) {
+                        $userRecordAliases[] = $alias;
+                    }
+                }
+                $userData['aliases'] = $userRecordAliases;
+                $userRecordData = json_encode($userData, JSON_PRETTY_PRINT);
+                $sqliteUtils->updateRecordById(
+                    intval($userRecord['id']),
+                    $userRecordData
+                );
+            }
+        }
+
     }
 }
