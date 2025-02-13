@@ -73,8 +73,11 @@ class Groups extends DbClass
         return $this->get($postBody->getEmail());
     }
 
-    public function update(string $groupKey, GoogleGroupsSettings_Groups $postBody, $optParams = []): GoogleGroupsSettings_Groups
-    {
+    public function update(
+        string $groupKey,
+        GoogleGroupsSettings_Groups $postBody,
+        $optParams = []
+    ): GoogleGroupsSettings_Groups {
         if (! $this->doGroupsSettingsExist($postBody->getEmail())) {
             throw new Exception("Group Settings for '{$groupKey}' does not exist.");
         }
