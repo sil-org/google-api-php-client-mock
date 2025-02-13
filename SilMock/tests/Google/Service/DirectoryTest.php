@@ -18,6 +18,7 @@ class DirectoryTest extends TestCase
     use SampleUser;
 
     public string $dataFile = DATAFILE2;
+    public string $userId = '999991';
 
     public function getProperties($object, $propKeys = null): array
     {
@@ -87,8 +88,8 @@ class DirectoryTest extends TestCase
 
         $expected = [
             "changePasswordAtNextLogin" => false,
-            "hashFunction" => "SHA-1",
-            "id" => 999991,
+            "hashFunction" => "SHA-512",
+            "id" => $this->userId,
             "password" => "testP4ss",
             "primaryEmail" => "user_test1@sil.org",
             "suspended" => false,
@@ -106,18 +107,7 @@ class DirectoryTest extends TestCase
         $dataObj = json_decode($lastDataEntry['data']);
         $results = $this->getProperties($dataObj);
 
-        $expected = [
-            "changePasswordAtNextLogin" => false,
-            "hashFunction" => "SHA-1",
-            "id" => 999991,
-            "password" => "testP4ss",
-            "primaryEmail" => "user_test1@sil.org",
-            "suspended" => false,
-            "isEnforcedIn2Sv" => false,
-            "isEnrolledIn2Sv" => true,
-            "aliases" => [],
-        ];
-
+        // $expected is the same as above
         $msg = " *** Bad data from sqlite database";
         $this->assertEquals($expected, $results, $msg);
     }
@@ -129,8 +119,8 @@ class DirectoryTest extends TestCase
         $results =  $this->getProperties($newUser);
         $expected = [
             "changePasswordAtNextLogin" => false,
-            "hashFunction" => "SHA-1",
-            "id" => 999991,
+            "hashFunction" => "SHA-512",
+            "id" => $this->userId,
             "password" => "testP4ss",
             "primaryEmail" => "user_test1@sil.org",
             "suspended" => false,
@@ -164,7 +154,7 @@ class DirectoryTest extends TestCase
     public function getFixtures(): array
     {
         $user4Data = '{"changePasswordAtNextLogin":false,' .
-            '"hashFunction":"SHA-1",' .
+            '"hashFunction":"SHA-512",' .
             '"id":"999991","password":"testP4ss",' .
             '"primaryEmail":"user_test4@sil.org",' .
             '"isEnforcedIn2Sv":false,' .
@@ -216,14 +206,14 @@ class DirectoryTest extends TestCase
 
         $userData = [
             "changePasswordAtNextLogin" => false,
-            "hashFunction" => "SHA-1",
-            "id" => 999991,
+            "hashFunction" => "SHA-512",
+            "id" => $this->userId,
             "password" => "testP4ss",
             "primaryEmail" => $primaryEmail,
             "suspended" => false,
             "isEnforcedIn2Sv" => false,
             "isEnrolledIn2Sv" => true,
-            "aliases" => null,
+            "aliases" => [],
         ];
 
         $fixtures = $this->getFixtures();
@@ -243,25 +233,23 @@ class DirectoryTest extends TestCase
         $fixturesClass = new GoogleFixtures($this->dataFile);
         $fixturesClass->removeAllFixtures();
 
-        $userId = '999991';
-
         $userData = [
             "changePasswordAtNextLogin" => false,
-            "hashFunction" => "SHA-1",
-            "id" => $userId,
+            "hashFunction" => "SHA-512",
+            "id" => $this->userId,
             "password" => "testP4ss",
             "primaryEmail" => "user_test4@sil.org",
             "suspended" => false,
             "isEnforcedIn2Sv" => false,
             "isEnrolledIn2Sv" => true,
-            "aliases" => null,
+            "aliases" => [],
         ];
 
         $fixtures = $this->getFixtures();
         $fixturesClass->addFixtures($fixtures);
 
         $newDir = new Directory('anyclient', $this->dataFile);
-        $newUser = $newDir->users->get($userId);
+        $newUser = $newDir->users->get($this->userId);
 
         $results = $this->getProperties($newUser);
         $expected = $userData;
@@ -277,13 +265,12 @@ class DirectoryTest extends TestCase
         $fixtures = $this->getFixtures();
         $fixturesClass->addFixtures($fixtures);
 
-        $userId = '999991';
         $email = "user_test4@sil.org";
 
         $userData = [
             "changePasswordAtNextLogin" => false,
-            "hashFunction" => "SHA-1",
-            "id" => $userId,
+            "hashFunction" => "SHA-512",
+            "id" => $this->userId,
             "password" => "testP4ss",
             "primaryEmail" => $email,
             "suspended" => false,
@@ -352,8 +339,8 @@ class DirectoryTest extends TestCase
 
         $userData = [
             "changePasswordAtNextLogin" => false,
-            "hashFunction" => "SHA-1",
-            "id" => 999991,
+            "hashFunction" => "SHA-512",
+            "id" => $this->userId,
             "password" => "testP4ss",
             "primaryEmail" => $primaryEmail,
             "suspended" => false,
@@ -384,12 +371,10 @@ class DirectoryTest extends TestCase
         $fixturesClass = new GoogleFixtures($this->dataFile);
         $fixturesClass->removeAllFixtures();
 
-        $userId = '999991';
-
         $userData = [
             "changePasswordAtNextLogin" => false,
-            "hashFunction" => "SHA-1",
-            "id" => $userId,
+            "hashFunction" => "SHA-512",
+            "id" => $this->userId,
             "password" => "testP4ss",
             "primaryEmail" => "user_test4@sil.org",
             "suspended" => false,
@@ -405,8 +390,8 @@ class DirectoryTest extends TestCase
         ObjectUtils::initialize($newUser, $userData);
 
         $newDir = new Directory('anyclient', $this->dataFile);
-        $newDir->users->update($userId, $newUser);
-        $newUser = $newDir->users->get($userId);
+        $newDir->users->update($this->userId, $newUser);
+        $newUser = $newDir->users->get($this->userId);
 
         $results = $this->getProperties($newUser);
         $expected = $userData;
@@ -419,14 +404,13 @@ class DirectoryTest extends TestCase
         $fixturesClass = new GoogleFixtures($this->dataFile);
         $fixturesClass->removeAllFixtures();
 
-        $userId = '999991';
         $oldEmailAddress = 'user_test4@sil.org';
         $newEmailAddress = 'user_test4a@sil.org';
 
         $userData = [
             "changePasswordAtNextLogin" => false,
-            "hashFunction" => "SHA-1",
-            "id" => $userId,
+            "hashFunction" => "SHA-512",
+            "id" => $this->userId,
             "password" => "testP4ss",
             "primaryEmail" => $newEmailAddress,
             "suspended" => false,
@@ -442,8 +426,8 @@ class DirectoryTest extends TestCase
         ObjectUtils::initialize($newUser, $userData);
 
         $newDir = new Directory('anyclient', $this->dataFile);
-        $newDir->users->update($userId, $newUser);
-        $newUser = $newDir->users->get($userId);
+        $newDir->users->update($this->userId, $newUser);
+        $newUser = $newDir->users->get($this->userId);
 
         $results = $this->getProperties($newUser);
         $expected = $userData;
@@ -454,7 +438,7 @@ class DirectoryTest extends TestCase
         // Attempt to get the user by the alias, after updating the primary email address
         $newUser = $newDir->users->get($oldEmailAddress);
         $results = $this->getProperties($newUser);
-        $msg = " *** Bad user data returned";
+        // $msg is as above
         $this->assertEquals($expected, $results, $msg);
     }
 
@@ -467,8 +451,8 @@ class DirectoryTest extends TestCase
 
         $userData = [
             "changePasswordAtNextLogin" => false,
-            "hashFunction" => "SHA-1",
-            "id" => 999991,
+            "hashFunction" => "SHA-512",
+            "id" => $this->userId,
             "password" => "testP4ss",
             "primaryEmail" => $primaryEmail,
             "suspended" => false,
@@ -513,8 +497,8 @@ class DirectoryTest extends TestCase
         // Different aliases
         $userData = [
             "changePasswordAtNextLogin" => false,
-            "hashFunction" => "SHA-1",
-            "id" => 999991,
+            "hashFunction" => "SHA-512",
+            "id" => $this->userId,
             "password" => "testP4ss",
             "primaryEmail" => $primaryEmail,
             "suspended" => false,
@@ -550,7 +534,7 @@ class DirectoryTest extends TestCase
 
         $userData = [
             "changePasswordAtNextLogin" => false,
-            "hashFunction" => "SHA-1",
+            "hashFunction" => "SHA-512",
             "id" => $userId,
             "password" => "testP4ss",
             "primaryEmail" => "user_test4@sil.org",
@@ -621,13 +605,11 @@ class DirectoryTest extends TestCase
         $fixturesClass = new GoogleFixtures($this->dataFile);
         $fixturesClass->removeAllFixtures();
 
-        $userId = 999991;
-
         $fixtures = $this->getFixtures();
         $fixturesClass->addFixtures($fixtures);
 
         $newDir = new Directory('anyclient', $this->dataFile);
-        $newDir->users->delete($userId);
+        $newDir->users->delete($this->userId);
 
         $sqliteClass = new SqliteUtils($this->dataFile);
         $results = $sqliteClass->getData('', '');

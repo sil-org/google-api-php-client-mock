@@ -84,7 +84,7 @@ class GroupsTest extends TestCase
         $group->setAliases([self::GROUP_ALIAS_ADDRESS . 'update-change']);
         $updatedGroup = $mockGoogleServiceDirectory->groups->update($group->getEmail(), $group);
         self::assertTrue($updatedGroup instanceof GoogleDirectory_Group);
-        self::assertEmpty($updatedGroup->getAliases(),  "Expecting no group aliases changed by group.update");
+        self::assertEmpty($updatedGroup->getAliases(), "Expecting no group aliases changed by group.update");
     }
 
     protected function deleteTestSetup()
@@ -214,7 +214,9 @@ class GroupsTest extends TestCase
             );
         }
         try {
-            $groupAliases = $mockGoogleServiceDirectory->groups_aliases->listGroupsAliases(self::GROUP_EMAIL_ADDRESS . 'delete');
+            $groupAliases = $mockGoogleServiceDirectory->groups_aliases->listGroupsAliases(
+                self::GROUP_EMAIL_ADDRESS . 'delete'
+            );
             self::assertEmpty(
                 $groupAliases->getAliases(),
                 'Was expecting the group aliases to be deleted by name, but found something'
