@@ -43,6 +43,7 @@ class UsersAliasesResource extends DbClass
         }
 
         $sqliteUtils = new SqliteUtils($this->dbFile);
+
         // Get all the user records for that user
         $userRecords = $sqliteUtils->getAllRecordsByDataKey(
             $this->dataType,
