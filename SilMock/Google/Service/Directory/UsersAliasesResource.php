@@ -223,6 +223,5 @@ class UsersAliasesResource extends DbClass
                 );
             }
         }
-
     }
 }
