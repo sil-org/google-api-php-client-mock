@@ -44,7 +44,6 @@ class Groups extends DbClass
         $groupRecords = $this->getRecords();
         foreach ($groupRecords as $groupRecord) {
             $groupRecordData = json_decode($groupRecord['data'], true);
-            echo "CHECKING " . $groupKey . " FOR: " . $groupRecordData['email'] . "\n";
             if (strcasecmp($groupKey, $groupRecordData['email']) === 0) {
                 $matchingData = $groupRecordData;
             }
@@ -74,8 +73,11 @@ class Groups extends DbClass
         return $this->get($postBody->getEmail());
     }
 
-    public function update(string $groupKey, GoogleGroupsSettings_Groups $postBody, $optParams = []): GoogleGroupsSettings_Groups
-    {
+    public function update(
+        string $groupKey,
+        GoogleGroupsSettings_Groups $postBody,
+        $optParams = []
+    ): GoogleGroupsSettings_Groups {
         if (! $this->doGroupsSettingsExist($postBody->getEmail())) {
             throw new Exception("Group Settings for '{$groupKey}' does not exist.");
         }

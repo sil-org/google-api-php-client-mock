@@ -64,7 +64,12 @@ class Groups extends DbClass
             $mockGroupsAliasesObject = new GroupsAliases($this->dbFile);
             $aliasesObject = $mockGroupsAliasesObject->listGroupsAliases($matchedGroup->getEmail());
             $arrayOfAliasObjects = $aliasesObject->getAliases();
-            $aliases = array_map(function (GoogleDirectory_GroupAlias $alias) { return $alias->getAlias(); }, $arrayOfAliasObjects);
+            $aliases = array_map(
+                function (GoogleDirectory_GroupAlias $alias) {
+                    return $alias->getAlias();
+                },
+                $arrayOfAliasObjects
+            );
             $matchedGroup->setAliases($aliases);
         }
         return $matchedGroup;
@@ -134,7 +139,12 @@ class Groups extends DbClass
             $mockGroupsAliasesObject = new GroupsAliases($this->dbFile);
             $aliasesObject = $mockGroupsAliasesObject->listGroupsAliases($group->getEmail());
             $aliasesObjectArray = $aliasesObject->getAliases();
-            $aliases = array_map(function (GoogleDirectory_GroupAlias $alias) { return $alias->getAlias(); }, $aliasesObjectArray);
+            $aliases = array_map(
+                function (GoogleDirectory_GroupAlias $alias) {
+                    return $alias->getAlias();
+                },
+                $aliasesObjectArray
+            );
             $group->setAliases($aliases);
         }
         return $groups;
