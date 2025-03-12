@@ -4,6 +4,7 @@ LABEL maintainer="Mark Tompsett <mark_tompsett@sil.org>"
 ENV REFRESHED_AT 2023-07-12
 
 # Make sure apt has current list/updates
+USER root
 RUN apt-get update -y \
 # Fix timezone stuff from hanging.
     && echo "America/New_York" > /etc/timezone \
@@ -21,8 +22,10 @@ RUN apt-get update -y \
 
 RUN mkdir -p /data
 WORKDIR /data
-COPY ./ /data
+COPY --chown=1000:www-data ./ /data
 
 RUN cd /data && ./composer-install.sh
 RUN mv /data/composer.phar /usr/bin/composer
 RUN /usr/bin/composer install
+# User 1000 is the first user on a *nix system
+USER 1000
