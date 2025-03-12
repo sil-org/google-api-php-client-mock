@@ -17,7 +17,7 @@ class GroupsettingsTest extends TestCase
         $mockGroupsSettings = new MockGroupsSettings_ResourceGroups($this->dataFile);
         $groupsSettings = $mockGroupsSettings->get(self::GROUP_EMAIL_ADDRESS);
         self::assertNotNull($groupsSettings, 'Expecting group settings to exist');
-        self::assertEquals(
+        self::assertSame(
             $groupsSettings->getEmail(),
             self::GROUP_EMAIL_ADDRESS,
             sprintf(
