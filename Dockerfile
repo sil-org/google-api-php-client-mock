@@ -7,10 +7,10 @@ ENV REFRESHED_AT 2023-07-12
 RUN apt-get update -y \
 # Fix timezone stuff from hanging.
     && echo "America/New_York" > /etc/timezone \
-    && apt-get install -y tzdata \
+    && apt-get install -y --no-install-recommends tzdata \
     && apt-get upgrade -y \
 # Install
-    && apt-get install -y \
+    && apt-get install -y --no-install-recommends \
 # things needed for GoogleMock objects
         sqlite3 \
 # some basics
