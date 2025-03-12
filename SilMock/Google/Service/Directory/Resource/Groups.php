@@ -7,6 +7,8 @@ use Google\Service\Directory\Group as GoogleDirectory_Group;
 use Google\Service\Directory\Groups as GoogleDirectory_Groups;
 use Google\Service\Directory\Alias as GoogleDirectory_GroupAlias;
 use Google\Service\Groupssettings\Groups as GoogleGroupsSettings_Group;
+use SilMock\exceptions\GroupAlreadyExistsException;
+use SilMock\exceptions\GroupDoesNotExistException;
 use SilMock\Google\Service\DbClass;
 use SilMock\Google\Service\Directory\ObjectUtils;
 use SilMock\Google\Service\Groupssettings\Resource\Groups as MockGroupssettings_ResourceGroups;
@@ -92,7 +94,7 @@ class Groups extends DbClass
             $groupSettings->setWhoCanViewGroup('ALL_MEMBERS_CAN_VIEW');
             $mockGroupSettings->insert($groupSettings);
         } else {
-            throw new Exception(
+            throw new GroupAlreadyExistsException(
                 "Cannot group.insert an existing group: " . $postBody->getEmail()
             );
         }
@@ -166,7 +168,7 @@ class Groups extends DbClass
     public function update(string $groupKey, GoogleDirectory_Group $postBody, $optParams = []): GoogleDirectory_Group
     {
         if ($this->isNewGroup($postBody->getEmail())) {
-            throw new Exception("Group '{$groupKey}' does not exist.");
+            throw new GroupDoesNotExistException("Group '{$groupKey}' does not exist.");
         }
         $group = $this->get($groupKey);
 
