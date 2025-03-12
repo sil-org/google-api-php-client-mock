@@ -35,7 +35,7 @@ class Groups extends DbClass
     protected function doGroupsSettingsExist(string $groupKey): bool
     {
         $groupsSettings = $this->get($groupKey);
-        return ($groupsSettings !== null);
+        return $groupsSettings !== null;
     }
 
     public function get(string $groupKey): ?GoogleGroupsSettings_Groups
