@@ -451,10 +451,6 @@ class UsersResource extends DbClass
                 )
             );
         }
-        if (mb_strpos($checkValue, $value) === 0) {
-            return true;
-        } else {
-            return false;
-        }
+        return mb_strpos($checkValue, $value) === 0;
     }
 }
