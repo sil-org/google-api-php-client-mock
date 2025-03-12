@@ -1,4 +1,5 @@
 FROM php:8.2-apache
+USER 1000
 LABEL maintainer="Mark Tompsett <mark_tompsett@sil.org>"
 
 ENV REFRESHED_AT 2023-07-12
