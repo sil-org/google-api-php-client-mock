@@ -182,3 +182,5 @@ Examples
 
     $aliases = $dir->users_aliases->listUsersAliases($users_email);
     $alias = $dir->users_aliases->delete($users_email, $alias);
+
+### DEVELOPER'S NOTE: Releases should include updating the version in composer.json to match
