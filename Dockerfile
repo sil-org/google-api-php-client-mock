@@ -23,8 +23,11 @@ RUN apt-get update -y \
 
 RUN mkdir -p /data
 WORKDIR /data
-COPY --chown=nonroot:www-data ./ /data
+USER nonroot
+COPY * /data
+COPY SilMock/ /data/SilMock
 
+USER root
 RUN cd /data && ./composer-install.sh
 RUN mv /data/composer.phar /usr/bin/composer
 RUN /usr/bin/composer install
