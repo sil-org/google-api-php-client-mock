@@ -1,5 +1,5 @@
 FROM php:8.2-apache
-USER 1000
+RUN useradd nonroot
 LABEL maintainer="Mark Tompsett <mark_tompsett@sil.org>"
 
 ENV REFRESHED_AT 2023-07-12
@@ -23,10 +23,9 @@ RUN apt-get update -y \
 
 RUN mkdir -p /data
 WORKDIR /data
-COPY --chown=1000:www-data ./ /data
+COPY --chown=nonroot:www-data ./ /data
 
 RUN cd /data && ./composer-install.sh
 RUN mv /data/composer.phar /usr/bin/composer
 RUN /usr/bin/composer install
-# User 1000 is the first user on a *nix system
-USER 1000
+USER nonroot
