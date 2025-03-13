@@ -24,7 +24,17 @@ RUN apt-get update -y \
 RUN mkdir -p /data
 WORKDIR /data
 USER nonroot
-COPY * /data
+COPY actions-services.yml /data
+COPY composer-install.sh /data
+COPY composer.json /data
+COPY composer.lock /data
+COPY docker-compose.yml /data
+COPY Dockerfile /data
+COPY LICENSE /data
+COPY Makefile /data
+COPY README.md /data
+COPY run-tests.sh /data
+COPY .travis.yml /data
 COPY SilMock/ /data/SilMock
 
 USER root
