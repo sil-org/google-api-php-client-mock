@@ -19,11 +19,12 @@ RUN apt-get update -y \
         unzip wget zip \
 # Clean up to reduce docker image size
     && apt-get clean \
-    && rm -rf /var/lib/apt/lists/*
+    && rm -rf /var/lib/apt/lists/* \
+# Make sure the directory we'll mount and reference is there
+    && mkdir -p /data
 
-RUN mkdir -p /data
-WORKDIR /data
 USER nonroot
+WORKDIR /data
 COPY actions-services.yml /data
 COPY composer-install.sh /data
 COPY composer.json /data
@@ -38,7 +39,8 @@ COPY .travis.yml /data
 COPY SilMock/ /data/SilMock
 
 USER root
-RUN cd /data && ./composer-install.sh
-RUN mv /data/composer.phar /usr/bin/composer
-RUN /usr/bin/composer install
+WORKDIR /data
+RUN ./composer-install.sh \
+    && mv /data/composer.phar /usr/bin/composer \
+    && /usr/bin/composer install
 USER nonroot
