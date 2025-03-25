@@ -6,6 +6,8 @@ use Exception;
 use PDO;
 use SilMock\exceptions\SqliteUtilsBadDataClassException;
 use SilMock\exceptions\SqliteUtilsBadDataTypeException;
+use SilMock\exceptions\SqliteUtilsSqlAffectedNoRowsException;
+use SilMock\exceptions\SqliteUtilsSqlFailedException;
 
 class SqliteUtils
 {
@@ -319,14 +321,14 @@ class SqliteUtils
         // If the statement was NOT successful...
         if ($stmtSuccess === false) {
             // Indicate failure.
-            throw new Exception('SQL statement failed: ' . $sql);
+            throw new SqliteUtilsSqlFailedException('SQL statement failed: ' . $sql);
 
             // If told to confirm that rows were affected
             // AND
             // if the statement didn't affect any rows...
         } elseif ($confirmAffectedRows && ($stmt->rowCount() < 1)) {
             // Indicate failure.
-            throw new Exception('SQL statement affected no rows: ' . $sql);
+            throw new SqliteUtilsSqlAffectedNoRowsException('SQL statement affected no rows: ' . $sql);
         }
 
         // If told to return data, do so.
