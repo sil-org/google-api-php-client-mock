@@ -4,6 +4,8 @@ namespace SilMock\DataStore\Sqlite;
 
 use Exception;
 use PDO;
+use SilMock\exceptions\SqliteUtilsBadDataClassException;
+use SilMock\exceptions\SqliteUtilsBadDataTypeException;
 
 class SqliteUtils
 {
@@ -218,11 +220,11 @@ class SqliteUtils
     public function recordData(string $dataType, string $dataClass, string $data): bool
     {
         if (empty($dataType)) {
-            throw new Exception("No data type given when trying to record " .
+            throw new SqliteUtilsBadDataTypeException("No data type given when trying to record " .
                 "data.");
         }
         if (empty($dataClass)) {
-            throw new Exception("No data class given when trying to record " .
+            throw new SqliteUtilsBadDataClassException("No data class given when trying to record " .
                 "data (data type: " . $dataType . ").");
         }
 
