@@ -45,11 +45,13 @@ RUN touch /data/SilMock/DataStore/Sqlite/Test1_Google_Service_Data.db && \
     touch /data/SilMock/DataStore/Sqlite/Test3_Google_Service_Data.db && \
     touch /data/SilMock/DataStore/Sqlite/Test4_Google_Service_Data.db && \
     touch /data/SilMock/DataStore/Sqlite/Test5_Google_Service_Data.db && \
+    touch /data/SilMock/tests/.phpunit.result.cache && \
     chmod 664 /data/SilMock/DataStore/Sqlite/Test1_Google_Service_Data.db && \
     chmod 664 /data/SilMock/DataStore/Sqlite/Test2_Google_Service_Data.db && \
     chmod 664 /data/SilMock/DataStore/Sqlite/Test3_Google_Service_Data.db && \
     chmod 664 /data/SilMock/DataStore/Sqlite/Test4_Google_Service_Data.db && \
-    chmod 664 /data/SilMock/DataStore/Sqlite/Test5_Google_Service_Data.db
+    chmod 664 /data/SilMock/DataStore/Sqlite/Test5_Google_Service_Data.db && \
+    chmod 664 /data/SilMock/tests/.phpunit.result.cache
 
 WORKDIR /data
 RUN ./composer-install.sh \
