@@ -55,7 +55,7 @@ RUN touch /data/SilMock/DataStore/Sqlite/Test1_Google_Service_Data.db && \
     chmod 664 /data/SilMock/tests/.phpunit.result.cache
 
 WORKDIR /data
-RUN ./composer-install.sh \
-    && mv /data/composer.phar /usr/bin/composer \
-    && /usr/bin/composer install
+RUN ./composer-install.sh
+RUN mv /data/composer.phar /usr/bin/composer
 USER nonroot
+RUN /usr/bin/composer install
