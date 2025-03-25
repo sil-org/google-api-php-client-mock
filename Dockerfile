@@ -39,13 +39,19 @@ COPY .travis.yml /data
 COPY SilMock/ /data/SilMock
 
 USER root
-# Make sure the development test DB's exist and have writable permissions
+# Make sure the development test files exist and have writable permissions
 RUN touch /data/SilMock/DataStore/Sqlite/Test1_Google_Service_Data.db && \
     touch /data/SilMock/DataStore/Sqlite/Test2_Google_Service_Data.db && \
     touch /data/SilMock/DataStore/Sqlite/Test3_Google_Service_Data.db && \
     touch /data/SilMock/DataStore/Sqlite/Test4_Google_Service_Data.db && \
     touch /data/SilMock/DataStore/Sqlite/Test5_Google_Service_Data.db && \
     touch /data/SilMock/tests/.phpunit.result.cache && \
+    chown root:nonroot /data/SilMock/DataStore/Sqlite/Test1_Google_Service_Data.db && \
+    chown root:nonroot /data/SilMock/DataStore/Sqlite/Test2_Google_Service_Data.db && \
+    chown root:nonroot /data/SilMock/DataStore/Sqlite/Test3_Google_Service_Data.db && \
+    chown root:nonroot /data/SilMock/DataStore/Sqlite/Test4_Google_Service_Data.db && \
+    chown root:nonroot /data/SilMock/DataStore/Sqlite/Test5_Google_Service_Data.db && \
+    chown root:nonroot /data/SilMock/tests/.phpunit.result.cache && \
     chmod 664 /data/SilMock/DataStore/Sqlite/Test1_Google_Service_Data.db && \
     chmod 664 /data/SilMock/DataStore/Sqlite/Test2_Google_Service_Data.db && \
     chmod 664 /data/SilMock/DataStore/Sqlite/Test3_Google_Service_Data.db && \
