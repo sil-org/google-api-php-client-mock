@@ -46,12 +46,7 @@ RUN touch /data/SilMock/DataStore/Sqlite/Test1_Google_Service_Data.db && \
     touch /data/SilMock/DataStore/Sqlite/Test4_Google_Service_Data.db && \
     touch /data/SilMock/DataStore/Sqlite/Test5_Google_Service_Data.db && \
     touch /data/SilMock/tests/.phpunit.result.cache && \
-    chown root:nonroot /data/SilMock/DataStore/Sqlite/Test1_Google_Service_Data.db && \
-    chown root:nonroot /data/SilMock/DataStore/Sqlite/Test2_Google_Service_Data.db && \
-    chown root:nonroot /data/SilMock/DataStore/Sqlite/Test3_Google_Service_Data.db && \
-    chown root:nonroot /data/SilMock/DataStore/Sqlite/Test4_Google_Service_Data.db && \
-    chown root:nonroot /data/SilMock/DataStore/Sqlite/Test5_Google_Service_Data.db && \
-    chown root:nonroot /data/SilMock/tests/.phpunit.result.cache && \
+    chown -R nonroot:root /data && \
     chmod 664 /data/SilMock/DataStore/Sqlite/Test1_Google_Service_Data.db && \
     chmod 664 /data/SilMock/DataStore/Sqlite/Test2_Google_Service_Data.db && \
     chmod 664 /data/SilMock/DataStore/Sqlite/Test3_Google_Service_Data.db && \
