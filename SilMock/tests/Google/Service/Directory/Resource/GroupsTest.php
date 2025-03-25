@@ -16,6 +16,7 @@ class GroupsTest extends TestCase
     public string $dataFile = DATAFILE5;
     public const GROUP_EMAIL_ADDRESS = 'sample_group@example.com';
     public const GROUP_ALIAS_ADDRESS = 'ma_org_sample_group@groups.example.com';
+    public const GROUP_INSERT_FAILURE_TEMPLATE = 'Was expecting the groups.insert method to function, but got: %s';
 
     protected function deleteGroupAndAliasesIfTheyExists(string $groupName)
     {
@@ -45,7 +46,7 @@ class GroupsTest extends TestCase
         } catch (Exception $exception) {
             self::fail(
                 sprintf(
-                    'Was expecting the groups.insert method to function, but got: %s',
+                    self::GROUP_INSERT_FAILURE_TEMPLATE,
                     $exception->getMessage()
                 )
             );
@@ -71,7 +72,7 @@ class GroupsTest extends TestCase
         } catch (Exception $exception) {
             self::fail(
                 sprintf(
-                    'Was expecting the groups.insert method to function, but got: %s',
+                    self::GROUP_INSERT_FAILURE_TEMPLATE,
                     $exception->getMessage()
                 )
             );
@@ -104,7 +105,7 @@ class GroupsTest extends TestCase
         } catch (Exception $exception) {
             self::fail(
                 sprintf(
-                    'Was expecting the groups.insert method to function, but got: %s',
+                    self::GROUP_INSERT_FAILURE_TEMPLATE,
                     $exception->getMessage()
                 )
             );

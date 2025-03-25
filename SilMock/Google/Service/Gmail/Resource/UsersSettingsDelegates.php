@@ -122,7 +122,7 @@ class UsersSettingsDelegates extends DbClass
      */
     protected function isValidEmailAddress($email)
     {
-        return (filter_var($email, FILTER_VALIDATE_EMAIL) !== false);
+        return filter_var($email, FILTER_VALIDATE_EMAIL) !== false;
     }
 
     public function get($userId, $delegateEmail, $optParams = array())

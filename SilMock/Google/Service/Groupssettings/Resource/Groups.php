@@ -4,6 +4,7 @@ namespace SilMock\Google\Service\Groupssettings\Resource;
 
 use Exception;
 use Google\Service\Groupssettings\Groups as GoogleGroupsSettings_Groups;
+use SilMock\exceptions\GroupSettingsDoNotExistException;
 use SilMock\Google\Service\DbClass;
 use SilMock\Google\Service\Directory\ObjectUtils;
 
@@ -35,7 +36,7 @@ class Groups extends DbClass
     protected function doGroupsSettingsExist(string $groupKey): bool
     {
         $groupsSettings = $this->get($groupKey);
-        return ($groupsSettings !== null);
+        return $groupsSettings !== null;
     }
 
     public function get(string $groupKey): ?GoogleGroupsSettings_Groups
@@ -79,7 +80,7 @@ class Groups extends DbClass
         $optParams = []
     ): GoogleGroupsSettings_Groups {
         if (! $this->doGroupsSettingsExist($postBody->getEmail())) {
-            throw new Exception("Group Settings for '{$groupKey}' does not exist.");
+            throw new GroupSettingsDoNotExistException("Group Settings for '{$groupKey}' does not exist.");
         }
         $groupsSettings = $this->get($groupKey);
 
