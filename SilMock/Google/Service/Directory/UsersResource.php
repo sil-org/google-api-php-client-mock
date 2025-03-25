@@ -293,7 +293,7 @@ class UsersResource extends DbClass
                 $newAlias->kind = "personal";
                 $newAlias->primaryEmail = $postBody->primaryEmail;
 
-                $insertedAlias = $usersAliases->insertAssumingUserExists($newAlias);
+                $usersAliases->insertAssumingUserExists($newAlias);
             }
         }
 
