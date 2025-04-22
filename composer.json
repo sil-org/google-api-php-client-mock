@@ -1,6 +1,6 @@
 {
     "name": "silinternational/google-api-php-client-mock",
-    "version": "2.15.3",
+    "version": "2.16.0",
     "description": "Attempting to create an intelligent mock of the Google API PHP Client for unit and functional testing.",
     "type": "library",
     "keywords": [
@@ -15,7 +15,7 @@
         }
     ],
     "require": {
-        "php": "^8.2",
+        "php": "^8.3",
         "ext-json": "*",
         "ext-mbstring": "*",
         "ext-pdo": "*",
