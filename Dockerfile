@@ -1,5 +1,5 @@
 FROM php:8.3-apache
-RUN useradd nonroot
+RUN useradd -m -d /data nonroot
 LABEL maintainer="Mark Tompsett <mark_tompsett@sil.org>"
 
 ENV REFRESHED_AT 2023-07-12
