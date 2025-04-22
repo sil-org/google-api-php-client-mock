@@ -1,4 +1,4 @@
-FROM php:8.2-apache
+FROM php:8.3-apache
 RUN useradd nonroot
 LABEL maintainer="Mark Tompsett <mark_tompsett@sil.org>"
 
