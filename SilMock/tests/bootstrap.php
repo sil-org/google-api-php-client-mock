@@ -1,5 +1,7 @@
 <?php
 
+use PHPUnit\Runner\ErrorException as TestFailedException;
+
 //include_once('AutoLoader.php');
 // Register the directory to your include files
 //AutoLoader::registerDirectory(__DIR__ . '/../../SilMock');
@@ -41,5 +43,5 @@ set_error_handler(function ($errno, $errorString, $errorFile, $errorLine) {
         return false;
     }
 
-    throw new ErrorException($errorString, 0, $errno, $errorFile, $errorLine);
+    throw new TestFailedException($errorString, 0, $errno, $errorFile, $errorLine);
 });
