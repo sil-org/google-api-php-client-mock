@@ -1,5 +1,7 @@
 <?php
 
+use PHPUnit\Runner\ErrorException as TestFailedException;
+
 //include_once('AutoLoader.php');
 // Register the directory to your include files
 //AutoLoader::registerDirectory(__DIR__ . '/../../SilMock');
@@ -29,3 +31,17 @@ if (!file_exists(DATAFILE4)) {
 if (!file_exists(DATAFILE5)) {
     touch(DATAFILE5);
 }
+
+// PHPUnit 12.x no longer has
+//     convertErrorsToExceptions="true"
+//     convertNoticesToExceptions="true"
+//     convertWarningsToExceptions="true"
+// This error handler should mimic it.
+set_error_handler(function ($errno, $errorString, $errorFile, $errorLine) {
+    if (!(error_reporting() & $errno)) {
+        // This error code is not included in error_reporting
+        return false;
+    }
+
+    throw new TestFailedException($errorString, 0, $errno, $errorFile, $errorLine);
+});
