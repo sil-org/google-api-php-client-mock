@@ -222,18 +222,17 @@ class SqliteUtils
     public function recordData(string $dataType, string $dataClass, string $data): bool
     {
         if (empty($dataType)) {
-            throw new SqliteUtilsBadDataTypeException("No data type given when trying to record " .
-                "data.");
+            throw new SqliteUtilsBadDataTypeException("No data type given when trying to record data.");
         }
         if (empty($dataClass)) {
-            throw new SqliteUtilsBadDataClassException("No data class given when trying to record " .
-                "data (data type: " . $dataType . ").");
+            throw new SqliteUtilsBadDataClassException(
+                "No data class given when trying to record data (data type: " . $dataType . ")."
+            );
         }
 
         // Add the record.
         $this->runSql(
-            'INSERT INTO ' . $this->dbTable . ' (type, class, data)' .
-            ' VALUES (:type, :class, :data)',
+            'INSERT INTO ' . $this->dbTable . ' (type, class, data)  VALUES (:type, :class, :data)',
             [':type' => $dataType, ':class' => $dataClass, ':data' => $data],
             true
         );
