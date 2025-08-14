@@ -39,7 +39,7 @@ class UsersAliasesResource extends DbClass
         $matchingUsers = $dir->users->get($userKey);
 
         if ($matchingUsers === null) {
-            throw new Exception(self::ACCOUNT_DOESNT_EXIST . $userKey, 201407101645);
+            throw new Exception(static::ACCOUNT_DOESNT_EXIST . $userKey, 201407101645);
         }
 
         $sqliteUtils = new SqliteUtils($this->dbFile);
@@ -100,7 +100,7 @@ class UsersAliasesResource extends DbClass
         $matchingUsers = $dir->users->get($userKey);
 
         if ($matchingUsers === null) {
-            throw new Exception(self::ACCOUNT_DOESNT_EXIST . $userKey, 201407110830);
+            throw new Exception(static::ACCOUNT_DOESNT_EXIST . $userKey, 201407110830);
         }
 
         if ($postBody->$key === null) {
@@ -158,7 +158,7 @@ class UsersAliasesResource extends DbClass
         $matchingUsers = $dir->users->get($userKey);
 
         if ($matchingUsers === null) {
-            throw new Exception(self::ACCOUNT_DOESNT_EXIST . $userKey, 201407101420);
+            throw new Exception(static::ACCOUNT_DOESNT_EXIST . $userKey, 201407101420);
         }
 
         $foundAliases =  $this->fetchAliasesByUser($key, $userKey);

@@ -17,7 +17,7 @@ class MembersTest extends TestCase
 
     public function testInsert()
     {
-        $emailAddress = self::MEMBER_EMAIL_ADDRESS;
+        $emailAddress = static::MEMBER_EMAIL_ADDRESS;
         $groupEmailAddress = GroupsTest::GROUP_EMAIL_ADDRESS;
 
         $member = new GoogleDirectory_Member();
@@ -28,32 +28,32 @@ class MembersTest extends TestCase
         try {
             $addedMember = $mockGoogleServiceDirectory->members->insert($groupEmailAddress, $member);
         } catch (Exception $exception) {
-            self::fail(
+            static::fail(
                 sprintf(
                     'Was expecting the members.insert method to function, but got: %s',
                     $exception->getMessage()
                 )
             );
         }
-        self::assertTrue($addedMember instanceof GoogleDirectory_Member);
+        static::assertTrue($addedMember instanceof GoogleDirectory_Member);
     }
 
     public function testGet()
     {
         $groupEmailAddress = GroupsTest::GROUP_EMAIL_ADDRESS;
-        $emailAddress = self::MEMBER_EMAIL_ADDRESS;
+        $emailAddress = static::MEMBER_EMAIL_ADDRESS;
         $mockGoogleServiceDirectory = new GoogleMock_Directory('anyclient', $this->dataFile);
         try {
             $member = $mockGoogleServiceDirectory->members->get($groupEmailAddress, $emailAddress);
         } catch (Exception $exception) {
-            self::fail(
+            static::fail(
                 sprintf(
                     'Was expecting the members.get method to function, but got: %s',
                     $exception->getMessage()
                 )
             );
         }
-        self::assertTrue($member instanceof GoogleDirectory_Member);
+        static::assertTrue($member instanceof GoogleDirectory_Member);
     }
 
     public function testHasMember()
@@ -63,15 +63,15 @@ class MembersTest extends TestCase
         try {
             $result = $mockGoogleServiceDirectory->members->hasMember(
                 $groupEmailAddress,
-                self::MEMBER_EMAIL_ADDRESS
+                static::MEMBER_EMAIL_ADDRESS
             );
             $hasMember = $result['isMember'] ?? false;
         } catch (Exception $exception) {
-            self::fail(
+            static::fail(
                 $exception->getMessage()
             );
         }
-        self::assertTrue($hasMember);
+        static::assertTrue($hasMember);
     }
 
     public function testListMembersAll()
@@ -84,7 +84,7 @@ class MembersTest extends TestCase
         } catch (Exception $exception) {
             $this->failure($exception, 'listMembersAll');
         }
-        self::assertNotEmpty(
+        static::assertNotEmpty(
             $members->getMembers(),
             'Was expecting the members.list method to have at least one member entry.'
         );
@@ -105,7 +105,7 @@ class MembersTest extends TestCase
         } catch (Exception $exception) {
             $this->failure($exception, 'listMembersOnlyMember');
         }
-        self::assertNotEmpty(
+        static::assertNotEmpty(
             $members->getMembers(),
             'Was expecting the members.list method to have at least one member type entry.'
         );
@@ -126,7 +126,7 @@ class MembersTest extends TestCase
         } catch (Exception $exception) {
             $this->failure($exception, 'listMembersOnlyOwner');
         }
-        self::assertEmpty(
+        static::assertEmpty(
             $members->getMembers(),
             'Was expecting the members.list method to have no owner types.'
         );
@@ -136,7 +136,7 @@ class MembersTest extends TestCase
     {
         $mockGoogleServiceDirectory = new GoogleMock_Directory('anyclient', $this->dataFile);
         $groupEmailAddress = GroupsTest::GROUP_EMAIL_ADDRESS;
-        $emailAddress = self::MEMBER_EMAIL_ADDRESS;
+        $emailAddress = static::MEMBER_EMAIL_ADDRESS;
         try {
             $result = $mockGoogleServiceDirectory->members->hasMember(
                 $groupEmailAddress,
@@ -144,7 +144,7 @@ class MembersTest extends TestCase
             );
             $hasMember = $result['isMember'] ?? false;
         } catch (Exception $exception) {
-            self::fail(
+            static::fail(
                 $exception->getMessage()
             );
         }
@@ -160,15 +160,15 @@ class MembersTest extends TestCase
         try {
             $result = $mockGoogleServiceDirectory->members->hasMember(
                 $groupEmailAddress,
-                self::MEMBER_EMAIL_ADDRESS
+                static::MEMBER_EMAIL_ADDRESS
             );
             $hasMember = $result['isMember'] ?? false;
         } catch (Exception $exception) {
-            self::fail(
+            static::fail(
                 $exception->getMessage()
             );
         }
-        self::assertFalse(
+        static::assertFalse(
             $hasMember,
             sprintf(
                 'Failed to delete %s from group %s',
@@ -180,7 +180,7 @@ class MembersTest extends TestCase
 
     protected function failure(Exception $exception, string $function): void
     {
-        self::fail(
+        static::fail(
             sprintf(
                 'Was expecting the %s method to function, but got: %s',
                 $function,
