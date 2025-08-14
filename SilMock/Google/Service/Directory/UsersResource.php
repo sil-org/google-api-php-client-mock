@@ -81,6 +81,7 @@ class UsersResource extends DbClass
         } else {
             $newUser->aliases = [];
         }
+        $newUser->isMailboxSetup = true;
 
         return $newUser;
     }
