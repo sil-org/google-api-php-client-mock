@@ -72,7 +72,7 @@ class SqliteUtilsTest extends TestCase
         $newSql->recordData(
             'directory',
             'verification_codes',
-            self::VERIFICATION_RECORD_DATA
+            static::VERIFICATION_RECORD_DATA
         );
 
         return $newSql;
@@ -116,7 +116,7 @@ class SqliteUtilsTest extends TestCase
                 'id' => '6',
                 'type' => 'directory',
                 'class' => 'verification_codes',
-                'data' => self::VERIFICATION_RECORD_DATA,
+                'data' => static::VERIFICATION_RECORD_DATA,
             )
         );
         $msg = " *** Mismatched data results for all data.";
@@ -156,7 +156,7 @@ class SqliteUtilsTest extends TestCase
                 'id' => '6',
                 'type' => 'directory',
                 'class' => 'verification_codes',
-                'data' => self::VERIFICATION_RECORD_DATA,
+                'data' => static::VERIFICATION_RECORD_DATA,
             )
         );
         $msg = " *** Mismatched data results for directory data.";
@@ -311,7 +311,7 @@ class SqliteUtilsTest extends TestCase
                 'id' => '6',
                 'type' => 'directory',
                 'class' => 'verification_codes',
-                'data' => self::VERIFICATION_RECORD_DATA,
+                'data' => static::VERIFICATION_RECORD_DATA,
             ]
         ];
         $msg = " *** Mismatched data results for remaining data.";

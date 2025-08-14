@@ -23,6 +23,6 @@ class DomainsTest extends TestCase
             'groups.example.org' => 'groups.example.org',
             'example.org' => 'example.org',
         ];
-        self::assertEquals($expected, $domainNameList, 'Domain name list does not match expected values');
+        static::assertEquals($expected, $domainNameList, 'Domain name list does not match expected values');
     }
 }

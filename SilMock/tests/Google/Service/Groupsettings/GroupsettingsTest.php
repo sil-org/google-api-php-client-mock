@@ -15,11 +15,11 @@ class GroupsettingsTest extends TestCase
     public function testGet()
     {
         $mockGroupsSettings = new MockGroupsSettings_ResourceGroups($this->dataFile);
-        $groupsSettings = $mockGroupsSettings->get(self::GROUP_EMAIL_ADDRESS);
-        self::assertNotNull($groupsSettings, 'Expecting group settings to exist');
-        self::assertSame(
+        $groupsSettings = $mockGroupsSettings->get(static::GROUP_EMAIL_ADDRESS);
+        static::assertNotNull($groupsSettings, 'Expecting group settings to exist');
+        static::assertSame(
             $groupsSettings->getEmail(),
-            self::GROUP_EMAIL_ADDRESS,
+            static::GROUP_EMAIL_ADDRESS,
             sprintf(
                 'Was expecting the groupsSettings.get method to return a match for the group: %s',
                 json_encode($groupsSettings, JSON_PRETTY_PRINT)
@@ -31,11 +31,11 @@ class GroupsettingsTest extends TestCase
     public function testUpdate()
     {
         $mockGroupsSettings = new MockGroupsSettings_ResourceGroups($this->dataFile);
-        $groupsSettings = $mockGroupsSettings->get(self::GROUP_EMAIL_ADDRESS);
-        self::assertEquals('false', $groupsSettings->getIsArchived(), 'Expecting default to be not archived');
+        $groupsSettings = $mockGroupsSettings->get(static::GROUP_EMAIL_ADDRESS);
+        static::assertEquals('false', $groupsSettings->getIsArchived(), 'Expecting default to be not archived');
         $groupsSettings->setIsArchived('true');
-        $mockGroupsSettings->update(self::GROUP_EMAIL_ADDRESS, $groupsSettings);
-        $groupsSettings = $mockGroupsSettings->get(self::GROUP_EMAIL_ADDRESS);
-        self::assertEquals('true', $groupsSettings->getIsArchived(), 'Expecting isArchived to be true');
+        $mockGroupsSettings->update(static::GROUP_EMAIL_ADDRESS, $groupsSettings);
+        $groupsSettings = $mockGroupsSettings->get(static::GROUP_EMAIL_ADDRESS);
+        static::assertEquals('true', $groupsSettings->getIsArchived(), 'Expecting isArchived to be true');
     }
 }

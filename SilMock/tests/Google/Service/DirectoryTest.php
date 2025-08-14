@@ -50,7 +50,7 @@ class DirectoryTest extends TestCase
     public function testCreateBatch()
     {
         $batch = new Batch();
-        self::assertInstanceOf(Batch::class, $batch);
+        static::assertInstanceOf(Batch::class, $batch);
     }
 
     public function testDirectory()
