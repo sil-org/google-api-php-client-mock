@@ -26,17 +26,17 @@ class GroupsTest extends TestCase
             $mockGoogleServiceDirectory->groups->delete($groupName);
         }
         $group = $mockGoogleServiceDirectory->groups->get($groupName);
-        self::assertNull($group, "Failed to clean up previous tests.");
+        static::assertNull($group, "Failed to clean up previous tests.");
     }
 
     public function testInsert()
     {
-        $this->deleteGroupAndAliasesIfTheyExists(self::GROUP_EMAIL_ADDRESS);
+        $this->deleteGroupAndAliasesIfTheyExists(static::GROUP_EMAIL_ADDRESS);
         $group = new GoogleDirectory_Group();
-        $group->setEmail(self::GROUP_EMAIL_ADDRESS);
+        $group->setEmail(static::GROUP_EMAIL_ADDRESS);
         // See https://developers.google.com/admin-sdk/directory/reference/rest/v1/groups#Group
         // setting the aliases will not add, remove, or change aliases at all.
-        $group->setAliases([self::GROUP_ALIAS_ADDRESS]);
+        $group->setAliases([static::GROUP_ALIAS_ADDRESS]);
         $group->setName('Sample Group');
         $group->setDescription('A Sample Group used for testing');
 
@@ -44,25 +44,25 @@ class GroupsTest extends TestCase
         try {
             $addedGroup = $mockGoogleServiceDirectory->groups->insert($group);
         } catch (Exception $exception) {
-            self::fail(
+            static::fail(
                 sprintf(
-                    self::GROUP_INSERT_FAILURE_TEMPLATE,
+                    static::GROUP_INSERT_FAILURE_TEMPLATE,
                     $exception->getMessage()
                 )
             );
         }
-        self::assertTrue($addedGroup instanceof GoogleDirectory_Group);
-        self::assertEmpty($addedGroup->getAliases(), "Expecting no group aliases inserted by group.insert");
+        static::assertTrue($addedGroup instanceof GoogleDirectory_Group);
+        static::assertEmpty($addedGroup->getAliases(), "Expecting no group aliases inserted by group.insert");
     }
 
     public function testUpdate()
     {
-        $this->deleteGroupAndAliasesIfTheyExists(self::GROUP_EMAIL_ADDRESS . 'update');
+        $this->deleteGroupAndAliasesIfTheyExists(static::GROUP_EMAIL_ADDRESS . 'update');
         $group = new GoogleDirectory_Group();
-        $group->setEmail(self::GROUP_EMAIL_ADDRESS . 'update');
+        $group->setEmail(static::GROUP_EMAIL_ADDRESS . 'update');
         // See https://developers.google.com/admin-sdk/directory/reference/rest/v1/groups#Group
         // setting the aliases will not add, remove, or change aliases at all.
-        $group->setAliases([self::GROUP_ALIAS_ADDRESS . 'update']);
+        $group->setAliases([static::GROUP_ALIAS_ADDRESS . 'update']);
         $group->setName('Sample Group Update');
         $group->setDescription('A Sample Group used for testing update');
 
@@ -70,32 +70,32 @@ class GroupsTest extends TestCase
         try {
             $addedGroup = $mockGoogleServiceDirectory->groups->insert($group);
         } catch (Exception $exception) {
-            self::fail(
+            static::fail(
                 sprintf(
-                    self::GROUP_INSERT_FAILURE_TEMPLATE,
+                    static::GROUP_INSERT_FAILURE_TEMPLATE,
                     $exception->getMessage()
                 )
             );
         }
-        self::assertTrue($addedGroup instanceof GoogleDirectory_Group);
-        self::assertEmpty($addedGroup->getAliases(), "Expecting no group aliases inserted by group.insert");
+        static::assertTrue($addedGroup instanceof GoogleDirectory_Group);
+        static::assertEmpty($addedGroup->getAliases(), "Expecting no group aliases inserted by group.insert");
 
         // See https://developers.google.com/admin-sdk/directory/reference/rest/v1/groups#Group
         // setting the aliases will not add, remove, or change aliases at all.
-        $group->setAliases([self::GROUP_ALIAS_ADDRESS . 'update-change']);
+        $group->setAliases([static::GROUP_ALIAS_ADDRESS . 'update-change']);
         $updatedGroup = $mockGoogleServiceDirectory->groups->update($group->getEmail(), $group);
-        self::assertTrue($updatedGroup instanceof GoogleDirectory_Group);
-        self::assertEmpty($updatedGroup->getAliases(), "Expecting no group aliases changed by group.update");
+        static::assertTrue($updatedGroup instanceof GoogleDirectory_Group);
+        static::assertEmpty($updatedGroup->getAliases(), "Expecting no group aliases changed by group.update");
     }
 
     protected function deleteTestSetup()
     {
         // Set update a deletable email address
         $group = new GoogleDirectory_Group();
-        $group->setEmail(self::GROUP_EMAIL_ADDRESS . 'delete');
+        $group->setEmail(static::GROUP_EMAIL_ADDRESS . 'delete');
         // See https://developers.google.com/admin-sdk/directory/reference/rest/v1/groups#Group
         // setting the aliases will not add, remove, or change aliases at all.
-        $group->setAliases([self::GROUP_ALIAS_ADDRESS . 'delete']);
+        $group->setAliases([static::GROUP_ALIAS_ADDRESS . 'delete']);
         $group->setName('Sample Deletable Group');
         $group->setDescription('A Sample Deletable Group used for testing');
 
@@ -103,35 +103,35 @@ class GroupsTest extends TestCase
         try {
             $addedGroup = $mockGoogleServiceDirectory->groups->insert($group);
         } catch (Exception $exception) {
-            self::fail(
+            static::fail(
                 sprintf(
-                    self::GROUP_INSERT_FAILURE_TEMPLATE,
+                    static::GROUP_INSERT_FAILURE_TEMPLATE,
                     $exception->getMessage()
                 )
             );
         }
-        self::assertTrue($addedGroup instanceof GoogleDirectory_Group);
-        self::assertEmpty($addedGroup->getAliases(), "Expecting no group aliases");
+        static::assertTrue($addedGroup instanceof GoogleDirectory_Group);
+        static::assertEmpty($addedGroup->getAliases(), "Expecting no group aliases");
 
         // Set update a deletable email address
         $groupAlias = new GoogleDirectory_GroupAlias();
-        $groupAlias->setPrimaryEmail(self::GROUP_EMAIL_ADDRESS . 'delete');
-        $groupAlias->setAlias(self::GROUP_ALIAS_ADDRESS . 'delete');
+        $groupAlias->setPrimaryEmail(static::GROUP_EMAIL_ADDRESS . 'delete');
+        $groupAlias->setAlias(static::GROUP_ALIAS_ADDRESS . 'delete');
 
         try {
             $addedGroupAliases = $mockGoogleServiceDirectory->groups_aliases->insert(
-                self::GROUP_EMAIL_ADDRESS . 'delete',
+                static::GROUP_EMAIL_ADDRESS . 'delete',
                 $groupAlias
             );
         } catch (Exception $exception) {
-            self::fail(
+            static::fail(
                 sprintf(
                     'Was expecting the groups_aliases.insert method to function, but got: %s',
                     $exception->getMessage()
                 )
             );
         }
-        self::assertTrue($addedGroupAliases instanceof GoogleDirectory_GroupAlias);
+        static::assertTrue($addedGroupAliases instanceof GoogleDirectory_GroupAlias);
     }
 
     public function testDeleteByName()
@@ -141,9 +141,9 @@ class GroupsTest extends TestCase
         // Now try to delete it
         $mockGoogleServiceDirectory = new GoogleMock_Directory('anyclient', $this->dataFile);
         try {
-            $mockGoogleServiceDirectory->groups->delete(self::GROUP_EMAIL_ADDRESS . 'delete');
+            $mockGoogleServiceDirectory->groups->delete(static::GROUP_EMAIL_ADDRESS . 'delete');
         } catch (Exception $exception) {
-            self::fail(
+            static::fail(
                 sprintf(
                     'Was expecting the groups.delete method to function for name, but got: %s',
                     $exception->getMessage()
@@ -152,13 +152,13 @@ class GroupsTest extends TestCase
         }
 
         try {
-            $group = $mockGoogleServiceDirectory->groups->get(self::GROUP_EMAIL_ADDRESS . 'delete');
-            self::assertNull(
+            $group = $mockGoogleServiceDirectory->groups->get(static::GROUP_EMAIL_ADDRESS . 'delete');
+            static::assertNull(
                 $group,
                 'Was expecting the group to be deleted by name, but found something'
             );
         } catch (Exception $exception) {
-            self::fail(
+            static::fail(
                 sprintf(
                     'Was expecting to confirm the group was deleted by name, but got: %s',
                     $exception->getMessage()
@@ -167,14 +167,14 @@ class GroupsTest extends TestCase
         }
         try {
             $groupAliases = $mockGoogleServiceDirectory->groups_aliases->listGroupsAliases(
-                self::GROUP_EMAIL_ADDRESS . 'delete'
+                static::GROUP_EMAIL_ADDRESS . 'delete'
             );
-            self::assertEmpty(
+            static::assertEmpty(
                 $groupAliases->getAliases(),
                 'Was expecting the group aliases to be deleted by name, but found something'
             );
         } catch (Exception $exception) {
-            self::fail(
+            static::fail(
                 sprintf(
                     'Was expecting to confirm the group aliases were also deleted by name, but got: %s',
                     $exception->getMessage()
@@ -190,9 +190,9 @@ class GroupsTest extends TestCase
         // Now try to delete it
         $mockGoogleServiceDirectory = new GoogleMock_Directory('anyclient', $this->dataFile);
         try {
-            $mockGoogleServiceDirectory->groups->delete(self::GROUP_ALIAS_ADDRESS . 'delete');
+            $mockGoogleServiceDirectory->groups->delete(static::GROUP_ALIAS_ADDRESS . 'delete');
         } catch (Exception $exception) {
-            self::fail(
+            static::fail(
                 sprintf(
                     'Was expecting the groups.delete method to function for aliases, but got: %s',
                     $exception->getMessage()
@@ -201,13 +201,13 @@ class GroupsTest extends TestCase
         }
 
         try {
-            $group = $mockGoogleServiceDirectory->groups->get(self::GROUP_EMAIL_ADDRESS . 'delete');
-            self::assertNull(
+            $group = $mockGoogleServiceDirectory->groups->get(static::GROUP_EMAIL_ADDRESS . 'delete');
+            static::assertNull(
                 $group,
                 'Was expecting the group to be deleted by alias, but found something'
             );
         } catch (Exception $exception) {
-            self::fail(
+            static::fail(
                 sprintf(
                     'Was expecting to confirm the group was deleted by alias, but got: %s',
                     $exception->getMessage()

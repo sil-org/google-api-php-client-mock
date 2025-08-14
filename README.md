@@ -154,7 +154,7 @@ Examples
     }
 
     public static function getGoogleServiceDirectory($client) {
-        if (self::useRealGoogle()) {
+        if (static::useRealGoogle()) {
             return new Google\Service\Directory($client);
         }
         $db_path = null;
@@ -165,7 +165,7 @@ Examples
     }
 
 ### Managing a User
-    $dir = self::getGoogleServiceDirectory($client);
+    $dir = static::getGoogleServiceDirectory($client);
     $google_user = new Google\Service\Directory\User();
     $google_user = $dir->users->insert($google_user);
     $google_user = $dir->users->get($usersEmail);
@@ -175,7 +175,7 @@ Examples
     $account = $dir->users->update($users_email, $google_user);
 
 ### Managing a User's Aliases
-    $dir = self::getGoogleServiceDirectory($client);
+    $dir = static::getGoogleServiceDirectory($client);
     $google_alias = new Google\Service\Directory\Alias();
     $google_alias->setAlias($alias);
     $alias = $dir->users_aliases->insert($users_email, $google_alias);
