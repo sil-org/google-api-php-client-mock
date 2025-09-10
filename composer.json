@@ -1,12 +1,12 @@
 {
-    "name": "silinternational/google-api-php-client-mock",
+    "name": "sil-org/google-api-php-client-mock",
     "version": "2.16.0",
     "description": "Attempting to create an intelligent mock of the Google API PHP Client for unit and functional testing.",
     "type": "library",
     "keywords": [
         "google-api-php-client", "mock"
     ],
-    "homepage": "https://github.com/silinternational/google-api-php-client-mock",
+    "homepage": "https://github.com/sil-org/google-api-php-client-mock",
     "license": "MIT",
     "authors": [
         {
