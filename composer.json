@@ -1,6 +1,6 @@
 {
     "name": "sil-org/google-api-php-client-mock",
-    "version": "2.16.0",
+    "version": "2.16.1",
     "description": "Attempting to create an intelligent mock of the Google API PHP Client for unit and functional testing.",
     "type": "library",
     "keywords": [
