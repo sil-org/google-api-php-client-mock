@@ -1,0 +1,20 @@
+#version tag is obsolete
+services:
+    cli:
+        build: ./
+        volumes:
+            - ./:/data
+        working_dir: /data
+        environment:
+            # This should match the value in run-tests.sh
+            - DOMAIN_NAMES=groups.example.org,example.org
+        command: ["true"]
+
+networks:
+    default:
+        driver: bridge
+        ipam:
+            driver: default
+            config:
+            - subnet: 10.20.35.0/24
+              gateway: 10.20.35.1
