@@ -29,7 +29,7 @@ COPY actions-services.yml /data
 COPY composer-install.sh /data
 COPY composer.json /data
 COPY composer.lock /data
-COPY docker-compose.yml /data
+COPY compose.yaml /data
 COPY Dockerfile /data
 COPY LICENSE /data
 COPY Makefile /data

@@ -16,7 +16,7 @@ class DomainsTest extends TestCase
         foreach ($arrayOfDomainsObjects as $domainObject) {
             $domainNameList[$domainObject->getDomainName()] = $domainObject->getDomainName();
         }
-        // This should match the values in docker-compose.yml when testing locally
+        // This should match the values in compose.yaml when testing locally
         // This should match the values in run-tests.sh when testing is triggered by GitHub actions
         // This is the keyed array version of the list.
         $expected = [
