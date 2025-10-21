@@ -24,7 +24,7 @@
     },
     "require-dev": {
         "phpunit/phpunit": "^12.0",
-        "silinternational/psr3-adapters": "^3.0"
+        "sil-org/psr3-adapters": "^3.0"
     },
     "autoload": {
         "psr-0": {
