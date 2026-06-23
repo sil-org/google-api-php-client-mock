@@ -17,6 +17,8 @@ RUN apt-get update -y \
         sqlite3 \
 # some basics
         unzip wget zip \
+# needed for composer updating to determine version \
+        git \
 # Clean up to reduce docker image size
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* \
