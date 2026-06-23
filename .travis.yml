@@ -1,9 +1,0 @@
-language: php
-php:
-  - "8.2"
-
-before_script:
-  - curl -s https://getcomposer.org/installer | php && php composer.phar update
-
-script:
-  - php vendor/bin/phpunit -c SilMock/tests/phpunit.xml SilMock/tests/
