@@ -37,7 +37,6 @@ COPY LICENSE /data
 COPY Makefile /data
 COPY README.md /data
 COPY run-tests.sh /data
-COPY .travis.yml /data
 COPY SilMock/ /data/SilMock
 
 USER root
