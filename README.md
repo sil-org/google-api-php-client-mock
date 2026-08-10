@@ -1,3 +1,5 @@
+<h1>NOTE: This project is archived and no longer maintained.</h1>
+
 google-api-php-client-mock
 ==========================
 A small scale intelligent mock of the Google API PHP Client for unit and
